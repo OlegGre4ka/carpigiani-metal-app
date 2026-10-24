@@ -1,0 +1,224 @@
+{
+  "Metadata": {
+    "title": "Carpigiani Ukraine",
+    "description": "Official dealer of Carpigiani, IFI and ISA in Ukraine: ice cream production equipment."
+  },
+  "Nav": {
+    "home": "Home",
+    "news": "News",
+    "catalog": "Equipment catalog",
+    "support": "Support",
+    "contacts": "Contacts",
+    "menu": "Menu",
+    "language": "Language",
+    "brands": "Brands",
+    "admin": "Admin panel",
+    "showEquipment": "Show equipment: {name}",
+    "showTopics": "Show news topics",
+    "toHome": "Carpigiani: go to home page"
+  },
+  "Catalog": {
+    "carpigiani": "Carpigiani equipment",
+    "gelato": "Italian gelato",
+    "soft": "Soft serve",
+    "stick": "Ice cream on a stick",
+    "restaurant": "For restaurants",
+    "pastry": "For pastry shops",
+    "fastFood": "For fast food",
+    "ifi": "IFI display cases",
+    "ifiGelatoCases": "Classic gelato display cases",
+    "ifiPanoramaPozzetti": "Panorama and Pozzetti gelato cases",
+    "ifiPastryCases": "Pastry, hot and other display cases",
+    "isa": "ISA display cases",
+    "isaProfessional": "Professional display cases",
+    "isaPromotional": "Promotional display cases"
+  },
+  "SupportMenu": {
+    "gelatoUniversity": "Carpigiani Gelato University",
+    "gelatoCrystal": "Gelato Crystal technology",
+    "project": "Design and planning",
+    "service": "Service",
+    "sitemap": "Sitemap"
+  },
+  "Footer": {
+    "about": "Equipment for ice cream makers and gelaterias. Italian quality, service in Ukraine.",
+    "contactsTitle": "Contacts",
+    "company": "KHOLOD LLC",
+    "street": "1 Shumskoho St, office 317",
+    "city": "Kyiv, 02098",
+    "companyTitle": "Company",
+    "copyright": "© Carpigiani Ukraine",
+    "madeBy": "Website by"
+  },
+  "Slider": {
+    "label": "Carpigiani highlights",
+    "slideOf": "Slide {n} of {total}",
+    "goTo": "Show slide {n}",
+    "about": "About the model",
+    "more": "Learn more",
+    "maestro": {
+      "title": "Carpigiani Maestro",
+      "text": "A universal machine for making ice cream and pastry products"
+    },
+    "lunette": {
+      "title": "IFI Lunette",
+      "text": "A charismatic display case from IFI"
+    },
+    "university": {
+      "title": "Carpigiani Gelato University",
+      "text": "For those who want to learn to make <b>real</b> Italian gelato"
+    },
+    "ready": {
+      "title": "Carpigiani Ready",
+      "text": "Batch freezing and pasteurisation in one cylinder"
+    },
+    "prev": "Previous slide",
+    "next": "Next slide"
+  },
+  "Services": {
+    "project": {
+      "title": "Design and planning",
+      "text": "Technology advice, equipment selection, premises planning"
+    },
+    "delivery": {
+      "title": "Equipment supply",
+      "text": "Delivery, installation, commissioning, staff training"
+    },
+    "service": {
+      "title": "Service",
+      "text": "Warranty and post-warranty service, spare parts"
+    }
+  },
+  "Contact": {
+    "open": "Contact us",
+    "openShort": "Contact",
+    "close": "Close",
+    "title": "Contact us",
+    "quoteTitle": "Get a quote",
+    "text": "Leave your email and we will send a proposal and pick equipment for your needs.",
+    "inquiry": "Inquiry about:",
+    "name": "Your name",
+    "email": "Your email *",
+    "phone": "Phone (optional)",
+    "message": "Message (optional)",
+    "send": "Send",
+    "sending": "Sending…",
+    "retry": "Try again",
+    "sendFailed": "Could not send. Please try again or give us a call.",
+    "tooMany": "Too many attempts. Please try a bit later or give us a call.",
+    "orCall": "or call us:",
+    "thanksTitle": "Thank you!",
+    "thanksText": "We will reply shortly.",
+    "emailError": "Please enter your email so we can reply",
+    "phoneError": "Please check the phone number, e.g. +380 67 123 4567",
+    "toTop": "Back to top"
+  },
+  "ComingSoon": {
+    "eyebrow": "Page in progress",
+    "text": "We are preparing this page right now. Its content will appear here very soon. Meanwhile, go back to the home page or give us a call.",
+    "home": "Home page",
+    "call": "Call:"
+  },
+  "Equipment": {
+    "title": "Ice cream production equipment",
+    "text": "Choose a type of ice cream to see the equipment for making it",
+    "more": "Learn more",
+    "carpigianiTitle": "Carpigiani equipment",
+    "carpigianiText": "Batch freezers, pasteurizers and other Carpigiani equipment, sorted by application",
+    "ifiTitle": "IFI display cases",
+    "ifiText": "Display cases for gelato, pastry and bar counters by the Italian manufacturer IFI",
+    "view": "Quick view",
+    "askPrice": "Ask for a price",
+    "back": "Back",
+    "isaTitle": "ISA display cases",
+    "isaText": "Display cases for gelato, pastry, chocolate, deli food and baked goods by the Italian manufacturer ISA",
+    "prev": "Previous",
+    "next": "Next",
+    "prevModel": "Previous model",
+    "nextModel": "Next model",
+    "models": "Other models"
+  },
+  "CarpigianiAbout": {
+    "p1": "CARPIGIANI GROUP is the best-known manufacturer of commercial ice cream equipment. The company accounts for about 50% of the world market for machines that make Italian gelato and soft serve.",
+    "p2": "Today the company makes batch freezers, pasteurizers and other equipment under the Carpigiani, Coldelite, Ice Team 1927, Ott-Freezer, Promag, Sencotel and GBG brands.",
+    "p3": "In 2003 the company founded <link>Carpigiani Gelato University</link>, a school that trains ice cream professionals. Courses take place at the company headquarters in Anzola dell'Emilia and in other countries. In 2012 the Carpigiani Gelato Museum opened, dedicated to the history, culture and technology of gelato making.",
+    "p4": "Our company is the official distributor of CARPIGIANI GROUP in Ukraine. We design projects and select equipment for you, and provide warranty and post-warranty service."
+  },
+  "IfiAbout": {
+    "p1": "<b>IFI</b> is a high-end Italian manufacturer specialising in display cases and ready-made solutions for bar counters. IFI products are best described by <b>cutting-edge design, innovation and high build quality</b>. Display cases such as <panorama>PANORAMA</panorama> and <tonda>TONDA</tonda> were so successful and innovative that they started whole new directions in the gelato display case industry: other manufacturers follow and imitate them.",
+    "panelsTitle": "The display cases come with several options of decorative panels:",
+    "panel1": "<b>No panels.</b> Only the technical part of the case is supplied; on site it is clad with the customer's own materials.",
+    "panel2": "<b>RAL 9010.</b> The case comes with standard white decorative panels, RAL 9010.",
+    "panel3": "<b>LC RAL.</b> The case is made with decorative panels in any RAL colour the customer chooses.",
+    "p2": "Most display cases come in several versions that look the same but have different technical equipment inside, so each is made for showing a different kind of product: gelato, chocolate, pastry, baked goods or deli food."
+  },
+  "IsaAbout": {
+    "p1": "<b>ISA</b> is a well-known Italian manufacturer of refrigeration equipment and ready-made solutions for cafés, restaurants and shops.",
+    "p2": "The company manages to keep high standards of appearance and build quality while keeping prices affordable. Thanks to this, gelato display cases such as <carrettino>CARRETTINO DEI GELATI</carrettino> and <millennium>MILLENNIUM</millennium> have been bestsellers for many years. The new <oneshow>ONESHOW</oneshow> and <supercapri>SUPERCAPRI</supercapri> models have become bestsellers in recent years.",
+    "p3": "<b>ISA</b> offers a wide range of display cases for gelato, pastry, chocolate, deli food and baked goods. For convenience we have divided them into two groups:",
+    "group1": "Affordable \"promotional\" gelato display cases",
+    "group2": "Professional display cases for an impressive display of gelato and pastry",
+    "p4": "Here they are:"
+  },
+  "Showcases": {
+    "filter": "Filter display cases by category",
+    "all": "All",
+    "ifiTitle": "IFI gelato and pastry display cases",
+    "isaTitle": "ISA gelato display cases"
+  },
+  "Loader": {
+    "text": "Loading…"
+  },
+  "EquipmentPage": {
+    "map": "Equipment catalog",
+    "close": "Close",
+    "catalogs": "Catalogs",
+    "items": "{count} items"
+  },
+  "CategoryPage": {
+    "breadcrumbs": "You are here",
+    "slider": "Photos",
+    "photo": "Photo {number}",
+    "previous": "Previous",
+    "next": "Next",
+    "zoom": "Enlarge photo {number}",
+    "viewer": "Photo viewer",
+    "close": "Close",
+    "video": "Video",
+    "play": "Play video",
+    "file": "File",
+    "megabytes": "{size} MB",
+    "kilobytes": "{size} KB",
+    "downloadPdf": "Download PDF: {name}"
+  },
+  "News": {
+    "title": "News",
+    "filter": "Filter news by topic",
+    "all": "All",
+    "empty": "No news yet. Please come back a bit later.",
+    "emptyTopic": "There is no news in this topic yet.",
+    "allNews": "All news",
+    "page": "Page {number}",
+    "zoom": "Enlarge photo",
+    "topic": "Topic",
+    "readMore": "Read more",
+    "showMore": "Show more",
+    "shown": "Shown {shown} of {total}",
+    "loadFailed": "Could not load. Please try again.",
+    "byTopic": "News by topic",
+    "allInTopic": "All in the topic ({count}) →",
+    "back": "Back to news",
+    "newer": "Newer news",
+    "older": "Older news"
+  },
+  "ContactsPage": {
+    "phones": "Phones",
+    "email": "Email",
+    "address": "Address",
+    "hours": "Working hours",
+    "route": "Get directions",
+    "map": "Map: how to find us",
+    "copy": "Copy",
+    "copied": "Copied"
+  }
+}

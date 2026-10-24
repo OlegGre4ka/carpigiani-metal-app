@@ -1,0 +1,103 @@
+"use client";
+
+import { useCallback, useEffect, useRef, useState, type FocusEvent, type TouchEvent } from "react";
+
+// What every slider of the site shares (the home slider and the slider of category pages):
+// - useSlider: which slide is shown, autoplay with pause, swipe on phones;
+// - the cream "scoop" arrows and the caramel ring timer around the "next" arrow.
+// Each slider only draws its own slides and dots.
+
+export const AUTOPLAY_MS = 4000;
+
+type Options = {
+  count: number;
+  /** false: photos change only by arrows, dots and swipe */
+  autoplay?: boolean;
+};
+
+export function useSlider({ count, autoplay = true }: Options) {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const touchX = useRef<number | null>(null);
+
+  const go = useCallback((index: number) => setActive((index + count) % count), [count]);
+  const next = useCallback(() => go(active + 1), [go, active]);
+  const prev = useCallback(() => go(active - 1), [go, active]);
+
+  // Auto-scroll every 4 seconds. Stops while the mouse is over the slider and for people who
+  // turned off animations in their system settings. Any manual switch restarts the 4 seconds.
+  const running = autoplay && count > 1 && !paused;
+  useEffect(() => {
+    if (!running) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setTimeout(() => go(active + 1), AUTOPLAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [active, running, go]);
+
+  // Put on the block that holds the slides: pause under the mouse and for keyboard users (Tab),
+  // swipe left/right with a finger. A mouse click on a dot keeps autoplay going.
+  const handlers = {
+    onMouseEnter: () => setPaused(true),
+    onMouseLeave: () => setPaused(false),
+    onFocusCapture: (e: FocusEvent) => {
+      if (e.target instanceof HTMLElement && e.target.matches(":focus-visible")) setPaused(true);
+    },
+    onBlurCapture: () => setPaused(false),
+    onTouchStart: (e: TouchEvent) => {
+      touchX.current = e.touches[0].clientX;
+    },
+    onTouchEnd: (e: TouchEvent) => {
+      if (touchX.current === null || count < 2) return;
+      const dx = e.changedTouches[0].clientX - touchX.current;
+      touchX.current = null;
+      if (Math.abs(dx) > 50) go(active + (dx < 0 ? 1 : -1));
+    },
+  };
+
+  return { active, paused, go, next, prev, handlers, ringKey: `${active}-${paused}` };
+}
+
+// Side arrows: cream "ice cream scoops" with volume. On hover they turn caramel.
+// Hidden on phones (photos are swiped there). Each slider adds its own top/left/right.
+export const scoopButton =
+  "group/arrow absolute z-2 flex size-14 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white/90 bg-[radial-gradient(circle_at_35%_30%,#fff8ec,#f3dcc0_70%)] text-caramel shadow-[inset_0_-4px_8px_rgba(122,82,50,0.18),0_12px_26px_rgba(74,52,38,0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[linear-gradient(180deg,#b88a5e,#7a5232)] hover:text-white hover:shadow-[0_16px_32px_rgba(122,82,50,0.4)] max-[820px]:hidden";
+
+export function Chevron({ dir }: { dir: "left" | "right" }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={`relative size-5.5 transition-transform duration-300 ${
+        dir === "left" ? "group-hover/arrow:-translate-x-0.5" : "group-hover/arrow:translate-x-0.5"
+      }`}
+    >
+      <path d={dir === "left" ? "M15 6l-6 6 6 6" : "M9 6l6 6-6 6"} />
+    </svg>
+  );
+}
+
+// Ring timer around the "next" scoop: fills up during the 4 seconds before the slide switches,
+// stops while the slider is paused. Give it key={ringKey} from useSlider, so it restarts.
+export function TimerRing({ paused }: { paused: boolean }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 60 60" className="pointer-events-none absolute -inset-1.5 size-[calc(100%+12px)] -rotate-90">
+      <circle cx="30" cy="30" r="27" fill="none" stroke="rgba(255,253,248,0.8)" strokeWidth="3.5" />
+      <circle
+        cx="30"
+        cy="30"
+        r="27"
+        fill="none"
+        stroke="#7a5232"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeDasharray="170"
+        className={`motion-safe:animate-ring-fill motion-reduce:hidden ${paused ? "paused" : ""}`}
+      />
+    </svg>
+  );
+}

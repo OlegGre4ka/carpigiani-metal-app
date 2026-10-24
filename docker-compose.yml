@@ -1,0 +1,114 @@
+name: carpigiani
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    container_name: carpigiani-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+      # Next.js server talks to the API inside Docker
+      BACKEND_URL: http://backend:8000
+      # true on the live site (https)
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    depends_on:
+      - backend
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+          ignore:
+            - node_modules/
+            - .next/
+        - action: rebuild
+          path: ./frontend/package.json
+        - action: rebuild
+          path: ./frontend/package-lock.json
+
+  backend:
+    build:
+      context: ./backend
+    container_name: carpigiani-backend
+    command: sh -c "alembic upgrade head && python -m app.services.create_admins && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://127.0.0.1:3000}
+      # Admin panel login
+      JWT_SECRET: ${JWT_SECRET}
+      OLEH_ADMIN_EMAIL: ${OLEH_ADMIN_EMAIL:-}
+      OLEH_ADMIN_PASSWORD: ${OLEH_ADMIN_PASSWORD:-}
+      FOFKA_ADMIN_EMAIL: ${FOFKA_ADMIN_EMAIL:-}
+      FOFKA_ADMIN_PASSWORD: ${FOFKA_ADMIN_PASSWORD:-}
+      # Address of the site for links in emails
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      # Email: locally everything goes to Mailpit (http://localhost:8025)
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_TLS: ${SMTP_TLS:-false}
+      MAIL_FROM: ${MAIL_FROM:-Carpigiani <noreply@carpigiani.com.ua>}
+      # Where requests from the contact form of the site go
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-info@carpigiani.com.ua}
+      # Uploaded photos are kept in the "uploads" volume
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync
+          path: ./backend
+          target: /app
+          ignore:
+            - .venv/
+            - __pycache__/
+            - uploads/
+        - action: rebuild
+          path: ./backend/pyproject.toml
+        - action: rebuild
+          path: ./backend/poetry.lock
+
+  db:
+    image: postgres:18-alpine
+    container_name: carpigiani-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Catches all emails locally. Open http://localhost:8025 to read them.
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: carpigiani-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  postgres_data:
+  uploads:

@@ -1,0 +1,33 @@
+# frontend
+frontend/node_modules/
+
+# backend
+backend/.venv/
+backend/__pycache__/
+backend/**/*.pyc
+backend/.ruff_cache/
+backend/uploads/
+
+# env
+.env
+.env.*
+!.env.example
+.env.local
+frontend/.env
+frontend/.env.local
+backend/.env
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# database copies and photo archives (for moving to the server)
+*.dump
+uploads.tgz

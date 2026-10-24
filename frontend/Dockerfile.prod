@@ -1,0 +1,26 @@
+# Live site: the site is built once, then started (no dev mode, no hot reload).
+FROM node:24-alpine
+
+WORKDIR /app
+
+ENV NEXT_TELEMETRY_DISABLED=1
+
+COPY package*.json ./
+
+RUN npm ci
+
+COPY . .
+
+# The address of the API inside Docker. It is written into the build
+# (/api/... and /uploads/... are passed on to FastAPI), so it is set here.
+ARG BACKEND_URL=http://backend:8000
+ENV BACKEND_URL=${BACKEND_URL}
+
+# The server has 4 GB of memory: keep the build within 1.5 GB
+RUN NODE_OPTIONS=--max-old-space-size=1536 npm run build
+
+ENV NODE_ENV=production
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start", "--", "--hostname", "0.0.0.0"]
