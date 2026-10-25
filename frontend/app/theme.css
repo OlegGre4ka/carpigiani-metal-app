@@ -65,7 +65,7 @@
   --grad-navy-panel: linear-gradient(180deg, #10285c, #0a1b42);
   --navy-panel-rim: linear-gradient(160deg, rgb(247 249 251 / 0.7), rgb(111 122 134 / 0.3) 40%, rgb(120 170 255 / 0.4));
   /* Заголовок слайда: білий, що переходить у блакитний */
-  --grad-title: linear-gradient(90deg, #ffffff, #9cc4ff 65%, #4c97ff);
+  --grad-title: linear-gradient(90deg, #ffffff 0%, #e8f0ff 45%, #a9cbff 100%);
   /* Слайдер: тонка рамка (метал → синій), фон, світіння кожного слайда */
   --hero-rim: linear-gradient(150deg, rgb(247 249 251 / 0.8), rgb(111 122 134 / 0.3) 38%, rgb(70 140 255 / 0.55));
   --hero-glow-1: radial-gradient(760px 560px at 78% 55%, rgb(47 130 255 / 0.45), transparent 68%),
@@ -79,6 +79,12 @@
   --hero-glow-4: radial-gradient(700px 520px at 78% 55%, rgb(60 140 255 / 0.42), transparent 68%),
     radial-gradient(600px 500px at 100% 100%, rgb(120 170 255 / 0.2), transparent 65%),
     linear-gradient(120deg, #0b2154, #0a1b42 60%, #08173a);
+  /* «Туман» під текстом слайда: темно-синій зліва, плавно зникає до середини (фото справа у своїх кольорах) */
+  --hero-fog: radial-gradient(ellipse 58% 42% at 0% 12%, rgb(10 27 66 / 0.85) 0%, rgb(10 27 66 / 0.5) 60%, rgb(10 27 66 / 0) 100%),
+    linear-gradient(90deg, #0a1b42 0%, rgb(10 27 66 / 0.92) 28%, rgb(10 27 66 / 0.55) 45%, rgb(10 27 66 / 0) 62%);
+  --hero-fog-phone: linear-gradient(180deg, #0a1b42 0%, rgb(10 27 66 / 0.9) 32%, rgb(10 27 66 / 0) 52%);
+  /* Колір паперу акварелі Болоньї (слайд Gelato University) */
+  --sketch-paper: #ede4d0;
   /* Нахилена картка з апаратом на слайді */
   --sheet-rim: linear-gradient(150deg, #ffffff, #9da7b2 40%, #5b9bff);
   --sheet-bg: linear-gradient(180deg, #ffffff, #e6ecf5);
@@ -114,7 +120,8 @@
 
   /* ---------- Градієнти ---------- */
   /* Основна кнопка */
-  --grad-btn: linear-gradient(180deg, #2f82ff, #0b50d8);
+  /* Основна кнопка: глибокий кобальт з відблиском зверху (не плаский синій) */
+  --grad-btn: linear-gradient(160deg, #5a9cff 0%, #1f5ee0 34%, #0d3699 70%, #0a2873 100%);
   /* Кругла світла кнопка (стрілки слайдера, «вгору», хрестики) */
   --grad-round: radial-gradient(circle at 35% 30%, #ffffff, #e3e8ee 70%);
   /* Метал (хром): слова-акценти, рамки, металева кнопка */
@@ -136,4 +143,18 @@
   --font-title: var(--font-manrope), Arial, sans-serif;
   --title-weight: 800;
   --title-tracking: -0.02em;
+}
+
+/* ТИМЧАСОВО: порівняння строгіших шрифтів (перемикач у кутку локального сайту, components/font-picker.tsx) */
+html[data-font="inter-tight"] {
+  --font-text: var(--font-inter-tight), Arial, sans-serif;
+  --font-title: var(--font-inter-tight), Arial, sans-serif;
+}
+html[data-font="montserrat"] {
+  --font-text: var(--font-montserrat), Arial, sans-serif;
+  --font-title: var(--font-montserrat), Arial, sans-serif;
+}
+html[data-font="golos"] {
+  --font-text: var(--font-golos), Arial, sans-serif;
+  --font-title: var(--font-golos), Arial, sans-serif;
 }

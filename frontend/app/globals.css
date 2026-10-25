@@ -276,10 +276,12 @@
       radial-gradient(50% 50% at 0% 100%, rgb(var(--brand-rgb) / 0.05) 0%, transparent 70%);
   }
   /* Home page: the screen behind the header and the slider is navy (mockup «Головна (синя тема)») */
-  body:has(.home-navy)::before {
+  /* Only while the home page is on the screen: after going to another page Next.js keeps the
+     home page hidden in the page (style="display: none"), it must not colour other pages */
+  body:has(.home-navy:not([style*="display: none"]))::before {
     background: var(--grad-navy-page);
   }
-  body:has(.home-navy) .site-header {
+  body:has(.home-navy:not([style*="display: none"])) .site-header {
     background: transparent;
   }
   h1,

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Manrope } from "next/font/google";
+import { Golos_Text, Inter_Tight, Manrope, Montserrat } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -12,6 +12,7 @@ import { loadContacts, loadEquipmentMap, loadNewsMenu, type EquipmentMapCategory
 import { ContactsSync } from "@/components/contacts-sync";
 import { SiteFooter } from "@/components/site-footer";
 import { ContactWidget } from "@/components/contact-widget";
+import { FontPicker } from "@/components/font-picker";
 import "../globals.css";
 
 // Font of the whole site: Manrope (text and headings; see app/theme.css).
@@ -21,6 +22,13 @@ const fontSans = Manrope({
   subsets: ["latin", "cyrillic"],
   display: "swap",
 });
+
+// TEMPORARY: stricter fonts to compare (the switcher in the corner, only on the local site).
+// When Oleh chooses one, keep only it here and in app/theme.css, and remove the switcher.
+const fontInterTight = Inter_Tight({ variable: "--font-inter-tight", subsets: ["latin", "cyrillic"], display: "swap" });
+const fontMontserrat = Montserrat({ variable: "--font-montserrat", subsets: ["latin", "cyrillic"], display: "swap" });
+const fontGolos = Golos_Text({ variable: "--font-golos", subsets: ["latin", "cyrillic"], display: "swap" });
+const fontChoices = `${fontInterTight.variable} ${fontMontserrat.variable} ${fontGolos.variable}`;
 
 
 type Props = {
@@ -45,8 +53,8 @@ export default async function RootLayout({ children, params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
 
   return (
-    <html lang={locale} className={`${fontSans.variable} h-full antialiased`}>
-      <body className={`${fontSans.className} min-h-full flex flex-col`}>
+    <html lang={locale} className={`${fontSans.variable} ${fontChoices} h-full antialiased`}>
+      <body className="min-h-full flex flex-col font-sans">
         {/* Without JavaScript blocks that appear on scroll (components/reveal.tsx) are simply shown */}
         <noscript>
           <style>{".reveal,.reveal [data-reveal-kids]>*,.reveal [data-reveal-rows]>*,.reveal [data-reveal-pop]{opacity:1!important;transform:none!important;scale:1!important;clip-path:none!important}"}</style>
@@ -64,6 +72,7 @@ export default async function RootLayout({ children, params }: Props) {
             <FooterWithContacts />
           </Suspense>
           <ContactWidget />
+          {process.env.NODE_ENV === "development" && <FontPicker />}
         </NextIntlClientProvider>
       </body>
     </html>

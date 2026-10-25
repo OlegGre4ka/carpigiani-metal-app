@@ -88,19 +88,23 @@ const slides: Slide[] = [
 // Position and tilt of the inner photo, per slide.
 const sheetStyles = {
   1: {
-    box: "max-[820px]:bottom-3.5 left-[41%] w-62.5 -rotate-5 hover:rotate-0 max-[820px]:left-auto max-[820px]:right-2.5 max-[820px]:w-28",
+    box: "max-[820px]:bottom-3.5 left-[30%] w-62.5 -rotate-6 hover:-rotate-2 max-[820px]:left-auto max-[820px]:right-2.5 max-[820px]:w-28",
+    back: "rotate-[8deg]",
     img: "h-[min(335px,calc(100svh-460px))] min-h-55 max-[820px]:h-37.5 max-[820px]:min-h-0",
   },
   2: {
-    box: "max-[820px]:bottom-3.5 right-24 w-77.5 rotate-4 hover:rotate-0 max-[820px]:right-2.5 max-[820px]:w-39.5",
+    box: "max-[820px]:bottom-3.5 right-24 w-77.5 rotate-5 hover:rotate-2 max-[820px]:right-2.5 max-[820px]:w-39.5",
+    back: "-rotate-7",
     img: "h-53.75 max-[820px]:h-27.5",
   },
   3: {
-    box: "left-[max(41%,304px)] min-[821px]:bottom-6 w-max -rotate-4 hover:rotate-0 max-[820px]:relative max-[820px]:inset-auto max-[820px]:mx-auto max-[820px]:mt-1 max-[820px]:w-[calc(100%-48px)] max-[820px]:max-w-82.5",
+    box: "left-[max(20%,304px)] min-[821px]:bottom-6 w-max -rotate-5 hover:-rotate-1 max-[820px]:relative max-[820px]:inset-auto max-[820px]:mx-auto max-[820px]:mt-1 max-[820px]:w-[calc(100%-48px)] max-[820px]:max-w-82.5",
+    back: "rotate-6",
     img: "h-[min(400px,calc(clamp(520px,100svh_-_150px,720px)_-_310px),calc((min(80cqw,100cqw_-_262px)_+_59px_-_0.985_*_min(clamp(520px,100svh_-_150px,720px),580px))_/_1.5))] w-auto! max-[820px]:h-44 max-[820px]:min-h-0 max-[820px]:w-full! max-[820px]:object-cover max-[820px]:object-[center_25%]",
   },
   4: {
-    box: "max-[820px]:bottom-3.5 right-30 w-67.5 rotate-4 hover:rotate-0 max-[820px]:right-3 max-[820px]:w-30",
+    box: "max-[820px]:bottom-3.5 right-27.5 w-67.5 rotate-5 hover:rotate-2 max-[820px]:right-3 max-[820px]:w-30",
+    back: "-rotate-7",
     img: "h-[min(380px,calc(100svh-360px))] min-h-60 max-[820px]:h-41.25 max-[820px]:min-h-0",
   },
 } as const;
@@ -111,7 +115,7 @@ function SlideBackground({ background, first }: { background: Background; first:
     // shifted right so both towers stand right of the group photo.
     // Phone: full width at the bottom, so the towers show under the group photo.
     return (
-      <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
+      <div aria-hidden="true" className="absolute inset-0 overflow-hidden bg-[var(--sketch-paper)]">
         <Image
           src={background.src}
           alt=""
@@ -119,7 +123,7 @@ function SlideBackground({ background, first }: { background: Background; first:
           height={background.size[1]}
           sizes="(max-width: 820px) 100vw, 1300px"
           loading={first ? "eager" : "lazy"}
-          className="absolute -right-27.5 bottom-0 h-[min(100%,580px)] w-auto max-w-none opacity-30 mix-blend-screen invert hue-rotate-180 saturate-60 mask-[linear-gradient(90deg,transparent_10%,#000_45%)] max-[820px]:right-0 max-[820px]:h-auto max-[820px]:w-[min(100%,330px)] max-[820px]:mask-[linear-gradient(180deg,transparent_0%,#000_40%)]"
+          className="absolute -right-27.5 bottom-0 h-[min(100%,580px)] w-auto max-w-none max-[820px]:right-0 max-[820px]:h-auto max-[820px]:w-[min(100%,330px)]"
         />
       </div>
     );
@@ -128,7 +132,7 @@ function SlideBackground({ background, first }: { background: Background; first:
   if (background.kind === "fade") {
     // Photo fades in from the left, so the text sits on clean cream.
     return (
-      <div className="absolute inset-0 opacity-50 mask-[linear-gradient(90deg,transparent_28%,#000_70%)] max-[820px]:top-auto max-[820px]:h-[56%] max-[820px]:mask-[linear-gradient(180deg,transparent_0%,#000_36%)]">
+      <div className="absolute inset-0 mask-[radial-gradient(ellipse_75%_80%_at_0%_0%,transparent_0%,transparent_55%,#000_85%)] max-[820px]:top-auto max-[820px]:h-[56%] max-[820px]:mask-[linear-gradient(180deg,transparent_0%,#000_36%)]">
         <Image
           src={background.src}
           alt=""
@@ -158,7 +162,7 @@ function SlideBackground({ background, first }: { background: Background; first:
         {...rest}
         alt=""
         fetchPriority={first ? "high" : undefined}
-        className={`absolute inset-0 size-full object-cover object-right opacity-50 mask-[linear-gradient(90deg,transparent_28%,#000_70%)] max-[820px]:mask-[linear-gradient(180deg,transparent_25%,#000_65%)] ${background.phoneClass ?? ""}`}
+        className={`absolute inset-0 size-full object-cover object-right ${background.phoneClass ?? ""}`}
       />
     </picture>
   );
@@ -202,20 +206,22 @@ export function HeroSlider() {
               >
                 <div aria-hidden="true" className={`absolute inset-0 ${glows[slide.variant]}`} />
                 <SlideBackground background={slide.background} first={i === 0} />
+                {/* Navy fog under the text only: the photo keeps its own colours */}
+                <div aria-hidden="true" className="absolute inset-0 bg-[image:var(--hero-fog)] max-[820px]:bg-[image:var(--hero-fog-phone)]" />
 
                 {/* The text block lets clicks through to the photo; only the button catches them */}
                 <div className="pointer-events-none relative z-2 px-18 py-16 max-[820px]:px-5 max-[820px]:py-5.5">
                   <h2
-                    className={`mt-1.5 mb-4.5 max-w-108 bg-[image:var(--grad-title)] bg-clip-text pb-1.5 leading-none tracking-[-2px] text-transparent max-[820px]:mt-0.5 max-[820px]:mb-3 max-[820px]:max-w-none ${
+                    className={`mt-1.5 mb-4.5 bg-[image:var(--grad-title)] bg-clip-text pb-1 leading-[0.95] tracking-[-1px] whitespace-nowrap text-transparent drop-shadow-[0_2px_14px_rgb(0_10_40/0.55)] max-[820px]:whitespace-normal max-[820px]:mt-0.5 max-[820px]:mb-3 ${
                       slide.key === "university"
-                        ? "text-[56px] max-[820px]:text-[min(34px,7.6vw)]"
-                        : "text-[68px] max-[820px]:text-[min(42px,10vw)]"
+                        ? "text-[52px] max-[820px]:text-[min(36px,7.6vw)]"
+                        : "text-[60px] max-[820px]:text-[min(44px,10vw)]"
                     } ${on ? "motion-safe:animate-title-in" : ""}`}
                   >
                     {t(`${slide.key}.title`)}
                   </h2>
                   <p
-                    className={`mb-9 max-w-85 text-[21px] leading-normal text-on-navy-soft max-[820px]:max-w-none max-[820px]:mb-4.5 max-[820px]:text-base ${
+                    className={`mb-8.5 max-w-95 text-[21px] leading-normal text-on-navy-soft drop-shadow-[0_1px_8px_rgb(0_10_40/0.6)] max-[820px]:mb-4.5 max-[820px]:text-base ${
                       on ? "motion-safe:animate-in-left [animation-delay:250ms]" : ""
                     }`}
                   >
@@ -224,21 +230,21 @@ export function HeroSlider() {
                   <div
                     className={`pointer-events-auto w-max ${on ? "motion-safe:animate-in-left [animation-delay:450ms]" : ""}`}
                   >
-                    {/* Hover: lifts, a light glare runs across, the arrow moves right */}
+                    {/* Hover: lifts, a light glare runs across, an arrow slides in */}
                     <Link
                       href={slide.href}
-                      className="btn-shine group/btn inline-flex items-center gap-2.5 rounded-full bg-[image:var(--metal)] px-8.5 py-4.25 font-extrabold text-ink shadow-[0_12px_34px_rgb(160_180_215/0.28)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgb(160_180_215/0.4)] max-[820px]:px-4.5 max-[820px]:py-3 max-[820px]:text-sm"
+                      className="btn-shine group/btn inline-flex items-center rounded-full bg-[image:var(--metal)] px-8 py-4 font-extrabold text-ink shadow-[0_12px_34px_rgb(160_180_215/0.28)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_44px_rgb(160_180_215/0.4)] max-[820px]:px-4.5 max-[820px]:py-3 max-[820px]:text-sm"
                     >
                       {t(slide.button)}
                       <ArrowRight
                         aria-hidden="true"
-                        className="size-4.5 transition-transform duration-300 group-hover/btn:translate-x-1"
+                        className="ml-0 size-5 w-0 opacity-0 transition-all duration-300 group-hover/btn:ml-2 group-hover/btn:w-5 group-hover/btn:opacity-100"
                       />
                     </Link>
                   </div>
                 </div>
 
-                {/* Inner photo of the slide: tilted card in a metal-blue frame.
+                {/* Inner photo of the slide: tilted paper sheet with tape.
                     A click opens the same page as the button (the button stays the main link for keyboard and screen readers) */}
                 <Link
                   href={slide.href}
@@ -248,8 +254,15 @@ export function HeroSlider() {
                     on ? "motion-safe:animate-sheet-in [animation-delay:300ms]" : ""
                   }`}
                 >
-                  <div className="rounded-[30px] bg-[image:var(--sheet-rim)] p-0.5 shadow-[0_30px_80px_rgb(0_70_255/0.45),0_0_0_8px_rgb(47_130_255/0.1)] max-[820px]:rounded-[20px]">
-                  <div className="relative rounded-[28px] bg-[image:var(--sheet-bg)] p-3.5 max-[820px]:rounded-[18px] max-[820px]:p-1.75">
+                  <div
+                    aria-hidden="true"
+                    className={`absolute inset-0 rounded bg-[#d9e1ec] shadow-[0_10px_24px_rgb(0_10_40/0.35)] ${s.back}`}
+                  />
+                  <div className="relative rounded bg-white p-3.5 shadow-[0_18px_40px_rgb(0_10_40/0.45),0_2px_4px_rgb(0_10_40/0.2)] max-[820px]:p-1.75">
+                    <span
+                      aria-hidden="true"
+                      className="absolute -top-3.25 left-1/2 -ml-10.75 h-6.5 w-21.5 -rotate-4 bg-[rgb(205_220_240/0.8)] shadow-[0_2px_4px_rgb(0_0_0/0.15)] max-[820px]:-top-2 max-[820px]:-ml-6.25 max-[820px]:h-4 max-[820px]:w-12.5"
+                    />
                     <Image
                       src={slide.sheet.src}
                       alt={slide.sheet.alt}
@@ -258,7 +271,6 @@ export function HeroSlider() {
                       sizes="(max-width: 820px) 270px, 310px"
                       className={`block w-full object-contain ${s.img}`}
                     />
-                  </div>
                   </div>
                 </Link>
               </div>
@@ -276,7 +288,7 @@ export function HeroSlider() {
         </button>
 
         {/* Dots */}
-        <div className="absolute bottom-7 left-15.5 z-2 flex max-[820px]:bottom-3 max-[820px]:left-2.5">
+        <div className="absolute bottom-7 left-15.5 z-2 flex max-[820px]:bottom-3 max-[820px]:left-2.5 max-[820px]:rounded-full max-[820px]:bg-navy/50 max-[820px]:px-1">
           {slides.map((slide, i) => (
             <button
               key={slide.key}
