@@ -59,6 +59,17 @@
       transform: none;
     }
   }
+  /* Double arrow on phone cards: a soft push to the right, "open it" */
+  --animate-nudge: nudge 1.6s ease-in-out infinite;
+  @keyframes nudge {
+    0%,
+    100% {
+      transform: none;
+    }
+    50% {
+      transform: translateX(3px);
+    }
+  }
   /* Headings and cards: soft rise from below */
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   @keyframes fade-up {
@@ -130,6 +141,10 @@
   --color-danger-ink: var(--danger-ink);
   --color-danger-bg: var(--danger-bg);
   --color-danger-pale: var(--danger-pale);
+  --color-navy: var(--navy);
+  --color-on-navy: var(--on-navy);
+  --color-on-navy-soft: var(--on-navy-soft);
+  --color-sky: var(--sky);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -259,6 +274,13 @@
     background-image:
       radial-gradient(60% 50% at 85% 0%, rgb(var(--brand-light-rgb) / 0.08) 0%, transparent 70%),
       radial-gradient(50% 50% at 0% 100%, rgb(var(--brand-rgb) / 0.05) 0%, transparent 70%);
+  }
+  /* Home page: the screen behind the header and the slider is navy (mockup «Головна (синя тема)») */
+  body:has(.home-navy)::before {
+    background: var(--grad-navy-page);
+  }
+  body:has(.home-navy) .site-header {
+    background: transparent;
   }
   h1,
   h2 {
@@ -525,48 +547,6 @@ button:not(:disabled),
   .contact-panel {
     animation: panel-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-  /* Quick view of a card (components/equipment-cards.tsx): grows softly in the middle;
-     on phones it slides up from the bottom like the contact panel */
-  .quick-view {
-    animation: quick-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  @keyframes quick-in {
-    from {
-      opacity: 0;
-      scale: 0.94;
-    }
-  }
-  /* Quick view: the next / previous card slides in from its side */
-  .qv-from-right {
-    animation: qv-from-right 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  .qv-from-left {
-    animation: qv-from-left 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  @keyframes qv-from-right {
-    from {
-      opacity: 0;
-      translate: 36px 0;
-    }
-  }
-  @keyframes qv-from-left {
-    from {
-      opacity: 0;
-      translate: -36px 0;
-    }
-  }
-  @media (max-width: 820px) {
-    .quick-view {
-      animation: sheet-up 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .quick-view,
-    .qv-from-right,
-    .qv-from-left {
-      animation: none;
-    }
-  }
   @media (max-width: 820px) {
     .contact-panel {
       animation: sheet-up 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -594,6 +574,14 @@ button:not(:disabled),
     background:
       linear-gradient(180deg, var(--dark-card), var(--dark-card-2)) padding-box,
       var(--steel-border-dark) border-box;
+  }
+  /* Card on the navy background (home page): blue inside, thin metal-to-blue rim, deep shadow */
+  .navy-card {
+    border: 1px solid transparent;
+    background:
+      var(--navy-card) padding-box,
+      var(--navy-card-rim) border-box;
+    box-shadow: 0 18px 44px rgb(0 10 50 / 0.45);
   }
 }
 

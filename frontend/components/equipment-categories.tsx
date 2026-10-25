@@ -1,7 +1,9 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { cardLift, moreButton } from "@/components/card-styles";
+import { PhoneArrow } from "@/components/equipment-cards";
 import { Link } from "@/i18n/navigation";
 import { loadEquipmentCategories } from "@/lib/equipment-categories";
 
@@ -33,52 +35,57 @@ export async function EquipmentCategories({ page = "home" }: { page?: keyof type
   const locale = await getLocale();
   const t = await getTranslations("Equipment");
   const Heading = onBrandPage ? "h1" : "h2";
-  // Home page: a dark band on the full width with dark steel cards; brand pages: light
+  // Home page: on the navy background with blue cards (mockup); brand pages: light
   const dark = !onBrandPage;
+  // Words in <m>…</m> of the title shine like metal
+  const metal = (chunks: ReactNode) => <span className="metal-text">{chunks}</span>;
 
   return (
-    <section className={dark ? "bg-dark text-on-dark" : ""}>
+    <section>
       <div
         className={`mx-auto w-full max-w-360 px-20 max-[1100px]:px-10 max-[820px]:px-4 ${
-          onBrandPage ? "pt-10 max-[820px]:pt-6" : "py-24 max-[820px]:py-14"
+          onBrandPage ? "pt-10 max-[820px]:pt-6" : "-mt-15 pt-2.5 max-[820px]:-mt-8"
         }`}
       >
         <Heading
-          className={`motion-safe:animate-fade-up font-heading text-[46px] leading-[1.05] font-extrabold tracking-[-0.02em] max-[820px]:text-[30px] ${
-            dark ? "text-white" : "text-center text-ink"
+          className={`motion-safe:animate-fade-up text-center font-heading leading-[1.05] font-extrabold ${
+            dark ? "pb-1 text-[54px] tracking-[-1.5px] text-white max-[820px]:text-[34px]" : "text-[46px] tracking-[-0.02em] text-ink max-[820px]:text-[30px]"
           }`}
         >
-          {t(texts[page].title)}
+          {t.rich(texts[page].title, { m: metal })}
         </Heading>
         <p
-          className={`mt-3.5 mb-12 max-w-[60ch] text-lg motion-safe:animate-fade-up motion-safe:[animation-delay:100ms] max-[820px]:mb-8 max-[820px]:text-base ${
-            dark ? "text-on-dark-soft" : "mx-auto text-center text-hint"
+          className={`mx-auto mt-3.5 max-w-[60ch] text-center text-lg motion-safe:animate-fade-up motion-safe:[animation-delay:100ms] max-[820px]:mb-8 max-[820px]:text-base ${
+            dark ? "mb-13 leading-[1.55] text-on-dark-soft" : "mb-12 text-hint"
           }`}
         >
           {t(texts[page].text)}
         </p>
 
-        <div className="grid grid-cols-3 gap-7 max-[1100px]:grid-cols-2 max-[640px]:grid-cols-1 max-[820px]:gap-4">
+        <div className={`grid grid-cols-3 max-[1100px]:grid-cols-2 max-[640px]:grid-cols-1 max-[820px]:gap-4 ${dark ? "gap-x-6.5 gap-y-7" : "gap-7"}`}>
           {categories.map((category, index) => {
             const title = locale === "en" ? category.title_en : category.title_uk;
             const external = category.href.startsWith("http");
             const content = (
               <>
-                <div className={`relative overflow-hidden rounded-[22px] ${dark ? "bg-dark-card" : ""}`}>
+                <div className={`relative overflow-hidden rounded-[22px] ${dark ? "bg-[var(--navy-photo)]" : ""}`}>
                   <Image
                     src={category.image_url}
                     alt=""
                     width={1200}
                     height={800}
                     sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 420px"
-                    className="block h-67.5 w-full object-cover transition-transform duration-500 group-hover:scale-104 max-[820px]:h-52.5"
+                    className={`block w-full object-cover transition-transform duration-500 ${dark ? "aspect-[4/3] h-auto group-hover:scale-105" : "h-67.5 group-hover:scale-104 max-[820px]:h-52.5"}`}
                   />
-                  <span className={`absolute right-4 bottom-4 ${moreButton}`}>{t("more")}</span>
+                  <span className={`absolute right-3.5 bottom-3.5 ${moreButton}`}>{t("more")}</span>
                 </div>
-                <h3 className={`px-2 pt-4.5 pb-1.5 text-xl font-extrabold ${dark ? "text-white" : ""}`}>{title}</h3>
+                <div className="flex items-end gap-3">
+                  <h3 className={`min-w-0 flex-1 px-2 pt-4.5 pb-1.5 font-extrabold ${dark ? "text-[21px] text-white" : "text-xl"}`}>{title}</h3>
+                  <PhoneArrow onNavy={dark} />
+                </div>
               </>
             );
-            const className = `group block motion-safe:animate-fade-up rounded-[30px] p-4.5 ${dark ? "steel-card-dark" : "steel-card shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)]"} ${cardLift}`;
+            const className = `group block motion-safe:animate-fade-up rounded-[31px] ${dark ? "navy-card p-3.5 pb-5 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)]" : "steel-card p-4.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)]"} ${dark ? "transition duration-300" : cardLift}`;
 
             return external ? (
               <a key={category.id} href={category.href} target="_blank" rel="noopener" className={className} style={delay(index)}>

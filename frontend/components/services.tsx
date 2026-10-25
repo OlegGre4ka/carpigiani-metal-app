@@ -63,23 +63,23 @@ export function Services() {
   return (
     // White band on the full width (the home page changes backgrounds: dark, white, dark...)
     <section className="bg-white">
-      <div className="mx-auto w-full max-w-360 px-20 py-24 max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:py-14">
-        <h2 className="text-[46px] leading-[1.05] max-[820px]:text-[32px]">
+      <div className="mx-auto w-full max-w-360 px-20 pt-5 pb-25 max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:pt-2.5 max-[820px]:pb-15">
+        <h2 className="mb-3 pb-1 text-[54px] leading-[1.05] tracking-[-1.5px] max-[820px]:text-[34px]">
           <span className="blue-text">{t("title")}</span>
         </h2>
-        <p className="mt-3 mb-10 max-w-155 text-[17px] leading-relaxed text-ink-soft max-[820px]:mb-7 max-[820px]:text-base">{t("text")}</p>
-        <div className="grid grid-cols-3 gap-6 max-[1000px]:grid-cols-1 max-[820px]:gap-4">
+        <p className="mb-11 max-w-155 text-lg leading-[1.55] text-ink-soft max-[820px]:mb-7 max-[820px]:text-base">{t("text")}</p>
+        <div className="grid grid-cols-3 gap-6.5 max-[1000px]:grid-cols-1 max-[820px]:gap-4">
           {services.map((s, index) => (
             <div
               key={s.key}
               style={{ animationDelay: `${index * 110}ms` }}
-              className="steel-card rounded-[30px] [--card-fill:var(--mist)] p-8.5 transition duration-300 motion-safe:animate-fade-up hover:-translate-y-1 max-[820px]:p-6.5"
+              className="steel-card rounded-[31px] [--card-fill:var(--light-card)] p-8.5 shadow-[0_18px_44px_rgb(0_10_50/0.45)] transition duration-300 motion-safe:animate-fade-up hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)] max-[820px]:p-6.5"
             >
-              <div className="mb-5.5 flex size-14 items-center justify-center rounded-[18px] bg-[image:var(--grad-btn)] text-white shadow-[0_10px_30px_var(--glow)]">
+              <div className="mb-6 flex size-15.5 items-center justify-center rounded-[20px] bg-[image:var(--grad-btn)] text-white shadow-[0_12px_30px_rgb(20_100_255/0.4)]">
                 {s.icon}
               </div>
               <h3 className="mb-2.5 text-2xl font-extrabold tracking-[-0.01em] text-ink max-[820px]:text-xl">{t(`${s.key}.title`)}</h3>
-              <p className="text-[15.5px] leading-relaxed text-ink-soft">{t(`${s.key}.text`)}</p>
+              <p className="text-base leading-[1.6] text-ink-soft">{t(`${s.key}.text`)}</p>
             </div>
           ))}
         </div>

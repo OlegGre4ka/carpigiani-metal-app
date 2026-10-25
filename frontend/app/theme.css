@@ -51,6 +51,51 @@
   --on-dark-soft: #9fb0c6;
   --on-dark-line: rgb(255 255 255 / 0.14);
 
+  /* ---------- Темно-синя тема (макет «Головна (синя тема)») ---------- */
+  --navy: #0a1b42; /* фон сторінки під шапкою і слайдером */
+  --navy-top: #0b1f4d;
+  --on-navy: #d5e2f5; /* пункти меню */
+  --on-navy-soft: #b9c6da; /* текст під заголовком слайда */
+  --sky: #7db6ff; /* підписи груп у меню */
+  /* Фон сторінки: синє світіння зверху і темно-синій градієнт */
+  --grad-navy-page: radial-gradient(900px 700px at 6% 0%, rgb(40 110 255 / 0.3), transparent 62%),
+    radial-gradient(800px 700px at 100% 8%, rgb(60 130 255 / 0.22), transparent 60%),
+    linear-gradient(180deg, #0b1f4d 0%, #0a1b42 45%, #08173a 100%);
+  /* Випадні меню на темно-синьому */
+  --grad-navy-panel: linear-gradient(180deg, #10285c, #0a1b42);
+  --navy-panel-rim: linear-gradient(160deg, rgb(247 249 251 / 0.7), rgb(111 122 134 / 0.3) 40%, rgb(120 170 255 / 0.4));
+  /* Заголовок слайда: білий, що переходить у блакитний */
+  --grad-title: linear-gradient(90deg, #ffffff, #9cc4ff 65%, #4c97ff);
+  /* Слайдер: тонка рамка (метал → синій), фон, світіння кожного слайда */
+  --hero-rim: linear-gradient(150deg, rgb(247 249 251 / 0.8), rgb(111 122 134 / 0.3) 38%, rgb(70 140 255 / 0.55));
+  --hero-glow-1: radial-gradient(760px 560px at 78% 55%, rgb(47 130 255 / 0.45), transparent 68%),
+    radial-gradient(600px 500px at 0% 100%, rgb(47 130 255 / 0.18), transparent 70%),
+    linear-gradient(120deg, #0b2154, #0a1b42 60%, #08173a);
+  --hero-glow-2: radial-gradient(700px 520px at 82% 50%, rgb(90 150 255 / 0.4), transparent 68%),
+    radial-gradient(600px 500px at 20% 0%, rgb(120 170 255 / 0.16), transparent 70%),
+    linear-gradient(120deg, #0a1b42, #0d2a66 70%, #0a1b42);
+  --hero-glow-3: radial-gradient(700px 520px at 70% 60%, rgb(47 130 255 / 0.35), transparent 68%),
+    linear-gradient(120deg, #0a1b42, #0b2154 60%, #08173a);
+  --hero-glow-4: radial-gradient(700px 520px at 78% 55%, rgb(60 140 255 / 0.42), transparent 68%),
+    radial-gradient(600px 500px at 100% 100%, rgb(120 170 255 / 0.2), transparent 65%),
+    linear-gradient(120deg, #0b2154, #0a1b42 60%, #08173a);
+  /* Нахилена картка з апаратом на слайді */
+  --sheet-rim: linear-gradient(150deg, #ffffff, #9da7b2 40%, #5b9bff);
+  --sheet-bg: linear-gradient(180deg, #ffffff, #e6ecf5);
+
+  /* Картки на темно-синьому: синій градієнт усередині, тонка рамка метал → синій */
+  --navy-card: linear-gradient(180deg, #1b418f, #12306f);
+  --navy-card-rim: linear-gradient(160deg, rgb(247 249 251 / 0.85), rgb(160 175 195 / 0.35) 40%, rgb(130 180 255 / 0.55));
+  --navy-photo: #0b1424; /* фон під фото в картці */
+  /* Картки на білій смузі («Що ми робимо») */
+  --light-card: #f5f7fa;
+  /* Футер: темно-синя картка */
+  --grad-footer-navy: linear-gradient(100deg, #071634 0%, #0a1b42 45%, #0e2a66 100%);
+  /* Мітки тем новин на темно-синьому */
+  --navy-tag-bg: rgb(47 130 255 / 0.2);
+  --navy-tag-ink: #9cc4ff;
+  --navy-tag-line: rgb(90 150 255 / 0.4);
+
   /* ---------- Помилки ---------- */
   --danger: #c43d3a;
   --danger-ink: #9a2622;

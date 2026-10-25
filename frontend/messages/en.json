@@ -122,7 +122,7 @@
     "call": "Call:"
   },
   "Equipment": {
-    "title": "Ice cream production equipment",
+    "title": "Ice cream <m>production equipment</m>",
     "text": "Choose a type of ice cream to see the equipment for making it",
     "more": "Learn more",
     "carpigianiTitle": "Carpigiani equipment",
@@ -165,7 +165,7 @@
   "Showcases": {
     "filter": "Filter display cases by category",
     "all": "All",
-    "ifiTitle": "IFI gelato and pastry display cases",
+    "ifiTitle": "IFI gelato and <m>pastry display cases</m>",
     "isaTitle": "ISA gelato display cases"
   },
   "Loader": {

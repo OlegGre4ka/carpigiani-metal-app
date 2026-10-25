@@ -73,13 +73,13 @@ function activeBrand(pathname: string) {
 
 const navLink = "rounded-full px-3.5 py-2.5 font-semibold whitespace-nowrap max-[1440px]:px-3 transition-colors";
 /** Main menu item: dark (as the brand pills) while its page is open */
-const navItem = (active: boolean) => `${navLink} ${active ? "bg-white text-ink" : "text-white/85 hover:bg-white/10 hover:text-white"}`;
+const navItem = (active: boolean) => `${navLink} ${active ? "bg-[image:var(--grad-btn)] text-white shadow-[0_8px_22px_rgb(20_100_255/0.4)]" : "text-on-navy hover:bg-white/10 hover:text-white"}`;
 /** Item of the phone menu: marked while its page is open */
-const mobileItem = (active: boolean) => (active ? `${panelLink} bg-mist text-brand` : panelLink);
+const mobileItem = (active: boolean) => (active ? `${panelLink} bg-white/10 text-white` : panelLink);
 const panel =
   "invisible absolute top-full z-20 pt-2 opacity-0 transition-opacity group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100";
-const panelBox = "rounded-[22px] bg-white p-4 text-ink shadow-[0_20px_50px_rgb(var(--ink-rgb)/0.2)]";
-const panelLink = "block rounded-[14px] px-3.5 py-2.5 text-[15px] font-semibold hover:bg-mist";
+const panelBox = "rounded-[22px] border border-white/15 bg-[image:var(--grad-navy-panel)] p-4 text-on-navy shadow-[0_30px_70px_rgb(0_10_40/0.6)]";
+const panelLink = "block rounded-[14px] px-3.5 py-2.5 text-[15px] font-semibold hover:bg-white/10 hover:text-white";
 
 // The dropdowns open on hover (and on keyboard focus). After a click on a link inside, the
 // mouse is still over the menu and the link keeps the focus, so the dropdown would stay open
@@ -114,7 +114,7 @@ function LocaleSwitcher({ onPick }: { onPick?: () => void }) {
           onClick={onPick}
           aria-current={code === locale ? "true" : undefined}
           className={`rounded-full px-2.5 py-1.5 uppercase transition-colors ${
-            code === locale ? "bg-white text-ink" : "hover:bg-white/15"
+            code === locale ? "bg-[image:var(--metal)] text-ink" : "text-on-navy-soft hover:bg-white/15"
           }`}
         >
           {code === "uk" ? "UA" : code}
@@ -142,7 +142,7 @@ export function SiteHeader({
   showcases?: { ifi: MenuCategory[]; isa: MenuCategory[] };
   /** Addresses of IFI / ISA categories and showcases (the menu marks "Equipment catalog" on them) */
   showcasePages?: string[];
-  /** Topics of news (a dropdown under "News") and the pages on which "News" is lit */
+  /** News: the pages on which "News" is lit (topics are not in the menu any more) */
   news?: NewsMenu;
 }) {
   const t = useTranslations("Nav");
@@ -159,11 +159,10 @@ export function SiteHeader({
   const dropdown = useDropdownClose();
   const catalogMenu = dropdown("catalog");
   const supportMenu = dropdown("support");
-  const newsMenu = dropdown("news");
 
   return (
-    // Dark band on every page: on the home page it flows into the dark hero
-    <header className="relative z-30 w-full bg-dark text-on-dark">
+    // Navy band on every page; on the home page it is see-through over the navy background
+    <header className="site-header relative z-30 w-full bg-navy text-white">
       <div className="mx-auto flex w-full max-w-360 items-center justify-between gap-3.5 px-20 py-5 max-[1280px]:px-8 max-[820px]:px-4 max-[820px]:py-3">
         <div className="flex shrink-0 items-center gap-5.5 max-[820px]:gap-2.5">
           <Link href="/" aria-label={t("toHome")} className="flex items-center gap-3">
@@ -181,7 +180,7 @@ export function SiteHeader({
                   aria-current={active ? "true" : undefined}
                   className={`rounded-full border px-3.5 py-1.75 text-xs font-extrabold tracking-[1.5px] transition-colors max-[820px]:px-2.25 max-[820px]:py-1.5 max-[820px]:text-[10px] max-[820px]:tracking-[0.8px] ${
                     active
-                      ? "border-white bg-white text-ink"
+                      ? "border-transparent bg-[image:var(--grad-btn)] text-white shadow-[0_8px_22px_rgb(20_100_255/0.45)]"
                       : "border-white/25 bg-white/5 text-white hover:border-white/50 hover:bg-white/10"
                   }`}
                 >
@@ -197,37 +196,10 @@ export function SiteHeader({
           <Link href="/" aria-current={section === "home" ? "page" : undefined} className={navItem(section === "home")}>
             {t("home")}
           </Link>
-          {/* News: with topics a dropdown (each topic leads to its page), without them a plain link */}
-          {news.topics.length > 0 ? (
-            <div className="group relative" onClick={newsMenu.onClick} onMouseLeave={newsMenu.onMouseLeave}>
-              <Link
-                href="/news"
-                aria-current={pathname === "/news" ? "page" : undefined}
-                className={`${navItem(section === "news")} flex items-center gap-1`}
-              >
-                {t("news")}
-                <ChevronDown aria-hidden="true" className="size-4" />
-              </Link>
-              <div className={`${panel} left-0 ${newsMenu.hidden}`}>
-                <div className={`${panelBox} w-max min-w-56`}>
-                  {news.topics.map((topic) => (
-                    <Link
-                      key={topic.href}
-                      href={topic.href}
-                      aria-current={pathname === topic.href ? "page" : undefined}
-                      className={pathname === topic.href ? `${panelLink} bg-mist text-brand` : panelLink}
-                    >
-                      {topic.title}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <Link href="/news" aria-current={section === "news" ? "page" : undefined} className={navItem(section === "news")}>
-              {t("news")}
-            </Link>
-          )}
+          {/* News: a plain link (the topics are reached from the news section: tags and its map) */}
+          <Link href="/news" aria-current={section === "news" ? "page" : undefined} className={navItem(section === "news")}>
+            {t("news")}
+          </Link>
 
           <div className="group relative" onClick={catalogMenu.onClick} onMouseLeave={catalogMenu.onMouseLeave}>
             <button type="button" className={`${navItem(section === "catalog")} flex items-center gap-1`}>
@@ -242,7 +214,7 @@ export function SiteHeader({
                   <div key={group.key}>
                     <Link
                       href={group.href}
-                      className="mb-1 block rounded-[14px] px-3.5 py-2 text-xs font-extrabold tracking-[1.5px] text-steel uppercase hover:bg-mist"
+                      className="mb-1 block rounded-[14px] px-3.5 py-2 text-xs font-extrabold tracking-[1.5px] text-sky uppercase hover:bg-white/10"
                     >
                       {tc(group.key)}
                     </Link>
@@ -317,26 +289,14 @@ export function SiteHeader({
             {open ? <X aria-hidden="true" className="size-5.5" /> : <Menu aria-hidden="true" className="size-5.5" />}
           </button>
           {open && (
-            <div className="absolute top-13.5 right-0 z-20 flex max-h-[calc(100dvh-90px)] w-[min(340px,calc(100vw-32px))] min-w-65 flex-col gap-0.5 overflow-y-auto rounded-[22px] bg-white p-4 text-ink shadow-[0_20px_50px_rgb(var(--ink-rgb)/0.2)]">
+            <div className="absolute top-13.5 right-0 z-20 flex max-h-[calc(100dvh-90px)] w-[min(340px,calc(100vw-32px))] min-w-65 flex-col gap-0.5 overflow-y-auto rounded-[22px] border border-white/15 bg-[image:var(--grad-navy-panel)] p-4 text-on-navy shadow-[0_30px_70px_rgb(0_10_40/0.6)]">
               <Link href="/" onClick={close} aria-current={section === "home" ? "page" : undefined} className={mobileItem(section === "home")}>
                 {t("home")}
               </Link>
-              {news.topics.length > 0 ? (
-                // The name leads to all news, the arrow next to it opens the topics
-                <MobileCategory
-                  category={{ href: "/news", title: t("news"), groups: [{ title: "", items: news.topics }] }}
-                  onPick={close}
-                  nameClass={`${mobileItem(section === "news")} min-w-0 flex-1`}
-                  listClass="mb-1 ml-3.5 border-l-2 border-mist pl-2.5"
-                  current={pathname}
-                  toggleLabel={t("showTopics")}
-                />
-              ) : (
-                <Link href="/news" onClick={close} aria-current={section === "news" ? "page" : undefined} className={mobileItem(section === "news")}>
-                  {t("news")}
-                </Link>
-              )}
-              <div className="px-3.5 pt-2.5 pb-1 text-xs font-extrabold tracking-[1.5px] text-steel uppercase">
+              <Link href="/news" onClick={close} aria-current={section === "news" ? "page" : undefined} className={mobileItem(section === "news")}>
+                {t("news")}
+              </Link>
+              <div className="px-3.5 pt-2.5 pb-1 text-xs font-extrabold tracking-[1.5px] text-sky uppercase">
                 {t("catalog")}
               </div>
               {groups.map((group) => (
@@ -361,7 +321,7 @@ export function SiteHeader({
                 <NextLink
                   href={ADMIN_HREF}
                   onClick={close}
-                  className="mt-1 flex items-center gap-2 rounded-[14px] bg-ink px-3.5 py-2.5 text-[15px] font-semibold text-white"
+                  className="mt-1 flex items-center gap-2 rounded-[14px] bg-white/10 px-3.5 py-2.5 text-[15px] font-semibold text-white"
                 >
                   <Settings aria-hidden="true" className="size-4" />
                   {t("admin")}
@@ -395,20 +355,20 @@ function CategoryItem({ category, openLeft = false }: { category: MenuCategory; 
   }
   return (
     <div className="group/cat relative">
-      <Link href={category.href} aria-haspopup="true" className={`${panelLink} flex items-center justify-between gap-2 group-hover/cat:bg-mist`}>
+      <Link href={category.href} aria-haspopup="true" className={`${panelLink} flex items-center justify-between gap-2 group-hover/cat:bg-white/10`}>
         {category.title}
-        <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-steel transition-transform group-hover/cat:translate-x-0.5" />
+        <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-sky transition-transform group-hover/cat:translate-x-0.5" />
       </Link>
       {/* The padding is a bridge for the mouse between the item and the submenu */}
       <div className={`invisible absolute top-[-14px] z-30 opacity-0 transition-[opacity,visibility,translate] delay-200 duration-200 ${openLeft ? "right-full pr-3 translate-x-2" : "left-full pl-3 -translate-x-2"} group-focus-within/cat:visible group-focus-within/cat:translate-x-0 group-focus-within/cat:opacity-100 group-focus-within/cat:delay-0 group-hover/cat:visible group-hover/cat:translate-x-0 group-hover/cat:opacity-100 group-hover/cat:delay-100`}>
-        <div className="max-h-[min(70vh,520px)] w-72 overflow-y-auto overscroll-contain rounded-[22px] border border-ink/8 bg-white p-3 shadow-[0_24px_54px_rgb(var(--ink-rgb)/0.22)]">
+        <div className="max-h-[min(70vh,520px)] w-72 overflow-y-auto overscroll-contain rounded-[22px] border border-white/15 bg-[image:var(--grad-navy-panel)] p-3 text-on-navy shadow-[0_30px_70px_rgb(0_10_40/0.6)]">
           {groups.map((group) => (
             <div key={group.title}>
               {groups.length > 1 && (
-                <p className="mx-2.5 mt-2 mb-0.5 text-[10.5px] font-extrabold tracking-[1.1px] text-steel uppercase first:mt-1">{group.title}</p>
+                <p className="mx-2.5 mt-2 mb-0.5 text-[10.5px] font-extrabold tracking-[1.1px] text-sky uppercase first:mt-1">{group.title}</p>
               )}
               {group.items.map((item) => (
-                <Link key={item.href} href={item.href} className="block rounded-xl px-3 py-2 text-[14.5px] font-semibold hover:bg-mist">
+                <Link key={item.href} href={item.href} className="block rounded-xl px-3 py-2 text-[14.5px] font-semibold hover:bg-white/10 hover:text-white">
                   {item.title}
                 </Link>
               ))}
@@ -428,7 +388,7 @@ function MobileCategory({
   category,
   onPick,
   nameClass = `${panelLink} min-w-0 flex-1 pl-9 text-[14.5px]`,
-  listClass = "mb-1 ml-9 border-l-2 border-mist pl-2.5",
+  listClass = "mb-1 ml-9 border-l-2 border-white/15 pl-2.5",
   current,
   toggleLabel,
 }: {
@@ -463,7 +423,7 @@ function MobileCategory({
           aria-expanded={open}
           aria-label={toggleLabel ?? t("showEquipment", { name: category.title })}
           onClick={() => setOpen((v) => !v)}
-          className="flex size-10 shrink-0 items-center justify-center rounded-full text-brand hover:bg-mist"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full text-sky hover:bg-white/10"
         >
           <ChevronDown aria-hidden="true" className={`size-4.5 transition-transform duration-300 ${open ? "rotate-180" : ""}`} />
         </button>
@@ -474,7 +434,7 @@ function MobileCategory({
             {groups.map((group) => (
               <div key={group.title}>
                 {groups.length > 1 && (
-                  <p className="mx-2 mt-2 mb-0.5 text-[10.5px] font-extrabold tracking-[1.1px] text-steel uppercase">{group.title}</p>
+                  <p className="mx-2 mt-2 mb-0.5 text-[10.5px] font-extrabold tracking-[1.1px] text-sky uppercase">{group.title}</p>
                 )}
                 {group.items.map((item) => (
                   <Link
@@ -482,8 +442,8 @@ function MobileCategory({
                     href={item.href}
                     onClick={onPick}
                     aria-current={current === item.href ? "page" : undefined}
-                    className={`block rounded-xl px-2.5 py-2 text-[14px] font-semibold hover:bg-mist ${
-                      current === item.href ? "bg-mist text-brand" : "text-body"
+                    className={`block rounded-xl px-2.5 py-2 text-[14px] font-semibold hover:bg-white/10 hover:text-white ${
+                      current === item.href ? "bg-white/10 text-white" : "text-on-navy"
                     }`}
                   >
                     {item.title}

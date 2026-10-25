@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type FocusEvent, type TouchEv
 
 // What every slider of the site shares (the home slider and the slider of category pages):
 // - useSlider: which slide is shown, autoplay with pause, swipe on phones;
-// - the light round arrows and the blue ring timer around the "next" arrow.
+// - the round metal arrows and the blue ring timer around the "next" arrow.
 // Each slider only draws its own slides and dots.
 
 export const AUTOPLAY_MS = 4000;
@@ -57,10 +57,10 @@ export function useSlider({ count, autoplay = true }: Options) {
   return { active, paused, go, next, prev, handlers, ringKey: `${active}-${paused}` };
 }
 
-// Side arrows: light round buttons with volume. On hover they turn blue.
+// Side arrows: round metal (chrome) buttons with volume. On hover they turn blue.
 // Hidden on phones (photos are swiped there). Each slider adds its own top/left/right.
 export const scoopButton =
-  "group/arrow absolute z-2 flex size-14 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--grad-round)] text-brand shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[image:var(--grad-btn)] hover:text-white hover:shadow-[0_16px_32px_rgb(var(--brand-rgb)/0.4)] max-[820px]:hidden";
+  "group/arrow absolute z-2 flex size-14 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-ink shadow-[inset_0_-4px_8px_rgb(var(--ink-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[image:var(--grad-btn)] hover:text-white hover:shadow-[0_16px_32px_rgb(var(--brand-rgb)/0.4)] max-[820px]:hidden";
 
 export function Chevron({ dir }: { dir: "left" | "right" }) {
   return (

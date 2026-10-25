@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { scoopArrow } from "@/components/card-styles";
 import { Link, useRouter } from "@/i18n/navigation";
 
-// Going from page to page without the list, like the arrows of the quick view of showcases:
+// Going from page to page without the list, like the arrows of a slider:
 // from news to news (the left arrow opens the newer news, the right one the older one, the
 // order of /news) and from model to model on equipment pages (the order of its category).
 // Large screens: two "ice cream scoops" on the sides of the page, in the middle of the screen,

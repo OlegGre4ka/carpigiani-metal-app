@@ -153,7 +153,7 @@ export function Block({ block, compact, title }: { block: PageBlock; compact: bo
 }
 
 /** A subcategory on the page: its title and the cards of its equipment (4 in a row, 2 on phones).
- *  A click on a card opens its quick view (components/equipment-cards.tsx). */
+ *  A click on a card opens the page of the equipment (components/equipment-cards.tsx). */
 function Subcategory({ block }: { block: SubcategoryBlock }) {
   return (
     <section>
