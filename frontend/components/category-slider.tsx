@@ -17,9 +17,9 @@ const arrow = `${scoopButton} top-1/2`;
 // (contain), so it is visible at once next to the right column.
 const frame = {
   category:
-    "aspect-[16/6] rounded-[48px] bg-sand shadow-[0_30px_70px_rgba(120,80,60,0.16)] max-[820px]:aspect-[4/3.4] max-[820px]:rounded-[30px]",
+    "aspect-[16/6] rounded-[48px] bg-mist shadow-[0_30px_70px_rgb(var(--shadow-rgb)/0.16)] max-[820px]:aspect-[4/3.4] max-[820px]:rounded-[30px]",
   equipment:
-    "aspect-[16/8.4] rounded-[40px] bg-white shadow-[0_26px_60px_rgba(120,80,60,0.16)] max-[820px]:aspect-[4/3.1] max-[820px]:rounded-[28px]",
+    "aspect-[16/8.4] rounded-[40px] bg-white shadow-[0_26px_60px_rgb(var(--shadow-rgb)/0.16)] max-[820px]:aspect-[4/3.1] max-[820px]:rounded-[28px]",
 };
 
 export function CategorySlider({
@@ -78,7 +78,7 @@ export function CategorySlider({
               >
                 <span
                   className={`block h-2.5 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.2)] transition-all duration-300 ${
-                    index === active ? "w-8.5 bg-cocoa" : variant === "equipment" ? "w-2.5 bg-cocoa/25" : "w-2.5 bg-white/75"
+                    index === active ? "w-8.5 bg-ink" : variant === "equipment" ? "w-2.5 bg-ink/25" : "w-2.5 bg-white/75"
                   }`}
                 />
               </button>

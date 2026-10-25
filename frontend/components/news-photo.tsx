@@ -20,7 +20,7 @@ export function NewsPhoto({ image, alt }: { image: string; alt: string }) {
         type="button"
         aria-label={t("zoom")}
         onClick={() => setOpen(true)}
-        className="group relative block aspect-[16/7.2] w-full cursor-zoom-in overflow-hidden rounded-[32px] bg-[#f3e4cf] shadow-[0_22px_50px_rgba(120,80,60,0.15)] max-[820px]:aspect-[4/3] max-[820px]:rounded-[24px]"
+        className="group relative block aspect-[16/7.2] w-full cursor-zoom-in overflow-hidden rounded-[32px] bg-mist shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.15)] max-[820px]:aspect-[4/3] max-[820px]:rounded-[24px]"
       >
         <Image
           src={image}

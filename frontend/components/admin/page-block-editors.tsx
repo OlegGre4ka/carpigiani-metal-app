@@ -94,20 +94,20 @@ const MAX_PHOTOS = 24;
 export function Field({ label, children, className = "" }: { label: string; children: ReactNode; className?: string }) {
   return (
     <label className={`block ${className}`}>
-      <span className="mb-1.5 block text-[13px] font-extrabold text-cocoa-soft">{label}</span>
+      <span className="mb-1.5 block text-[13px] font-extrabold text-ink-soft">{label}</span>
       {children}
     </label>
   );
 }
 
 export function Hint({ children }: { children: ReactNode }) {
-  return <p className="my-2.5 text-[13px] leading-normal text-[#8a7766]">{children}</p>;
+  return <p className="my-2.5 text-[13px] leading-normal text-hint">{children}</p>;
 }
 
 function Note({ children }: { children: ReactNode }) {
   return (
-    <div className="mt-3 flex items-start gap-3 rounded-[18px] bg-sand px-4 py-3.5 text-sm leading-relaxed text-[#5d4838]">
-      <Info size={18} className="mt-0.5 shrink-0 text-caramel" aria-hidden="true" />
+    <div className="mt-3 flex items-start gap-3 rounded-[18px] bg-mist px-4 py-3.5 text-sm leading-relaxed text-body">
+      <Info size={18} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
       <span>{children}</span>
     </div>
   );
@@ -148,7 +148,7 @@ export function TextInput({
 }
 
 export const smallButton =
-  "btn-shine inline-flex items-center gap-1.5 rounded-full border border-caramel/20 bg-sand px-4 py-2.5 text-sm font-extrabold text-caramel transition-colors hover:bg-[#efdfc8] disabled:cursor-not-allowed disabled:opacity-50";
+  "btn-shine inline-flex items-center gap-1.5 rounded-full border border-brand/20 bg-mist px-4 py-2.5 text-sm font-extrabold text-brand transition-colors hover:bg-mist-strong disabled:cursor-not-allowed disabled:opacity-50";
 
 /** "Add photo" tile: picks one or more files and uploads them one after another */
 export function AddPhotos({
@@ -190,7 +190,7 @@ export function AddPhotos({
         type="button"
         disabled={busy}
         onClick={() => input.current?.click()}
-        className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-[18px] border-2 border-dashed border-caramel/40 bg-sand/50 p-1.5 text-center text-xs font-extrabold text-caramel transition-colors hover:bg-sand disabled:cursor-wait"
+        className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-[18px] border-2 border-dashed border-brand/40 bg-mist/50 p-1.5 text-center text-xs font-extrabold text-brand transition-colors hover:bg-mist disabled:cursor-wait"
       >
         {busy ? <Spinner dark /> : <Plus size={22} aria-hidden="true" />}
         <span>{busy ? "Завантажуємо фото…" : label}</span>
@@ -229,18 +229,18 @@ function PhotoTile({
     <div
       ref={setNodeRef}
       style={{ transform: CSS.Translate.toString(transform), transition }}
-      className={`min-w-0 ${isDragging ? "relative z-10 opacity-80 shadow-[0_16px_34px_rgba(90,60,40,0.25)]" : ""}`}
+      className={`min-w-0 ${isDragging ? "relative z-10 opacity-80 shadow-[0_16px_34px_rgb(var(--shadow-rgb)/0.25)]" : ""}`}
     >
       <div
         {...attributes}
         {...listeners}
         aria-label={`Фото ${number}: перетягніть, щоб змінити порядок`}
         style={{ cursor: isDragging ? "grabbing" : "grab" }}
-        className="relative aspect-square touch-none overflow-hidden rounded-[18px] border border-cocoa/12 bg-white focus-visible:outline-2 focus-visible:outline-caramel"
+        className="relative aspect-square touch-none overflow-hidden rounded-[18px] border border-ink/12 bg-white focus-visible:outline-2 focus-visible:outline-brand"
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- small preview of an uploaded photo */}
         <img src={src} alt="" draggable={false} className="size-full object-cover" />
-        <span className="absolute top-2 left-2 flex size-6 items-center justify-center rounded-full bg-cocoa/80 text-xs font-extrabold text-white">
+        <span className="absolute top-2 left-2 flex size-6 items-center justify-center rounded-full bg-ink/80 text-xs font-extrabold text-white">
           {number}
         </span>
         <button
@@ -249,7 +249,7 @@ function PhotoTile({
           onPointerDown={(event) => event.stopPropagation()}
           onKeyDown={(event) => event.stopPropagation()}
           onClick={onRemove}
-          className="absolute top-1.5 right-1.5 flex size-6.5 items-center justify-center rounded-full bg-cocoa/75 text-white transition-colors hover:bg-[#c0504d]"
+          className="absolute top-1.5 right-1.5 flex size-6.5 items-center justify-center rounded-full bg-ink/75 text-white transition-colors hover:bg-danger"
         >
           <X size={14} aria-hidden="true" />
         </button>
@@ -464,7 +464,7 @@ export function FeaturesEditor({ block, lang, onChange }: { block: FeaturesBlock
       </Field>
       <div className="grid grid-cols-2 gap-3 max-[700px]:grid-cols-1">
         {block.items.map((item, index) => (
-          <div key={index} className="relative grid gap-1.5 rounded-[18px] bg-sand px-3.5 py-3">
+          <div key={index} className="relative grid gap-1.5 rounded-[18px] bg-mist px-3.5 py-3">
             <TextInput
               placeholder="Назва"
               aria-label={inLang(`Назва комірки ${index + 1}`, lang)}
@@ -486,7 +486,7 @@ export function FeaturesEditor({ block, lang, onChange }: { block: FeaturesBlock
               type="button"
               aria-label={`Видалити комірку ${index + 1}`}
               onClick={() => onChange({ ...block, items: block.items.filter((_, i) => i !== index) })}
-              className="absolute top-4.5 right-5.5 flex size-6.5 items-center justify-center rounded-full text-cocoa-soft transition-colors hover:bg-[#c0504d]/12 hover:text-[#c0504d]"
+              className="absolute top-4.5 right-5.5 flex size-6.5 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-danger/12 hover:text-danger"
             >
               <X size={15} aria-hidden="true" />
             </button>
@@ -496,7 +496,7 @@ export function FeaturesEditor({ block, lang, onChange }: { block: FeaturesBlock
           <button
             type="button"
             onClick={() => onChange({ ...block, items: [...block.items, { title: emptyText(), text: emptyText() }] })}
-            className="flex min-h-27.5 flex-col items-center justify-center gap-1 rounded-[18px] border-2 border-dashed border-caramel/40 bg-sand/50 text-[13px] font-extrabold text-caramel transition-colors hover:bg-sand"
+            className="flex min-h-27.5 flex-col items-center justify-center gap-1 rounded-[18px] border-2 border-dashed border-brand/40 bg-mist/50 text-[13px] font-extrabold text-brand transition-colors hover:bg-mist"
           >
             <Plus size={20} aria-hidden="true" />
             Додати комірку
@@ -511,7 +511,7 @@ export function FeaturesEditor({ block, lang, onChange }: { block: FeaturesBlock
 // ---------- 5. Table ----------
 
 const cellInput =
-  "w-full min-w-28 border-0 bg-transparent px-3.5 py-3 text-sm font-semibold text-cocoa outline-none placeholder:text-cocoa/35 focus:bg-[#fff6e4] focus:shadow-[inset_0_0_0_2px_#b88a5e]";
+  "w-full min-w-28 border-0 bg-transparent px-3.5 py-3 text-sm font-semibold text-ink outline-none placeholder:text-ink/35 focus:bg-focus-bg focus:shadow-[inset_0_0_0_2px_var(--brand-light)]";
 
 export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang: Lang; onChange: (b: TableBlock) => void }) {
   const columns = Math.max(block.header.length, 1);
@@ -542,40 +542,40 @@ export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang
       <Field label={inLang("Назва таблиці", lang)} className="mt-4 mb-3.5">
         <TextInput value={block.title} lang={lang} onChange={(title) => onChange({ ...block, title })} />
       </Field>
-      <div className="my-1.5 overflow-x-auto rounded-2xl border border-cocoa/18 bg-white">
+      <div className="my-1.5 overflow-x-auto rounded-2xl border border-ink/18 bg-white">
         <table className="w-full border-collapse">
           <thead>
             <tr>
               {block.header.map((cell, index) => (
-                <th key={index} className="relative border border-cocoa/12 bg-[#f3e4cf] p-0">
+                <th key={index} className="relative border border-ink/12 bg-mist p-0">
                   <input
                     value={cell[lang]}
                     maxLength={300}
                     placeholder={hint(cell) ?? (index === 0 ? "—" : "Назва стовпця")}
                     aria-label={inLang(`Назва стовпця ${index + 1}`, lang)}
                     onChange={(e) => setHeader(index, e.target.value)}
-                    className={`${cellInput} pr-8 font-extrabold text-caramel`}
+                    className={`${cellInput} pr-8 font-extrabold text-brand`}
                   />
                   {block.header.length > 1 && (
                     <button
                       type="button"
                       aria-label={`Видалити стовпець ${index + 1}`}
                       onClick={() => removeColumn(index)}
-                      className="absolute top-1/2 right-1.5 flex size-5.5 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-cocoa-soft hover:text-[#c0504d]"
+                      className="absolute top-1/2 right-1.5 flex size-5.5 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 text-ink-soft hover:text-danger"
                     >
                       <X size={13} aria-hidden="true" />
                     </button>
                   )}
                 </th>
               ))}
-              <th className="w-10 border border-cocoa/12 bg-[#f3e4cf]" aria-label="Дії" />
+              <th className="w-10 border border-ink/12 bg-mist" aria-label="Дії" />
             </tr>
           </thead>
           <tbody>
             {block.rows.map((cells, row) => (
               <tr key={row}>
                 {cells.map((cell, column) => (
-                  <td key={column} className="border border-cocoa/12 p-0">
+                  <td key={column} className="border border-ink/12 p-0">
                     <input
                       value={cell[lang]}
                       maxLength={300}
@@ -586,12 +586,12 @@ export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang
                     />
                   </td>
                 ))}
-                <td className="w-10 border border-cocoa/12 text-center">
+                <td className="w-10 border border-ink/12 text-center">
                   <button
                     type="button"
                     aria-label={`Видалити рядок ${row + 1}`}
                     onClick={() => onChange({ ...block, rows: block.rows.filter((_, i) => i !== row) })}
-                    className="inline-flex size-8 items-center justify-center rounded-full text-cocoa-soft transition-colors hover:bg-[#c0504d]/12 hover:text-[#c0504d]"
+                    className="inline-flex size-8 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-danger/12 hover:text-danger"
                   >
                     <X size={15} aria-hidden="true" />
                   </button>
@@ -608,7 +608,7 @@ export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang
         <button type="button" className={smallButton} onClick={addColumn} disabled={block.header.length >= 12}>
           <Plus size={16} aria-hidden="true" /> Стовпець
         </button>
-        <span className="ml-auto text-[13px] text-[#8a7766] max-[700px]:ml-0">
+        <span className="ml-auto text-[13px] text-hint max-[700px]:ml-0">
           Клікніть у клітинку й пишіть, як в Excel. Tab переходить далі. Рядки й стовпці спільні для обох мов.
         </span>
       </div>
@@ -651,7 +651,7 @@ export function VideoEditor({ block, lang, onChange }: { block: VideoBlock; lang
           placeholder="https://www.youtube.com/watch?v=..."
           onChange={(e) => onChange({ ...block, url: e.target.value })}
         />
-        {wrong && <span className="mt-1 block text-[13px] text-[#c0504d]">Це не схоже на посилання на відео YouTube</span>}
+        {wrong && <span className="mt-1 block text-[13px] text-danger">Це не схоже на посилання на відео YouTube</span>}
       </Field>
       <Field label={inLang("Підпис під відео, необов'язково", lang)} className="mb-3.5">
         <TextInput
@@ -661,7 +661,7 @@ export function VideoEditor({ block, lang, onChange }: { block: VideoBlock; lang
           onChange={(caption) => onChange({ ...block, caption })}
         />
       </Field>
-      <div className="relative mt-1.5 flex aspect-[16/7] max-w-160 items-center justify-center overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#7a5232,#4a3426)]">
+      <div className="relative mt-1.5 flex aspect-[16/7] max-w-160 items-center justify-center overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,var(--brand),var(--dark))]">
         {id && (
           // eslint-disable-next-line @next/next/no-img-element -- picture of the video straight from YouTube
           <img
@@ -707,8 +707,8 @@ export function SubcategoryEditor({
 
   if (subcategories.length === 0) {
     return (
-      <div className="mt-4 flex flex-col items-start gap-3 rounded-[18px] border-2 border-dashed border-caramel/40 bg-sand/50 px-5 py-5">
-        <p className="text-[15px] text-[#5d4838]">
+      <div className="mt-4 flex flex-col items-start gap-3 rounded-[18px] border-2 border-dashed border-brand/40 bg-mist/50 px-5 py-5">
+        <p className="text-[15px] text-body">
           У вас ще не створено жодної підкатегорії. Створіть першу: наприклад, «Універсальні апарати».
         </p>
         <Button type="primary" icon={<Plus size={17} />} onClick={onCreate}>
@@ -849,7 +849,7 @@ function CatalogCard({
   const key = lang === "uk" ? "file_uk" : "file_en";
   const other = lang === "uk" ? item.file_en : item.file_uk;
   const file = item[key];
-  const icon = "flex size-8 items-center justify-center rounded-full text-cocoa hover:bg-cocoa/7 disabled:opacity-30";
+  const icon = "flex size-8 items-center justify-center rounded-full text-ink hover:bg-ink/7 disabled:opacity-30";
 
   async function pick(files: FileList | null) {
     const chosen = files?.[0];
@@ -861,9 +861,9 @@ function CatalogCard({
   }
 
   return (
-    <div className="rounded-[20px] border border-cocoa/12 bg-white p-4 max-[700px]:p-3">
+    <div className="rounded-[20px] border border-ink/12 bg-white p-4 max-[700px]:p-3">
       <div className="mb-3 flex items-center gap-2">
-        <span className="flex size-6.5 shrink-0 items-center justify-center rounded-full bg-[#f3e4cf] text-[13px] font-extrabold text-caramel">
+        <span className="flex size-6.5 shrink-0 items-center justify-center rounded-full bg-mist text-[13px] font-extrabold text-brand">
           {number}
         </span>
         <b className="mr-auto text-sm">Каталог</b>
@@ -877,7 +877,7 @@ function CatalogCard({
           type="button"
           aria-label="Видалити каталог"
           onClick={onRemove}
-          className={`${icon} hover:bg-[#c0504d]/12 hover:text-[#c0504d]`}
+          className={`${icon} hover:bg-danger/12 hover:text-danger`}
         >
           <Trash2 size={16} aria-hidden="true" />
         </button>
@@ -893,15 +893,15 @@ function CatalogCard({
         />
       </Field>
 
-      <span className="mb-1.5 block text-[13px] font-extrabold text-cocoa-soft">{inLang("Файл PDF", lang)}</span>
+      <span className="mb-1.5 block text-[13px] font-extrabold text-ink-soft">{inLang("Файл PDF", lang)}</span>
       {file ? (
-        <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-sand/60 px-3.5 py-2.5">
-          <FileText size={20} className="shrink-0 text-caramel" aria-hidden="true" />
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-mist/60 px-3.5 py-2.5">
+          <FileText size={20} className="shrink-0 text-brand" aria-hidden="true" />
           <span className="min-w-0 flex-1">
-            <a href={file.url} target="_blank" rel="noopener" className="block truncate text-sm font-bold text-cocoa hover:underline">
+            <a href={file.url} target="_blank" rel="noopener" className="block truncate text-sm font-bold text-ink hover:underline">
               {file.name}
             </a>
-            <span className="text-xs text-cocoa-soft">{fileSize(file.size)}</span>
+            <span className="text-xs text-ink-soft">{fileSize(file.size)}</span>
           </span>
           <Button size="small" loading={busy} onClick={() => input.current?.click()}>
             Замінити
@@ -971,12 +971,12 @@ export function PhotoEditor({
       {block.image ? (
         <div className="flex flex-wrap items-end gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element -- preview of the uploaded photo */}
-          <img src={block.image} alt="" className="h-60 w-auto max-w-full rounded-[20px] border border-cocoa/10 bg-white object-contain p-3" />
+          <img src={block.image} alt="" className="h-60 w-auto max-w-full rounded-[20px] border border-ink/10 bg-white object-contain p-3" />
           <div className="flex gap-2">
             <button type="button" disabled={busy} onClick={() => input.current?.click()} className={smallButton}>
               {busy ? <Spinner dark /> : <Pencil size={16} aria-hidden="true" />} {busy ? "Завантажуємо фото…" : "Замінити фото"}
             </button>
-            <button type="button" onClick={() => onChange({ ...block, image: null })} className={`${smallButton} text-[#c0504d]`}>
+            <button type="button" onClick={() => onChange({ ...block, image: null })} className={`${smallButton} text-danger`}>
               <Trash2 size={16} aria-hidden="true" /> Прибрати
             </button>
           </div>

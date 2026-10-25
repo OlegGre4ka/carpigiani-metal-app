@@ -63,7 +63,7 @@ export function PageArrows({ prev, next, prevLabel, nextLabel, navLabel }: Props
         {/* The title of that page (and the photo of the model), on hover (large screens) */}
         <span
           aria-hidden="true"
-          className={`pointer-events-none absolute top-1/2 flex w-max max-w-72 -translate-y-1/2 items-center gap-3 rounded-2xl bg-cocoa py-2 text-[13px] leading-snug font-bold text-white opacity-0 shadow-[0_10px_24px_rgba(74,52,38,0.25)] transition-[opacity,translate] duration-200 group-hover/arrow:opacity-100 group-focus-visible/arrow:opacity-100 max-[820px]:hidden ${
+          className={`pointer-events-none absolute top-1/2 flex w-max max-w-72 -translate-y-1/2 items-center gap-3 rounded-2xl bg-ink py-2 text-[13px] leading-snug font-bold text-white opacity-0 shadow-[0_10px_24px_rgb(var(--ink-rgb)/0.25)] transition-[opacity,translate] duration-200 group-hover/arrow:opacity-100 group-focus-visible/arrow:opacity-100 max-[820px]:hidden ${
             to.image ? "pr-3.5 pl-2" : "px-3.5"
           } ${side === "prev" ? "left-full ml-3" : "right-full mr-3"}`}
         >
@@ -73,7 +73,7 @@ export function PageArrows({ prev, next, prevLabel, nextLabel, navLabel }: Props
             </span>
           )}
           <span className="min-w-0">
-            <span className="mb-0.5 block text-[10.5px] font-extrabold tracking-[1px] text-[#e8c9a0] uppercase">{label}</span>
+            <span className="mb-0.5 block text-[10.5px] font-extrabold tracking-[1px] text-brand-pale uppercase">{label}</span>
             {to.title}
           </span>
         </span>
@@ -90,11 +90,11 @@ export function PageArrows({ prev, next, prevLabel, nextLabel, navLabel }: Props
       </nav>
       {/* Phones: at the bottom of the page */}
       <nav aria-label={navLabel} className="hidden items-center justify-between gap-4 max-[820px]:flex">
-        <span className="flex items-center gap-2.5 text-[13px] font-extrabold text-caramel">
+        <span className="flex items-center gap-2.5 text-[13px] font-extrabold text-brand">
           {arrow(prev, "prev", "relative")}
           {prevLabel}
         </span>
-        <span className="flex items-center gap-2.5 text-right text-[13px] font-extrabold text-caramel">
+        <span className="flex items-center gap-2.5 text-right text-[13px] font-extrabold text-brand">
           {nextLabel}
           {arrow(next, "next", "relative")}
         </span>

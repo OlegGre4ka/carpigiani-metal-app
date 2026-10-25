@@ -28,12 +28,12 @@ export const oldEquipmentPages = [
 // choices in the "Address" field of a news item; any other address can be typed too.
 export const oldNewsPages = [
   "/230500-back-to-roots", "/210600-yourz", "/210500-hlbny", "/210425-gelato-gutsulato", "/210306-abc-gelato",
-  "/210104-ice-cream-traditions", "/210101-chocolate-tempering", "/201220-carpigiani-kfc",
+  "/210104-ice-page-traditions", "/210101-chocolate-tempering", "/201220-carpigiani-kfc",
   "/200924-yoyo-gelato-lab-harkiv", "/190729-techfrost-blast-freezers", "/190604-popsicle", "/190415-ifi-screen",
-  "/190201-sugars", "/181109-lactose-free-ice-cream", "/181004-demo-cgu", "/180900-ifi-lunette",
+  "/190201-sugars", "/181109-lactose-free-ice-page", "/181004-demo-cgu", "/180900-ifi-lunette",
   "/180716-lemon-sorbet", "/180703-kateryna-vlasenko-interview", "/180503-batch-freezer-construction",
   "/180425-spicy-gelato", "/180324-european-day-of-artisanal-gelato", "/180317-gelato-on-stick-by-ccf",
-  "/180227-15-years-of-cgu", "/180207-dog-ice-cream", "/180128-diet-gelato",
+  "/180227-15-years-of-cgu", "/180207-dog-ice-page", "/180128-diet-gelato",
   "/180109-low-level-of-solids-techonogy", "/171200-bolarus-vertika", "/171123-carpigiani-gelato-university",
   "/171017-sorbet", "/170922-facebook", "/170901-glusco-installation", "/170824-gelarty-installation",
   "/170801-new-site", "/170801-lamber-installation", "/160601-panorama-bellevue-goodwine",

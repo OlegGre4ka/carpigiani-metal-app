@@ -22,7 +22,6 @@ const icon = (children: ReactNode) => (
 const services = [
   {
     key: "project",
-    bg: "bg-[#cde9d2]",
     // Pen: body, cap and nib
     icon: icon(
       <>
@@ -35,7 +34,6 @@ const services = [
   },
   {
     key: "delivery",
-    bg: "bg-[#f2d7cf]",
     // Truck
     icon: icon(
       <>
@@ -47,7 +45,6 @@ const services = [
   },
   {
     key: "service",
-    bg: "bg-[#ffe7a6]",
     // Wrench and screwdriver crossed
     icon: icon(
       <>
@@ -64,21 +61,29 @@ export function Services() {
   const t = useTranslations("Services");
 
   return (
-    <section className="mx-auto flex w-full max-w-360 flex-wrap gap-7 px-20 pt-16 max-[820px]:gap-4 max-[820px]:px-4 max-[820px]:pt-10">
-      {services.map((s) => (
-        <div
-          key={s.key}
-          className="flex min-w-65 flex-1 gap-5 rounded-[32px] border border-white/90 bg-white/75 px-7.5 py-9 shadow-[0_14px_40px_rgba(90,60,40,0.08)] backdrop-blur-md transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_54px_rgba(90,60,40,0.15)] max-[820px]:py-7"
-        >
-          <div className={`flex size-14 flex-none items-center justify-center rounded-full text-cocoa ${s.bg}`}>
-            {s.icon}
-          </div>
-          <div>
-            <h3 className="mb-2 text-[21px] font-bold">{t(`${s.key}.title`)}</h3>
-            <p className="text-[15px] leading-[1.55] text-[#7a6656]">{t(`${s.key}.text`)}</p>
-          </div>
+    // White band on the full width (the home page changes backgrounds: dark, white, dark...)
+    <section className="bg-white">
+      <div className="mx-auto w-full max-w-360 px-20 py-24 max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:py-14">
+        <h2 className="text-[46px] leading-[1.05] max-[820px]:text-[32px]">
+          <span className="blue-text">{t("title")}</span>
+        </h2>
+        <p className="mt-3 mb-10 max-w-155 text-[17px] leading-relaxed text-ink-soft max-[820px]:mb-7 max-[820px]:text-base">{t("text")}</p>
+        <div className="grid grid-cols-3 gap-6 max-[1000px]:grid-cols-1 max-[820px]:gap-4">
+          {services.map((s, index) => (
+            <div
+              key={s.key}
+              style={{ animationDelay: `${index * 110}ms` }}
+              className="steel-card rounded-[30px] [--card-fill:var(--mist)] p-8.5 transition duration-300 motion-safe:animate-fade-up hover:-translate-y-1 max-[820px]:p-6.5"
+            >
+              <div className="mb-5.5 flex size-14 items-center justify-center rounded-[18px] bg-[image:var(--grad-btn)] text-white shadow-[0_10px_30px_var(--glow)]">
+                {s.icon}
+              </div>
+              <h3 className="mb-2.5 text-2xl font-extrabold tracking-[-0.01em] text-ink max-[820px]:text-xl">{t(`${s.key}.title`)}</h3>
+              <p className="text-[15.5px] leading-relaxed text-ink-soft">{t(`${s.key}.text`)}</p>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
     </section>
   );
 }

@@ -22,7 +22,7 @@ export function CategoryVideo({
   return (
     <section className="mx-auto w-full max-w-245">
       <div
-        className={`relative overflow-hidden bg-cocoa shadow-[0_24px_54px_rgba(90,60,40,0.18)] max-[820px]:aspect-[16/10] max-[820px]:rounded-3xl ${
+        className={`relative overflow-hidden bg-ink shadow-[0_24px_54px_rgb(var(--shadow-rgb)/0.18)] max-[820px]:aspect-[16/10] max-[820px]:rounded-3xl ${
           compact ? "aspect-[16/8] rounded-[32px]" : "aspect-[16/7] rounded-[36px]"
         }`}
       >
@@ -50,7 +50,7 @@ export function CategoryVideo({
               onError={(event) => (event.currentTarget.style.visibility = "hidden")}
               className="size-full object-cover opacity-85 transition-opacity duration-300 group-hover:opacity-100"
             />
-            <span data-reveal-pulse className="absolute top-1/2 left-1/2 flex size-22 -translate-1/2 items-center justify-center rounded-full bg-[linear-gradient(180deg,#b88a5e,#7a5232)] shadow-[0_14px_34px_rgba(0,0,0,0.35)] transition-transform duration-300 group-hover:scale-108 max-[820px]:size-16">
+            <span data-reveal-pulse className="absolute top-1/2 left-1/2 flex size-22 -translate-1/2 items-center justify-center rounded-full bg-[image:var(--grad-btn)] shadow-[0_14px_34px_rgba(0,0,0,0.35)] transition-transform duration-300 group-hover:scale-108 max-[820px]:size-16">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="#fff" className="ml-1 size-8.5 max-[820px]:size-6.5">
                 <path d="M8 5.5v13l11-6.5z" />
               </svg>
@@ -58,7 +58,7 @@ export function CategoryVideo({
           </button>
         )}
       </div>
-      {caption && <p className="mt-3 text-center text-sm text-cocoa-soft">{caption}</p>}
+      {caption && <p className="mt-3 text-center text-sm text-ink-soft">{caption}</p>}
     </section>
   );
 }

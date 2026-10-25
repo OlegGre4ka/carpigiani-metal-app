@@ -71,14 +71,14 @@ export function NewsMore({
               href={nextHref}
               onClick={load}
               aria-busy={loading}
-              className="btn-shine inline-flex items-center gap-2.5 rounded-full border border-cocoa/18 bg-white px-8.5 py-3.75 text-[15px] font-extrabold text-cocoa shadow-[0_8px_20px_rgba(120,80,60,0.1)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgba(120,80,60,0.16)]"
+              className="btn-shine inline-flex items-center gap-2.5 rounded-full border border-ink/18 bg-white px-8.5 py-3.75 text-[15px] font-extrabold text-ink shadow-[0_8px_20px_rgb(var(--shadow-rgb)/0.1)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_28px_rgb(var(--shadow-rgb)/0.16)]"
             >
               {loading && <Spinner dark />}
               {t("showMore")}
             </Link>
           )}
-          {failed && <p role="alert" className="text-sm font-bold text-[#8a3424]">{t("loadFailed")}</p>}
-          <p className="text-[13px] font-bold text-[#8b7664]" aria-live="polite">
+          {failed && <p role="alert" className="text-sm font-bold text-danger-ink">{t("loadFailed")}</p>}
+          <p className="text-[13px] font-bold text-hint" aria-live="polite">
             {t("shown", { shown: count, total: all })}
           </p>
         </div>

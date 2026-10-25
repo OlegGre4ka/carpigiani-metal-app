@@ -13,15 +13,18 @@ export async function BrandShowcases({ brand, withTitle = false }: { brand: "ifi
   const t = await getTranslations("Showcases");
 
   return (
-    <section
-      className={`mx-auto w-full max-w-360 px-20 max-[820px]:px-4 ${withTitle ? "pt-24 max-[820px]:pt-14" : "pt-14 max-[820px]:pt-10"}`}
-    >
-      {withTitle && (
-        <h2 className="mb-10 text-center font-heading text-[54px] leading-[1.05] font-bold tracking-[-0.5px] text-caramel motion-safe:animate-fade-up max-[820px]:mb-7 max-[820px]:text-[36px]">
-          {t(`${brand}Title`)}
-        </h2>
-      )}
-      <ShowcaseGrid chips={data.chips} items={data.items} />
+    // With the title (home page): a white band on the full width
+    <section className={withTitle ? "bg-white" : ""}>
+      <div
+        className={`mx-auto w-full max-w-360 px-20 max-[1100px]:px-10 max-[820px]:px-4 ${withTitle ? "py-24 max-[820px]:py-14" : "pt-14 max-[820px]:pt-10"}`}
+      >
+        {withTitle && (
+          <h2 className="mb-10 text-center font-heading text-[46px] leading-[1.05] font-extrabold tracking-[-0.02em] text-ink motion-safe:animate-fade-up max-[820px]:mb-7 max-[820px]:text-[30px]">
+            {t(`${brand}Title`)}
+          </h2>
+        )}
+        <ShowcaseGrid chips={data.chips} items={data.items} />
+      </div>
     </section>
   );
 }

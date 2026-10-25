@@ -83,7 +83,7 @@ export function ContactWidget() {
         aria-label={t("toTop")}
         tabIndex={showUp && !open ? 0 : -1}
         aria-hidden={showUp && !open ? undefined : true}
-        className={`contact-up fixed right-8 bottom-26 z-58 flex size-14 items-center justify-center rounded-full border-2 border-white/90 bg-[radial-gradient(circle_at_35%_30%,#fff8ec,#f3dcc0_70%)] text-caramel shadow-[inset_0_-4px_8px_rgba(122,82,50,0.18),0_12px_26px_rgba(74,52,38,0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[linear-gradient(180deg,#b88a5e,#7a5232)] hover:text-white hover:shadow-[0_16px_32px_rgba(122,82,50,0.4)] max-[820px]:right-5 max-[820px]:bottom-22 max-[820px]:size-12 ${
+        className={`contact-up fixed right-8 bottom-26 z-58 flex size-14 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--grad-round)] text-brand shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[image:var(--grad-btn)] hover:text-white hover:shadow-[0_16px_32px_rgb(var(--brand-rgb)/0.4)] max-[820px]:right-5 max-[820px]:bottom-22 max-[820px]:size-12 ${
           showUp && !open ? "opacity-100" : "pointer-events-none translate-y-3 opacity-0"
         }`}
       >
@@ -104,20 +104,20 @@ export function ContactWidget() {
       {/* Form: a card above the button; on phones a panel from the bottom over a dimmed page */}
       {open && (
         <>
-          <div aria-hidden="true" onClick={close} className="scrim-in fixed inset-0 z-58 hidden bg-[rgba(74,52,38,0.45)] max-[820px]:block" />
+          <div aria-hidden="true" onClick={close} className="scrim-in fixed inset-0 z-58 hidden bg-[rgb(var(--ink-rgb)/0.45)] max-[820px]:block" />
           <div
             id={panelId}
             role="dialog"
             aria-modal="true"
             aria-label={t("title")}
-            className="contact-panel fixed right-7 bottom-26 z-59 max-h-[calc(100dvh-120px)] w-90 max-w-[calc(100vw-32px)] overflow-y-auto rounded-[30px] border border-white/80 bg-[rgba(255,252,246,0.96)] px-6 pt-6 pb-5 shadow-[0_30px_70px_rgba(120,80,60,0.28)] backdrop-blur-[14px] max-[820px]:inset-x-0 max-[820px]:right-0 max-[820px]:bottom-0 max-[820px]:max-h-[92dvh] max-[820px]:w-auto max-[820px]:max-w-none max-[820px]:rounded-b-none max-[820px]:bg-[#fffcf6] max-[820px]:px-4 max-[820px]:pt-2.5 max-[820px]:pb-5"
+            className="contact-panel fixed right-7 bottom-26 z-59 max-h-[calc(100dvh-120px)] w-90 max-w-[calc(100vw-32px)] overflow-y-auto rounded-[30px] border border-white/80 bg-[rgb(var(--paper-rgb)/0.96)] px-6 pt-6 pb-5 shadow-[0_30px_70px_rgb(var(--shadow-rgb)/0.28)] backdrop-blur-[14px] max-[820px]:inset-x-0 max-[820px]:right-0 max-[820px]:bottom-0 max-[820px]:max-h-[92dvh] max-[820px]:w-auto max-[820px]:max-w-none max-[820px]:rounded-b-none max-[820px]:bg-paper max-[820px]:px-4 max-[820px]:pt-2.5 max-[820px]:pb-5"
           >
-            <span aria-hidden="true" className="mx-auto mb-3 hidden h-1.25 w-11 rounded-full bg-cocoa/20 max-[820px]:block" />
+            <span aria-hidden="true" className="mx-auto mb-3 hidden h-1.25 w-11 rounded-full bg-ink/20 max-[820px]:block" />
             <button
               type="button"
               onClick={close}
               aria-label={t("close")}
-              className="absolute top-4 right-4 z-1 flex size-9 items-center justify-center rounded-full bg-sand text-cocoa transition-colors hover:bg-[#ecdcc6] max-[820px]:top-6"
+              className="absolute top-4 right-4 z-1 flex size-9 items-center justify-center rounded-full bg-mist text-ink transition-colors hover:bg-mist-strong max-[820px]:top-6"
             >
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" className="size-4.5">
                 <path d="M6 6l12 12M18 6L6 18" />
@@ -135,7 +135,7 @@ export function ContactWidget() {
         onClick={() => (open ? close() : show())}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        className={`contact-fab fixed right-7 bottom-7 z-60 flex h-15 items-center gap-2.5 rounded-full bg-[linear-gradient(180deg,#b88a5e,#7a5232)] pr-6.5 pl-5 text-[15px] font-extrabold text-white shadow-[0_14px_30px_rgba(122,82,50,0.4)] transition hover:-translate-y-0.5 hover:brightness-108 motion-reduce:animate-none max-[820px]:right-4 max-[820px]:bottom-4 max-[820px]:h-13.5 max-[820px]:pr-5 max-[820px]:pl-4 ${
+        className={`contact-fab fixed right-7 bottom-7 z-60 flex h-15 items-center gap-2.5 rounded-full bg-[image:var(--grad-btn)] pr-6.5 pl-5 text-[15px] font-extrabold text-white shadow-[0_14px_30px_rgb(var(--brand-rgb)/0.4)] transition hover:-translate-y-0.5 hover:brightness-108 motion-reduce:animate-none max-[820px]:right-4 max-[820px]:bottom-4 max-[820px]:h-13.5 max-[820px]:pr-5 max-[820px]:pl-4 ${
           open ? "max-[820px]:hidden" : "animate-fab-pulse"
         }`}
       >

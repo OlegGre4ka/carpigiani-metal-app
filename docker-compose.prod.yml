@@ -2,9 +2,9 @@
 # Differences from docker-compose.yml (development):
 # - the site is built and started, no hot reload, no file watching;
 # - no Mailpit; email goes only if SMTP_* is set in .env (requests are saved anyway);
-# - only the site is reachable, and only from this server (127.0.0.1:3100) - Nginx passes visitors to it;
+# - only the site is reachable, and only from this server (127.0.0.1:3110) - Nginx passes visitors to it;
 # - the database and the API are not reachable from outside.
-name: carpigiani
+name: carpigiani-metal
 
 services:
   frontend:
@@ -13,9 +13,9 @@ services:
       dockerfile: Dockerfile.prod
       args:
         BACKEND_URL: http://backend:8000
-    container_name: carpigiani-frontend
+    container_name: carpigiani-metal-frontend
     ports:
-      - "127.0.0.1:3100:3000"
+      - "127.0.0.1:3110:3000"
     environment:
       NODE_ENV: production
       BACKEND_URL: http://backend:8000
@@ -27,7 +27,7 @@ services:
   backend:
     build:
       context: ./backend
-    container_name: carpigiani-backend
+    container_name: carpigiani-metal-backend
     command: sh -c "alembic upgrade head && python -m app.services.create_admins && uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips='*'"
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
@@ -59,7 +59,7 @@ services:
 
   db:
     image: postgres:18-alpine
-    container_name: carpigiani-db
+    container_name: carpigiani-metal-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}

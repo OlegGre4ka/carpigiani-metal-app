@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type FocusEvent, type TouchEv
 
 // What every slider of the site shares (the home slider and the slider of category pages):
 // - useSlider: which slide is shown, autoplay with pause, swipe on phones;
-// - the cream "scoop" arrows and the caramel ring timer around the "next" arrow.
+// - the light round arrows and the blue ring timer around the "next" arrow.
 // Each slider only draws its own slides and dots.
 
 export const AUTOPLAY_MS = 4000;
@@ -57,10 +57,10 @@ export function useSlider({ count, autoplay = true }: Options) {
   return { active, paused, go, next, prev, handlers, ringKey: `${active}-${paused}` };
 }
 
-// Side arrows: cream "ice cream scoops" with volume. On hover they turn caramel.
+// Side arrows: light round buttons with volume. On hover they turn blue.
 // Hidden on phones (photos are swiped there). Each slider adds its own top/left/right.
 export const scoopButton =
-  "group/arrow absolute z-2 flex size-14 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white/90 bg-[radial-gradient(circle_at_35%_30%,#fff8ec,#f3dcc0_70%)] text-caramel shadow-[inset_0_-4px_8px_rgba(122,82,50,0.18),0_12px_26px_rgba(74,52,38,0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[linear-gradient(180deg,#b88a5e,#7a5232)] hover:text-white hover:shadow-[0_16px_32px_rgba(122,82,50,0.4)] max-[820px]:hidden";
+  "group/arrow absolute z-2 flex size-14 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--grad-round)] text-brand shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[image:var(--grad-btn)] hover:text-white hover:shadow-[0_16px_32px_rgb(var(--brand-rgb)/0.4)] max-[820px]:hidden";
 
 export function Chevron({ dir }: { dir: "left" | "right" }) {
   return (
@@ -83,20 +83,20 @@ export function Chevron({ dir }: { dir: "left" | "right" }) {
 
 // Ring timer around the "next" scoop: fills up during the 4 seconds before the slide switches,
 // stops while the slider is paused. Give it key={ringKey} from useSlider, so it restarts.
-export function TimerRing({ paused }: { paused: boolean }) {
+// dark: on a dark background (home hero) — a faint light track under the ring.
+export function TimerRing({ paused, dark = false }: { paused: boolean; dark?: boolean }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 60 60" className="pointer-events-none absolute -inset-1.5 size-[calc(100%+12px)] -rotate-90">
-      <circle cx="30" cy="30" r="27" fill="none" stroke="rgba(255,253,248,0.8)" strokeWidth="3.5" />
+      <circle cx="30" cy="30" r="27" fill="none" className={dark ? "stroke-white/15" : "stroke-paper/80"} strokeWidth={dark ? 2 : 3.5} />
       <circle
         cx="30"
         cy="30"
         r="27"
         fill="none"
-        stroke="#7a5232"
         strokeWidth="3"
         strokeLinecap="round"
         strokeDasharray="170"
-        className={`motion-safe:animate-ring-fill motion-reduce:hidden ${paused ? "paused" : ""}`}
+        className={`${dark ? "stroke-brand-light" : "stroke-brand"} motion-safe:animate-ring-fill motion-reduce:hidden ${paused ? "paused" : ""}`}
       />
     </svg>
   );

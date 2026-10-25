@@ -160,7 +160,7 @@ export function NewsTopics({ onChanged }: { onChanged?: () => void }) {
       render: (_, topic) => (
         <div>
           <div className="font-bold">{topic.title_uk}</div>
-          <div className="text-sm text-cocoa-soft">EN: {topic.title_en || "—"}</div>
+          <div className="text-sm text-ink-soft">EN: {topic.title_en || "—"}</div>
         </div>
       ),
     },
@@ -174,7 +174,7 @@ export function NewsTopics({ onChanged }: { onChanged?: () => void }) {
       title: "Новини",
       key: "count",
       width: 170,
-      render: (_, topic) => <span className="text-sm text-cocoa-soft">{countText(topic)}</span>,
+      render: (_, topic) => <span className="text-sm text-ink-soft">{countText(topic)}</span>,
     },
     { title: "На сайті", key: "visible", width: 100, render: (_, topic) => visibilitySwitch(topic) },
     { title: "", key: "actions", width: 230, align: "right", render: (_, topic) => rowActions(topic) },
@@ -184,8 +184,8 @@ export function NewsTopics({ onChanged }: { onChanged?: () => void }) {
     <section>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="font-heading text-[32px] leading-tight font-bold text-caramel">Теми новин</h2>
-          <p className="mt-1 max-w-[62ch] text-sm text-cocoa-soft">
+          <h2 className="font-heading tracking-[-0.02em] text-[26px] leading-tight font-extrabold text-ink">Теми новин</h2>
+          <p className="mt-1 max-w-[62ch] text-sm text-ink-soft">
             Тема — як папка: назва й адреса сторінки на сайті. Теми з новинами показуються в меню «Новини» і над
             новинами. Порожня або вимкнена тема на сайті не видна.
           </p>
@@ -196,7 +196,7 @@ export function NewsTopics({ onChanged }: { onChanged?: () => void }) {
       </div>
 
       {/* Large screens: table */}
-      <div className="overflow-hidden rounded-[28px] border border-white/90 bg-white/75 p-2 shadow-[0_14px_40px_rgba(90,60,40,0.08)] max-[700px]:hidden">
+      <div className="overflow-hidden rounded-[28px] steel-card p-2 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[700px]:hidden">
         <Table<Topic>
           rowKey="id"
           columns={columns}
@@ -210,21 +210,21 @@ export function NewsTopics({ onChanged }: { onChanged?: () => void }) {
 
       {/* Phones: one card per topic */}
       <div className="hidden flex-col gap-3 max-[700px]:flex">
-        {!loading && topics.length === 0 && <div className="rounded-3xl border border-white/90 bg-white/75 p-4">{emptyState}</div>}
+        {!loading && topics.length === 0 && <div className="rounded-3xl steel-card p-4">{emptyState}</div>}
         {topics.map((topic, index) => (
           <div
             key={topic.id}
-            className={`rounded-3xl border border-white/90 bg-white/75 p-3 shadow-[0_10px_28px_rgba(90,60,40,0.08)] ${
+            className={`rounded-3xl steel-card p-3 shadow-[0_10px_28px_rgb(var(--shadow-rgb)/0.08)] ${
               topic.is_visible ? "" : "opacity-60"
             }`}
           >
             <div className="px-1.5 pt-1">
               <div className="font-bold">{topic.title_uk}</div>
-              <div className="text-sm text-cocoa-soft">EN: {topic.title_en || "—"}</div>
+              <div className="text-sm text-ink-soft">EN: {topic.title_en || "—"}</div>
               <Tag className="m-0! mt-2! font-semibold">{topic.href}</Tag>
-              <div className="mt-1.5 text-sm text-cocoa-soft">{countText(topic)}</div>
+              <div className="mt-1.5 text-sm text-ink-soft">{countText(topic)}</div>
             </div>
-            <div className="mt-3 flex items-center justify-between gap-2 border-t border-cocoa/8 px-1 pt-3">
+            <div className="mt-3 flex items-center justify-between gap-2 border-t border-ink/8 px-1 pt-3">
               {orderButtons(index)}
               <label className="flex items-center gap-2 text-sm font-semibold">
                 {visibilitySwitch(topic)}
@@ -308,7 +308,7 @@ export function TopicForm({
   return (
     <Modal
       open={open}
-      title={<span className="font-heading text-[28px] font-bold text-caramel">{isNew ? "Нова тема" : "Редагувати тему"}</span>}
+      title={<span className="font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">{isNew ? "Нова тема" : "Редагувати тему"}</span>}
       onCancel={onClose}
       okText={isNew ? "Додати" : "Зберегти"}
       cancelText="Скасувати"
@@ -346,7 +346,7 @@ export function TopicForm({
         </Form.Item>
 
         {error && (
-          <p role="alert" className="mb-1 rounded-2xl bg-[#f6dcd5] px-4 py-3 text-sm font-semibold text-[#8a3424]">
+          <p role="alert" className="mb-1 rounded-2xl bg-danger-bg px-4 py-3 text-sm font-semibold text-danger-ink">
             {error}
           </p>
         )}

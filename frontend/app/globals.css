@@ -5,6 +5,8 @@
 @import "tailwindcss";
 @import "../node_modules/tw-animate-css/dist/tw-animate.css";
 @import "shadcn/tailwind.css";
+/* Theme: all colours, fonts and gradients of the site */
+@import "./theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -74,14 +76,14 @@
   @keyframes fab-pulse {
     0% {
       box-shadow:
-        0 14px 30px rgba(122, 82, 50, 0.4),
-        0 0 0 0 rgba(184, 138, 94, 0.55);
+        0 14px 30px rgb(var(--brand-rgb)/0.4),
+        0 0 0 0 rgb(var(--brand-light-rgb)/0.55);
     }
     70%,
     100% {
       box-shadow:
-        0 14px 30px rgba(122, 82, 50, 0.4),
-        0 0 0 18px rgba(184, 138, 94, 0);
+        0 14px 30px rgb(var(--brand-rgb)/0.4),
+        0 0 0 18px rgb(var(--brand-light-rgb)/0);
     }
   }
   /* Contact form card pops up from the button */
@@ -101,19 +103,33 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-manrope);
-  --font-heading: var(--font-cormorant);
+  --font-sans: var(--font-text);
+  --font-heading: var(--font-title);
 
-  /* Carpigiani colors (from the approved design) */
-  --color-cocoa: #4a3426; /* main text */
-  --color-cocoa-soft: #6b5848; /* secondary text */
-  --color-caramel: #7a5232; /* accent, headings */
-  --color-caramel-light: #b88a5e; /* top of the button gradient */
-  --color-gold: #a8774f; /* small captions */
-  --color-sand: #f6ebdc;
-  --color-cream: #faf3e8;
-  --color-mint: #d6f0e0;
-  --color-mint-ink: #2f5a44;
+  /* Site colours: the values live in theme.css */
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-body: var(--body);
+  --color-hint: var(--hint);
+  --color-steel: var(--steel);
+  --color-brand: var(--brand);
+  --color-brand-light: var(--brand-light);
+  --color-brand-pale: var(--brand-pale);
+  --color-page: var(--page);
+  --color-paper: var(--paper);
+  --color-mist: var(--mist);
+  --color-mist-strong: var(--mist-strong);
+  --color-focus-bg: var(--focus-bg);
+  --color-tag: var(--tag);
+  --color-tag-ink: var(--tag-ink);
+  --color-dark: var(--dark);
+  --color-dark-card: var(--dark-card);
+  --color-on-dark: var(--on-dark);
+  --color-on-dark-soft: var(--on-dark-soft);
+  --color-danger: var(--danger);
+  --color-danger-ink: var(--danger-ink);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-pale: var(--danger-pale);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -153,8 +169,8 @@
 }
 
 :root {
-  --background: #faf3e8;
-  --foreground: #4a3426;
+  --background: var(--page);
+  --foreground: var(--ink);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -227,13 +243,12 @@
   }
   body {
     @apply text-foreground;
-    /* Ordinary digits everywhere: the heading font (Cormorant) draws "old style" digits by
-       default, where 0 looks like the letter o (IFI Sam80 became "Sam8o") */
+    /* Ordinary digits everywhere (a heading font may draw "old style" digits where 0 looks
+       like the letter o) */
     font-variant-numeric: lining-nums;
   }
-  /* Soft "ice cream" background from the design.
-     It is one layer fixed to the screen, behind everything: it never repeats or breaks,
-     however long the page is, so the colours always flow smoothly (no lines or stripes). */
+  /* Page background: light grey with a soft blue glow at the top (one layer fixed to the
+     screen, behind everything: never repeats or breaks however long the page is) */
   body::before {
     content: "";
     position: fixed;
@@ -242,15 +257,14 @@
     pointer-events: none;
     background-color: var(--background);
     background-image:
-      radial-gradient(70% 90% at 5% 0%, #f3e2c8 0%, transparent 62%),
-      radial-gradient(60% 90% at 100% 8%, #f6e6d6 0%, transparent 60%),
-      radial-gradient(70% 80% at 50% 50%, #fff6e4 0%, transparent 65%),
-      radial-gradient(60% 90% at 0% 100%, #e4efdf 0%, transparent 60%),
-      radial-gradient(60% 90% at 100% 100%, #ebd3b5 0%, transparent 60%);
+      radial-gradient(60% 50% at 85% 0%, rgb(var(--brand-light-rgb) / 0.08) 0%, transparent 70%),
+      radial-gradient(50% 50% at 0% 100%, rgb(var(--brand-rgb) / 0.05) 0%, transparent 70%);
   }
   h1,
   h2 {
-    @apply font-heading font-bold text-caramel;
+    @apply font-heading text-ink;
+    font-weight: var(--title-weight);
+    letter-spacing: var(--title-tracking);
   }
   html {
     @apply font-sans;
@@ -270,7 +284,7 @@ button:not(:disabled),
   .rich {
     font-size: 18px;
     line-height: 1.65;
-    color: #5d4838;
+    color: var(--body);
     /* A word longer than the line (a long link, a model code) wraps instead of pushing
        the page wider than a phone screen */
     overflow-wrap: break-word;
@@ -280,33 +294,34 @@ button:not(:disabled),
   }
   .rich h2 {
     margin-top: 28px;
-    font-size: 34px;
-    line-height: 1.1;
+    font-size: 28px;
+    line-height: 1.15;
   }
   .rich h3 {
     margin-top: 24px;
-    font-family: var(--font-cormorant), Georgia, serif;
-    font-size: 26px;
-    line-height: 1.15;
-    font-weight: 700;
-    color: var(--color-caramel);
+    font-family: var(--font-title);
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: var(--title-weight);
+    letter-spacing: var(--title-tracking);
+    color: var(--color-brand);
   }
   .rich > :first-child {
     margin-top: 0;
   }
   .rich strong,
   .rich b {
-    color: var(--color-cocoa);
+    color: var(--color-ink);
     font-weight: 800;
   }
   .rich a {
-    color: var(--color-caramel);
+    color: var(--color-brand);
     font-weight: 700;
-    border-bottom: 1px solid rgba(122, 82, 50, 0.4);
+    border-bottom: 1px solid rgb(var(--brand-rgb)/0.4);
     transition: border-color 0.2s;
   }
   .rich a:hover {
-    border-bottom-color: var(--color-caramel);
+    border-bottom-color: var(--color-brand);
   }
   .rich ul,
   .rich ol {
@@ -322,10 +337,10 @@ button:not(:disabled),
     margin-top: 6px;
   }
   .rich li::marker {
-    color: var(--color-caramel-light);
+    color: var(--color-brand-light);
   }
   .rich blockquote {
-    border-left: 3px solid var(--color-caramel-light);
+    border-left: 3px solid var(--color-brand-light);
     padding-left: 18px;
     font-style: italic;
   }
@@ -370,10 +385,10 @@ button:not(:disabled),
       font-size: 16px;
     }
     .rich h2 {
-      font-size: 28px;
+      font-size: 24px;
     }
     .rich h3 {
-      font-size: 22px;
+      font-size: 19px;
     }
     .rich img {
       border-radius: 16px;
@@ -564,6 +579,68 @@ button:not(:disabled),
   }
 }
 
+/* Cards on light pages: white with a thin "steel" gradient frame (1 px); another fill:
+   [--card-fill:var(--mist)]. Dark variant for dark
+   bands of the home page. */
+@layer components {
+  .steel-card {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--card-fill, var(--paper)), var(--card-fill, var(--paper))) padding-box,
+      var(--steel-border) border-box;
+  }
+  .steel-card-dark {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(180deg, var(--dark-card), var(--dark-card-2)) padding-box,
+      var(--steel-border-dark) border-box;
+  }
+}
+
+/* Chrome text (titles on the dark hero): metal gradient through the letters that slowly
+   shines (the gradient moves, 6 s). Without motion the metal simply stands still. */
+@layer components {
+  .metal-text {
+    background-image: var(--metal);
+    background-size: 220% 100%;
+    background-position: 0% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: metal-shine 6s ease-in-out infinite alternate;
+  }
+  /* Accent words on white: blue gradient through the letters */
+  .blue-text {
+    background-image: linear-gradient(135deg, var(--brand), var(--brand-pale));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  @keyframes metal-shine {
+    to {
+      background-position: 100% 50%;
+    }
+  }
+  /* The blue glow under the hero photo breathes softly */
+  .hero-glow {
+    animation: glow-breathe 5s ease-in-out infinite alternate;
+  }
+  @keyframes glow-breathe {
+    from {
+      opacity: 0.75;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .metal-text,
+    .hero-glow {
+      animation: none;
+    }
+  }
+}
+
 /* Map of equipment (components/equipment-map.tsx): items of an opened category appear one by
    one; the pill of the current equipment "grows" from left to right. */
 @layer components {
@@ -641,7 +718,7 @@ button:not(:disabled),
   .ltx {
     font-weight: 800;
     font-size: 15px;
-    color: #7a5232;
+    color: var(--brand);
     letter-spacing: 0.2px;
   }
   .ltx i {
@@ -666,8 +743,8 @@ button:not(:disabled),
     animation: spin 0.8s linear infinite;
   }
   .ring-spinner.dark {
-    border-color: rgba(122, 82, 50, 0.25);
-    border-top-color: #7a5232;
+    border-color: rgb(var(--brand-rgb)/0.25);
+    border-top-color: var(--brand);
   }
   @keyframes loader-show {
     from {
@@ -884,12 +961,12 @@ button:not(:disabled),
     0% {
       box-shadow:
         0 14px 34px rgba(0, 0, 0, 0.35),
-        0 0 0 0 rgba(184, 138, 94, 0.6);
+        0 0 0 0 rgb(var(--brand-light-rgb)/0.6);
     }
     100% {
       box-shadow:
         0 14px 34px rgba(0, 0, 0, 0.35),
-        0 0 0 26px rgba(184, 138, 94, 0);
+        0 0 0 26px rgb(var(--brand-light-rgb)/0);
     }
   }
   /* Phones: only a fade-up, lighter for weak devices */
@@ -965,7 +1042,7 @@ button:not(:disabled),
   }
   .cone-draw .cd-line {
     fill: none;
-    stroke: #7a5232;
+    stroke: var(--brand);
     stroke-width: 1.1;
     stroke-linejoin: round;
     stroke-dasharray: 1;
@@ -977,20 +1054,20 @@ button:not(:disabled),
     animation: cd-show 0.9s ease 2.2s forwards;
   }
   .cone-draw .cd-word {
-    font-family: var(--font-cormorant), Georgia, serif;
+    font-family: var(--font-title);
     font-weight: 700;
     font-size: 21px;
     letter-spacing: 1.6px;
-    fill: #7a5232;
+    fill: var(--brand);
     clip-path: inset(0 100% 0 0);
     animation: cd-write 1s ease 1.6s forwards;
   }
   .cone-draw .cd-tagline {
-    font-family: var(--font-manrope), Arial, sans-serif;
+    font-family: var(--font-text);
     font-weight: 600;
     font-size: 11px;
     letter-spacing: 2.4px;
-    fill: #a8774f;
+    fill: var(--steel);
     opacity: 0;
     animation: cd-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 2.6s forwards;
   }
@@ -1040,7 +1117,17 @@ button:not(:disabled),
 /* Splash screen (components/site-splash.tsx): fades away after the drawing (or at once on click) */
 @layer components {
   .site-splash {
-    animation: splash-out 0.5s ease 3.3s forwards;
+    animation: splash-out 0.5s ease 1.8s forwards;
+  }
+  .splash-logo {
+    animation: splash-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  @keyframes splash-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.94);
+      filter: blur(6px);
+    }
   }
   .site-splash.leaving {
     animation: splash-out 0.35s ease forwards;
@@ -1055,52 +1142,55 @@ button:not(:disabled),
     .site-splash {
       animation-delay: 0.6s;
     }
+    .splash-logo {
+      animation: none;
+    }
   }
 }
 
 /* Map of the office (components/site-map.tsx). Outside the layers on purpose: the styles of
    the map library are not in a layer, these must win over them. */
 .site-map .leaflet-tile-pane {
-  /* OpenStreetMap softly in the cream colours of the site */
-  filter: sepia(0.32) saturate(0.78) hue-rotate(-6deg) brightness(1.03) contrast(0.94);
+  /* OpenStreetMap a little muted, in the cool colours of the site */
+  filter: saturate(0.6) brightness(1.02) contrast(0.95);
 }
 .site-map.leaflet-container {
-  font-family: var(--font-manrope), Arial, sans-serif;
-  background: #efe4d2;
+  font-family: var(--font-text);
+  background: var(--mist);
 }
 .site-map .leaflet-control-zoom {
   border: 0;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 24px rgba(74, 52, 38, 0.18);
+  box-shadow: 0 10px 24px rgb(var(--ink-rgb)/0.18);
 }
 .site-map .leaflet-control-zoom a {
   width: 38px;
   height: 38px;
   line-height: 38px;
-  color: #7a5232;
-  background: #fffcf6;
-  border-color: rgba(74, 52, 38, 0.08);
+  color: var(--brand);
+  background: var(--paper);
+  border-color: rgb(var(--ink-rgb)/0.08);
 }
 .site-map .leaflet-control-zoom a:hover {
-  background: #f6ebdc;
+  background: var(--mist);
 }
 .site-map .leaflet-control-attribution {
   border-radius: 10px 0 0 0;
-  background: rgba(255, 252, 246, 0.85);
-  color: #6b5848;
+  background: rgb(var(--paper-rgb)/0.85);
+  color: var(--ink-soft);
   font-size: 10.5px;
 }
 .site-map .leaflet-control-attribution a {
-  color: #7a5232;
+  color: var(--brand);
 }
 /* The marker: just the brand cone (its tip is the point), with a soft shadow; it drops in once
    when the map appears */
 .site-map-pin {
   display: block;
-  width: 28px;
-  height: 58px;
-  filter: drop-shadow(0 6px 6px rgba(74, 52, 38, 0.35));
+  width: 40px;
+  height: 50px;
+  filter: drop-shadow(0 6px 6px rgb(var(--ink-rgb)/0.35));
   animation: pin-drop 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both;
 }
 .site-map-pin img {
@@ -1124,25 +1214,25 @@ button:not(:disabled),
   border: 0;
   border-radius: 12px;
   padding: 6px 10px;
-  background: #4a3426;
+  background: var(--ink);
   color: #fff;
   font-weight: 700;
-  box-shadow: 0 10px 24px rgba(74, 52, 38, 0.25);
+  box-shadow: 0 10px 24px rgb(var(--ink-rgb)/0.25);
 }
 .site-map .leaflet-tooltip-top::before {
-  border-top-color: #4a3426;
+  border-top-color: var(--ink);
 }
 /* The address next to the cone, all the time */
 .site-map .leaflet-tooltip.site-map-label {
   padding: 5px 11px;
   border-radius: 999px;
-  background: rgba(255, 252, 246, 0.96);
-  color: #4a3426;
+  background: rgb(var(--paper-rgb)/0.96);
+  color: var(--ink);
   font-size: 12.5px;
   font-weight: 800;
   white-space: nowrap;
-  box-shadow: 0 8px 20px rgba(74, 52, 38, 0.2);
+  box-shadow: 0 8px 20px rgb(var(--ink-rgb)/0.2);
 }
 .site-map .leaflet-tooltip-right.site-map-label::before {
-  border-right-color: rgba(255, 252, 246, 0.96);
+  border-right-color: rgb(var(--paper-rgb)/0.96);
 }

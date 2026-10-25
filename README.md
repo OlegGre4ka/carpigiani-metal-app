@@ -41,10 +41,10 @@ Open:
 
 | What | Address |
 |---|---|
-| Website | http://localhost:3000 |
-| API docs (Swagger) | http://localhost:8000/docs |
-| Health check | http://localhost:8000/api/health |
-| Emails (Mailpit) | http://localhost:8025 |
+| Website | http://localhost:3010 |
+| API docs (Swagger) | http://localhost:8010/docs |
+| Health check | http://localhost:8010/api/health |
+| Emails (Mailpit) | http://localhost:8035 |
 
 Stop with `Ctrl + C`, or `docker compose down`.
 
@@ -117,7 +117,7 @@ Hidden address: `/fofkas-adminpanel` (login page: `/fofkas-adminpanel/login`). I
 
 - Two admins are created on the first start from `.env`: `OLEH_ADMIN_EMAIL` / `OLEH_ADMIN_PASSWORD` and `FOFKA_ADMIN_EMAIL` / `FOFKA_ADMIN_PASSWORD`. An existing admin is not changed.
 - `JWT_SECRET` in `.env` signs the login tokens. Use a long random string.
-- "Forgot password" sends an email with a one-time link (valid 1 hour). Locally all emails go to Mailpit: open http://localhost:8025 to read them.
+- "Forgot password" sends an email with a one-time link (valid 1 hour). Locally all emails go to Mailpit: open http://localhost:8035 to read them.
 - For the live site set `SITE_URL`, `COOKIE_SECURE=true` and real `SMTP_*` values.
 - Admin pages use Antd (`frontend/components/admin/antd-provider.tsx` sets the Carpigiani colors).
 - Uploaded photos are converted to WebP and kept in the Docker volume `uploads` (`/app/uploads` in the backend). The browser gets them at `/uploads/...`; the site passes `/api/...` and `/uploads/...` on to FastAPI (`frontend/next.config.ts`).
@@ -171,8 +171,8 @@ This deletes all data of this project and starts with a clean database next time
 **I see a "Cache disabled" badge in the corner.**
 That is the Next.js dev indicator. It appears when "Disable cache" is turned on in your browser DevTools (Network tab). It is not shown in production.
 
-**Port 5432 is already in use.**
-Another PostgreSQL is running on your computer. Change the left number in `docker-compose.yml` under `db → ports`, e.g. `"5433:5432"`.
+**Port 5442 is already in use.**
+Another PostgreSQL is running on your computer. Change the left number in `docker-compose.yml` under `db → ports`, e.g. `"5443:5432"`.
 
 ## Starting a new project from this boilerplate
 

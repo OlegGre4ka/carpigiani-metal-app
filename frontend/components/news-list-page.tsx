@@ -37,7 +37,7 @@ export async function NewsListPage({ page, topicHref }: { page: number; topicHre
     <main className="mx-auto w-full max-w-360 flex-1 px-20 pb-18 max-[820px]:px-4 max-[820px]:pb-12">
       <Breadcrumbs items={crumbs} />
       <div className="mb-5.5 flex flex-wrap items-end justify-between gap-x-5 gap-y-3 max-[820px]:mb-4">
-        <h1 className="font-heading text-[40px] leading-[1.08] font-bold tracking-[-0.4px] text-caramel motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[30px]">
+        <h1 className="font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
           {title}
         </h1>
         {data.topics.length > 0 && (
@@ -65,7 +65,7 @@ export async function NewsListPage({ page, topicHref }: { page: number; topicHre
       </div>
 
       {data.items.length === 0 ? (
-        <p className="rounded-[32px] border border-white/90 bg-white/70 px-8 py-12 text-center text-lg text-cocoa-soft shadow-[0_14px_40px_rgba(90,60,40,0.08)] motion-safe:animate-fade-up">
+        <p className="rounded-[32px] steel-card px-8 py-12 text-center text-lg text-ink-soft shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] motion-safe:animate-fade-up">
           {topicHref ? t("emptyTopic") : t("empty")}
         </p>
       ) : (

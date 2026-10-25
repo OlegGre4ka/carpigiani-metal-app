@@ -35,10 +35,10 @@ import { loadEquipmentMap } from "@/lib/site-pages";
 // blocks never reach this page. Texts are already in the language of the site.
 
 const blockTitle =
-  "mb-4.5 font-heading text-[44px] leading-[1.05] font-bold tracking-[-0.4px] text-caramel max-[820px]:text-[34px]";
+  "mb-4.5 font-heading text-[36px] leading-[1.05] font-extrabold tracking-[-0.02em] text-ink max-[820px]:text-[28px]";
 
 const equipmentTitle =
-  "mb-3.5 font-heading text-[38px] leading-[1.05] font-bold tracking-[-0.3px] text-caramel max-[820px]:text-[30px]";
+  "mb-3.5 font-heading text-[31px] leading-[1.05] font-extrabold tracking-[-0.02em] text-ink max-[820px]:text-[25px]";
 
 // Blocks appear when scrolled to (components/reveal.tsx); the first ones on the screen one by one
 const delay = (index: number) => (index < 3 ? 120 + index * 90 : 0);
@@ -86,7 +86,7 @@ export async function SitePage({ page, href, locale }: { page: SitePageData; hre
       {equipment && <EquipmentPageMark name={page.item_title || page.title} />}
       <Breadcrumbs items={crumbs} />
 
-      <h1 className="mb-5.5 font-heading text-[40px] leading-[1.08] font-bold tracking-[-0.4px] text-caramel motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[30px]">
+      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
         {page.title}
       </h1>
 
@@ -100,7 +100,7 @@ export async function SitePage({ page, href, locale }: { page: SitePageData; hre
             <aside className="flex min-w-0 flex-col gap-6 max-[820px]:hidden">
               {map.length > 0 && (
                 <Reveal delay={150} radius={30} className="reveal-side">
-                  <div className="rounded-[30px] border border-white/90 bg-[rgba(255,253,248,0.94)] px-4.5 pt-5 pb-3.5 shadow-[0_14px_40px_rgba(90,60,40,0.09)]">
+                  <div className="rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] px-4.5 pt-5 pb-3.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.09)]">
                     <EquipmentMap categories={map} current={href} title={mapTitle} brand={brand} />
                   </div>
                 </Reveal>
@@ -108,7 +108,7 @@ export async function SitePage({ page, href, locale }: { page: SitePageData; hre
               {/* The sticky box itself is never animated (a transform would stop it sticking) */}
               <div className="sticky top-6">
                 <Reveal delay={350} radius={30}>
-                  <div className="rounded-[30px] border border-white/90 bg-[rgba(255,253,248,0.96)] px-5 pt-5.5 pb-4.5 shadow-[0_22px_50px_rgba(120,80,60,0.16)]">
+                  <div className="rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.96)] px-5 pt-5.5 pb-4.5 shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.16)]">
                     <ContactForm variant="page" subject={page.item_title || page.title} page={href} />
                   </div>
                 </Reveal>
@@ -167,7 +167,7 @@ function Subcategory({ block }: { block: SubcategoryBlock }) {
  *  card, shown whole (not cropped), like on the old site. It settles softly when it appears. */
 function MainPhoto({ image, alt }: { image: string; alt: string }) {
   return (
-    <section className="relative h-[clamp(360px,64vh,600px)] overflow-hidden rounded-[40px] bg-white shadow-[0_26px_60px_rgba(120,80,60,0.16)] max-[820px]:h-[min(100vw,440px)] max-[820px]:rounded-[28px]">
+    <section className="relative h-[clamp(360px,64vh,600px)] overflow-hidden rounded-[40px] bg-white shadow-[0_26px_60px_rgb(var(--shadow-rgb)/0.16)] max-[820px]:h-[min(100vw,440px)] max-[820px]:rounded-[28px]">
       <Image
         src={image}
         alt={alt}
@@ -185,7 +185,7 @@ function MainPhoto({ image, alt }: { image: string; alt: string }) {
 function TextSheet({ block, compact }: { block: TextBlock; compact: boolean }) {
   return (
     <section
-      className={`border border-white/90 bg-[rgba(255,253,248,0.92)] shadow-[0_14px_40px_rgba(90,60,40,0.08)] max-[820px]:rounded-[28px] max-[820px]:px-5 max-[820px]:py-6.5 ${
+      className={`border border-white/90 bg-[rgb(var(--paper-rgb)/0.92)] shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[820px]:rounded-[28px] max-[820px]:px-5 max-[820px]:py-6.5 ${
         compact ? "rounded-[36px] px-11 py-9.5" : "rounded-[40px] px-14 py-12"
       }`}
     >
@@ -206,10 +206,10 @@ function Features({ block }: { block: FeaturesBlock }) {
         {block.items.map((item, index) => (
           <li
             key={index}
-            className="rounded-[26px] border border-white/90 bg-[rgba(255,253,248,0.92)] px-6.5 py-6 shadow-[0_10px_28px_rgba(90,60,40,0.07)]"
+            className="rounded-[26px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.92)] px-6.5 py-6 shadow-[0_10px_28px_rgb(var(--shadow-rgb)/0.07)]"
           >
-            {item.title && <b className="mb-1.5 block text-lg text-cocoa">{item.title}</b>}
-            {item.text && <span className="text-[15px] leading-relaxed text-cocoa-soft">{item.text}</span>}
+            {item.title && <b className="mb-1.5 block text-lg text-ink">{item.title}</b>}
+            {item.text && <span className="text-[15px] leading-relaxed text-ink-soft">{item.text}</span>}
           </li>
         ))}
       </ul>
@@ -220,12 +220,12 @@ function Features({ block }: { block: FeaturesBlock }) {
 /** Table: rounded, header in sand, the second column lightly marked. Scrolls sideways on phones. */
 function SpecTable({ block }: { block: TableBlock }) {
   const cell = "px-5 py-3.75 align-top max-[820px]:px-4 max-[820px]:py-3";
-  const second = "[&:nth-child(2)]:bg-[rgba(246,235,220,0.55)]";
+  const second = "[&:nth-child(2)]:bg-[rgb(var(--mist-rgb)/0.55)]";
 
   return (
     <section>
       {block.title && <h2 className={blockTitle}>{block.title}</h2>}
-      <div className="overflow-x-auto rounded-[28px] border border-cocoa/12 bg-white">
+      <div className="overflow-x-auto rounded-[28px] border border-ink/12 bg-white">
         <table className="w-full min-w-160 border-collapse text-base max-[820px]:text-[15px]">
           {block.header.length > 0 && (
             <thead>
@@ -234,7 +234,7 @@ function SpecTable({ block }: { block: TableBlock }) {
                   <th
                     key={index}
                     scope="col"
-                    className={`${cell} bg-[#f3e4cf] text-left text-sm font-extrabold tracking-[0.3px] text-caramel ${second}`}
+                    className={`${cell} bg-mist text-left text-sm font-extrabold tracking-[0.3px] text-brand ${second}`}
                   >
                     {title}
                   </th>
@@ -246,12 +246,12 @@ function SpecTable({ block }: { block: TableBlock }) {
             {block.rows.map((row, rowIndex) => (
               <tr
                 key={rowIndex}
-                className={`border-t border-cocoa/10 ${block.header.length > 0 ? "" : "first:border-t-0"}`}
+                className={`border-t border-ink/10 ${block.header.length > 0 ? "" : "first:border-t-0"}`}
               >
                 {row.map((value, index) => (
                   <td
                     key={index}
-                    className={`${cell} text-[#5d4838] first:font-extrabold first:whitespace-nowrap first:text-cocoa ${second}`}
+                    className={`${cell} text-body first:font-extrabold first:whitespace-nowrap first:text-ink ${second}`}
                   >
                     {value}
                   </td>
@@ -276,8 +276,8 @@ async function Catalogs({ block }: { block: CatalogsBlock }) {
       : t("kilobytes", { size: Math.max(1, Math.round(bytes / 1024)) });
 
   return (
-    <section className="rounded-[36px] border border-white/90 bg-[rgba(255,253,248,0.92)] px-9 py-7.5 shadow-[0_14px_40px_rgba(90,60,40,0.08)] max-[820px]:rounded-[28px] max-[820px]:px-5 max-[820px]:py-6">
-      <h2 className="mb-4.5 font-heading text-[32px] leading-[1.05] font-bold text-caramel max-[820px]:text-[28px]">{te("catalogs")}</h2>
+    <section className="rounded-[36px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.92)] px-9 py-7.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[820px]:rounded-[28px] max-[820px]:px-5 max-[820px]:py-6">
+      <h2 className="mb-4.5 font-heading tracking-[-0.02em] text-[26px] leading-[1.05] font-extrabold text-ink max-[820px]:text-[23px]">{te("catalogs")}</h2>
       <ul data-reveal-kids className="grid grid-cols-2 gap-4 max-[820px]:grid-cols-1">
         {block.items.map((file) => (
           <li key={file.url} className="min-w-0">
@@ -285,13 +285,13 @@ async function Catalogs({ block }: { block: CatalogsBlock }) {
               href={file.url}
               download={file.name}
               aria-label={t("downloadPdf", { name: file.name })}
-              className="btn-shine group/btn inline-flex max-w-full items-center gap-2.5 rounded-full bg-[linear-gradient(180deg,#b88a5e,#7a5232)] px-6 py-3.75 text-[15px] font-extrabold text-white shadow-[0_10px_22px_rgba(122,82,50,0.3)] transition duration-300 hover:-translate-y-0.5 hover:brightness-108 hover:shadow-[0_16px_30px_rgba(122,82,50,0.4)]"
+              className="btn-shine group/btn inline-flex max-w-full items-center gap-2.5 rounded-full bg-[image:var(--grad-btn)] px-6 py-3.75 text-[15px] font-extrabold text-white shadow-[0_10px_22px_rgb(var(--brand-rgb)/0.3)] transition duration-300 hover:-translate-y-0.5 hover:brightness-108 hover:shadow-[0_16px_30px_rgb(var(--brand-rgb)/0.4)]"
             >
               <Download size={18} strokeWidth={2.6} aria-hidden="true" className="shrink-0 transition-transform duration-300 group-hover/btn:translate-y-0.5" />
               <span className="truncate">{file.label}</span>
             </a>
-            <p className="mt-2.5 text-[13px] leading-normal text-cocoa-soft">
-              <b className="text-cocoa">{t("file")}:</b> <span className="break-all">{file.name}</span>
+            <p className="mt-2.5 text-[13px] leading-normal text-ink-soft">
+              <b className="text-ink">{t("file")}:</b> <span className="break-all">{file.name}</span>
               <br />
               PDF · {size(file.size)}
             </p>

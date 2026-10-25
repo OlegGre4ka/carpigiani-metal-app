@@ -214,7 +214,7 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
       render: (_, category) => (
         <div>
           <div className="font-bold">{category.title_uk}</div>
-          <div className="text-sm text-cocoa-soft">EN: {category.title_en}</div>
+          <div className="text-sm text-ink-soft">EN: {category.title_en}</div>
         </div>
       ),
     },
@@ -243,13 +243,13 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-heading text-[40px] leading-tight font-bold text-caramel motion-safe:animate-fade-up max-[600px]:text-[32px]">
+          <h1 className="font-heading tracking-[-0.02em] text-[33px] leading-tight font-extrabold text-ink motion-safe:animate-fade-up max-[600px]:text-[26px]">
             {info.title}
           </h1>
-          <p className="mt-1 text-sm font-extrabold tracking-[1.5px] text-gold uppercase motion-safe:animate-fade-up motion-safe:[animation-delay:40ms]">
+          <p className="mt-1 text-sm font-extrabold tracking-[1.5px] text-steel uppercase motion-safe:animate-fade-up motion-safe:[animation-delay:40ms]">
             {info.caption}
           </p>
-          <p className="mt-2 max-w-[62ch] text-cocoa-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
+          <p className="mt-2 max-w-[62ch] text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
             Кожна категорія показується {info.shownOn} карткою з фото й назвою. Картки стоять по 3 в ряд. Поки категорій
             немає, блок на сайті не показується.
           </p>
@@ -260,7 +260,7 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
       </div>
 
       {/* Large screens: table */}
-      <div className="mt-6 overflow-hidden rounded-[28px] border border-white/90 bg-white/75 p-2 shadow-[0_14px_40px_rgba(90,60,40,0.08)] motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[700px]:hidden">
+      <div className="mt-6 overflow-hidden rounded-[28px] steel-card p-2 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[700px]:hidden">
         <Table<Category>
           rowKey="id"
           columns={columns}
@@ -275,12 +275,12 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
       {/* Phones: one card per category, nothing to scroll sideways */}
       <div className="mt-5 hidden flex-col gap-3 motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[700px]:flex">
         {!loading && categories.length === 0 && (
-          <div className="rounded-3xl border border-white/90 bg-white/75 p-4">{emptyState}</div>
+          <div className="rounded-3xl steel-card p-4">{emptyState}</div>
         )}
         {categories.map((category, index) => (
           <div
             key={category.id}
-            className={`rounded-3xl border border-white/90 bg-white/75 p-3 shadow-[0_10px_28px_rgba(90,60,40,0.08)] ${
+            className={`rounded-3xl steel-card p-3 shadow-[0_10px_28px_rgb(var(--shadow-rgb)/0.08)] ${
               category.is_visible ? "" : "opacity-60"
             }`}
           >
@@ -288,10 +288,10 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
             <img src={category.image_url} alt="" className="h-36 w-full rounded-2xl object-cover" />
             <div className="px-1.5 pt-3">
               <div className="font-bold">{category.title_uk}</div>
-              <div className="text-sm text-cocoa-soft">EN: {category.title_en}</div>
+              <div className="text-sm text-ink-soft">EN: {category.title_en}</div>
               <Tag className="m-0! mt-2! font-semibold">{category.href}</Tag>
             </div>
-            <div className="mt-3 flex items-center justify-between gap-2 border-t border-cocoa/8 px-1 pt-3">
+            <div className="mt-3 flex items-center justify-between gap-2 border-t border-ink/8 px-1 pt-3">
               {orderButtons(category, index)}
               <label className="flex items-center gap-2 text-sm font-semibold">
                 {visibilitySwitch(category)}
@@ -399,7 +399,7 @@ function CategoryForm({
   return (
     <Modal
       open={open}
-      title={<span className="font-heading text-[28px] font-bold text-caramel">{isNew ? "Нова категорія" : "Редагувати категорію"}</span>}
+      title={<span className="font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">{isNew ? "Нова категорія" : "Редагувати категорію"}</span>}
       onCancel={onClose}
       okText={isNew ? "Додати" : "Зберегти"}
       cancelText="Скасувати"
@@ -426,7 +426,7 @@ function CategoryForm({
             showUploadList={{ showPreviewIcon: false }}
           >
             {files.length === 0 && (
-              <div className="flex flex-col items-center gap-1.5 text-caramel">
+              <div className="flex flex-col items-center gap-1.5 text-brand">
                 <ImagePlus size={24} />
                 <span className="text-sm font-semibold">Обрати фото</span>
               </div>
@@ -477,7 +477,7 @@ function CategoryForm({
         </Form.Item>
 
         {error && (
-          <p role="alert" className="mb-1 rounded-2xl bg-[#f6dcd5] px-4 py-3 text-sm font-semibold text-[#8a3424]">
+          <p role="alert" className="mb-1 rounded-2xl bg-danger-bg px-4 py-3 text-sm font-semibold text-danger-ink">
             {error}
           </p>
         )}

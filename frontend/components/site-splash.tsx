@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-import { ConeDraw } from "@/components/cone-draw";
+import { BrandMark } from "@/components/brand-logo";
 
-// Splash screen of the site: when the site is opened or reloaded, the brand cone draws itself on
-// a cream screen (about 3 s), then the screen fades away and the page is already there behind it.
+// Splash screen of the site: when the site is opened or reloaded, the brand mark and the name
+// rise on a dark screen with a blue glow (about 1.8 s), then the screen fades away and the page is already there behind it.
 // Moving between pages of the site does not show it again (the layout stays). A click or a tap
 // skips it. Not in the admin panel. After a reload the page starts from the top. The fading is plain CSS (.site-splash in globals.css), so it
 // goes away even before the page scripts are loaded.
@@ -21,7 +21,7 @@ export function SiteSplash() {
 
   // Safety net: even if the styles of the site did not load, the screen goes away by itself
   useEffect(() => {
-    const timer = setTimeout(() => setState("gone"), 4200);
+    const timer = setTimeout(() => setState("gone"), 2800);
     return () => clearTimeout(timer);
   }, []);
   if (state === "gone") return null;
@@ -33,11 +33,15 @@ export function SiteSplash() {
       onAnimationEnd={(event) => {
         if (event.target === event.currentTarget) setState("gone");
       }}
-      className={`site-splash fixed inset-0 z-100 flex cursor-pointer items-center justify-center bg-[radial-gradient(circle_at_40%_30%,#fbf3e6,#efdcc1)] ${
+      className={`site-splash fixed inset-0 z-100 flex cursor-pointer items-center justify-center bg-[radial-gradient(circle_at_70%_40%,rgb(20_110_255/0.3),transparent_60%),var(--dark)] ${
         state === "leaving" ? "leaving" : ""
       }`}
     >
-      <ConeDraw className="h-[min(56vh,420px)] w-auto" />
+      <div className="splash-logo flex flex-col items-center text-white">
+        <BrandMark className="h-[min(30vh,190px)] w-auto drop-shadow-[0_20px_50px_rgb(20_110_255/0.45)]" />
+        <b className="mt-6 text-[clamp(22px,4vw,34px)] font-extrabold tracking-[0.3em]">CARPIGIANI</b>
+        <small className="mt-2 text-[11px] font-bold tracking-[0.35em] text-on-dark-soft">OFFICIAL UKRAINE DEALER</small>
+      </div>
     </div>
   );
 }

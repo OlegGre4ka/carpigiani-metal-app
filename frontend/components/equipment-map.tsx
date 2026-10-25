@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 
+import { BrandMark } from "@/components/brand-logo";
+
 import { SectionMap } from "@/components/section-map";
 import type { EquipmentMapCategory } from "@/lib/site-pages";
 
@@ -45,8 +47,8 @@ export function EquipmentMap({
         <Image src={logo.src} alt={logo.alt} width={logo.width} height={logo.height} className={`mx-auto mt-1 mb-3.5 w-auto ${logo.className}`} />
       )}
       <div className={`flex items-center gap-3 ${logo ? "justify-center" : ""}`}>
-        {!logo && <Image src="/images/logo.webp" alt="" width={202} height={420} className="h-10 w-auto" />}
-        <b className="font-heading text-2xl leading-none font-bold text-caramel">{name}</b>
+        {!logo && <BrandMark className="h-10 w-auto" />}
+        <b className="font-heading tracking-[-0.02em] text-xl leading-none font-extrabold text-ink">{name}</b>
       </div>
     </>
   );

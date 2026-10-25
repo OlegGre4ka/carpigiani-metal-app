@@ -12,7 +12,7 @@ import { routeHref } from "@/lib/route";
 import { loadContacts, type SiteContacts } from "@/lib/site-pages";
 
 // The "Contacts" page, in the same two columns as equipment and news pages: on the left the map
-// of the office (OpenStreetMap in the cream colours, the brand cone as the marker); on the right
+// of the office (OpenStreetMap a little muted, the brand mark as the marker); on the right
 // the card with phones, email, address and hours, "Get directions", and the contact form under
 // it. On phones: the card, the map, the form. Everything from the admin panel ("Contacts").
 
@@ -33,13 +33,13 @@ const fallback: SiteContacts = {
 
 function Row({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
-    <li className="flex gap-3.5 border-b border-cocoa/8 py-4 first:pt-1 last:border-b-0 last:pb-1">
-      <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-sand text-caramel">
+    <li className="flex gap-3.5 border-b border-ink/8 py-4 first:pt-1 last:border-b-0 last:pb-1">
+      <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-mist text-brand">
         {icon}
       </span>
       <div className="min-w-0">
-        <p className="mb-1 text-[11px] font-extrabold tracking-[1.5px] text-gold uppercase">{title}</p>
-        <div className="text-[15.5px] leading-relaxed text-cocoa">{children}</div>
+        <p className="mb-1 text-[11px] font-extrabold tracking-[1.5px] text-steel uppercase">{title}</p>
+        <div className="text-[15.5px] leading-relaxed text-ink">{children}</div>
       </div>
     </li>
   );
@@ -51,10 +51,10 @@ export async function ContactsPage() {
   const tNav = await getTranslations("Nav");
   const contacts = (await loadContacts(locale)) ?? fallback;
   const address = [contacts.street, contacts.city].filter(Boolean).join(", ");
-  const link = "font-extrabold text-caramel transition-colors hover:text-cocoa";
+  const link = "font-extrabold text-brand transition-colors hover:text-ink";
 
   const card = (
-    <div className="rounded-[30px] border border-white/90 bg-[rgba(255,253,248,0.94)] px-5.5 pt-5 pb-5 shadow-[0_14px_40px_rgba(90,60,40,0.09)]">
+    <div className="rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] px-5.5 pt-5 pb-5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.09)]">
       <ul data-reveal-kids>
         <Row icon={<Phone size={18} strokeWidth={2.2} />} title={t("phones")}>
           {contacts.phones.map((phone) => (
@@ -101,7 +101,7 @@ export async function ContactsPage() {
         href={routeHref(contacts.lat, contacts.lng)}
         target="_blank"
         rel="noopener"
-        className="btn-shine mt-3 flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(180deg,#b88a5e,#7a5232)] px-6 py-3.5 text-[15px] font-extrabold text-white shadow-[0_10px_22px_rgba(122,82,50,0.28)] transition hover:-translate-y-0.5 hover:brightness-108"
+        className="btn-shine mt-3 flex items-center justify-center gap-2 rounded-full bg-[image:var(--grad-btn)] px-6 py-3.5 text-[15px] font-extrabold text-white shadow-[0_10px_22px_rgb(var(--brand-rgb)/0.28)] transition hover:-translate-y-0.5 hover:brightness-108"
       >
         <Navigation size={17} strokeWidth={2.4} aria-hidden="true" />
         {t("route")}
@@ -114,7 +114,7 @@ export async function ContactsPage() {
       {/* The floating "Contact us" button hides on large screens: the form is on the page */}
       <EquipmentPageMark name="" />
       <Breadcrumbs items={[{ title: tNav("contacts") }]} />
-      <h1 className="mb-5.5 font-heading text-[40px] leading-[1.08] font-bold tracking-[-0.4px] text-caramel motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[30px]">
+      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
         {tNav("contacts")}
       </h1>
 
@@ -131,7 +131,7 @@ export async function ContactsPage() {
               lat={contacts.lat}
               lng={contacts.lng}
               label={contacts.street || address}
-              className="h-full min-h-150 rounded-[36px] shadow-[0_22px_50px_rgba(120,80,60,0.15)] max-[820px]:h-80 max-[820px]:min-h-0 max-[820px]:rounded-[26px]"
+              className="h-full min-h-150 rounded-[36px] shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.15)] max-[820px]:h-80 max-[820px]:min-h-0 max-[820px]:rounded-[26px]"
             />
           </section>
         </Reveal>
@@ -142,7 +142,7 @@ export async function ContactsPage() {
             </Reveal>
           </div>
           <Reveal delay={300} radius={30}>
-            <div className="rounded-[30px] border border-white/90 bg-[rgba(255,253,248,0.96)] px-5 pt-5.5 pb-4.5 shadow-[0_22px_50px_rgba(120,80,60,0.16)]">
+            <div className="rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.96)] px-5 pt-5.5 pb-4.5 shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.16)]">
               <ContactForm variant="page" heading="contact" page="/contacts" />
             </div>
           </Reveal>

@@ -14,12 +14,12 @@ export async function HomeNews() {
   const t = await getTranslations("News");
 
   return (
-    <section className="mx-auto w-full max-w-360 px-20 pt-24 max-[820px]:px-4 max-[820px]:pt-14">
+    <section className="mx-auto w-full max-w-360 px-20 py-24 max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:py-14">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 max-[820px]:mb-5">
-        <h2 className="font-heading text-[54px] leading-[1.05] font-bold tracking-[-0.5px] text-caramel motion-safe:animate-fade-up max-[820px]:text-[36px]">
+        <h2 className="font-heading text-[46px] leading-[1.05] font-extrabold tracking-[-0.02em] text-ink motion-safe:animate-fade-up max-[820px]:text-[30px]">
           {t("title")}
         </h2>
-        <Link href="/news" className="group inline-flex items-center gap-2 pb-2 text-[15px] font-extrabold text-caramel">
+        <Link href="/news" className="group inline-flex items-center gap-2 pb-2 text-[15px] font-extrabold text-brand">
           {t("allNews")}
           <ArrowRight size={18} strokeWidth={2.6} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1" />
         </Link>

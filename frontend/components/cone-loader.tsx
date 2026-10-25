@@ -71,9 +71,9 @@ export function RingLoader({ label }: { label: string }) {
     <div role="status" aria-live="polite" className="flex flex-col items-center justify-center gap-4">
       <span
         aria-hidden="true"
-        className="size-14 animate-spin rounded-full border-4 border-caramel-light/25 border-t-caramel motion-reduce:animate-[spin_2.5s_linear_infinite]"
+        className="size-14 animate-spin rounded-full border-4 border-brand-light/25 border-t-brand motion-reduce:animate-[spin_2.5s_linear_infinite]"
       />
-      <span className="text-sm font-semibold tracking-[1.5px] text-gold uppercase">{label}</span>
+      <span className="text-sm font-semibold tracking-[1.5px] text-steel uppercase">{label}</span>
     </div>
   );
 }

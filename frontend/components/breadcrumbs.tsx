@@ -16,7 +16,7 @@ export async function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
     <nav
       aria-label={t("CategoryPage.breadcrumbs")}
-      className="flex items-center gap-1.5 overflow-x-auto pt-0.5 pb-2.5 text-[11px] leading-snug font-bold tracking-[1px] whitespace-nowrap text-gold uppercase [scrollbar-width:none] motion-safe:animate-fade-up [&::-webkit-scrollbar]:hidden"
+      className="flex items-center gap-1.5 overflow-x-auto pt-6 pb-2.5 text-[11px] max-[820px]:pt-4 leading-snug font-bold tracking-[1px] whitespace-nowrap text-steel uppercase [scrollbar-width:none] motion-safe:animate-fade-up [&::-webkit-scrollbar]:hidden"
     >
       {all.map((crumb, index) => {
         const last = index === all.length - 1;
@@ -30,7 +30,7 @@ export async function Breadcrumbs({ items }: { items: Crumb[] }) {
             {last ? (
               <span aria-current="page">{crumb.title}</span>
             ) : crumb.href ? (
-              <Link href={crumb.href} className="transition-colors hover:text-caramel">
+              <Link href={crumb.href} className="transition-colors hover:text-brand">
                 {crumb.title}
               </Link>
             ) : (

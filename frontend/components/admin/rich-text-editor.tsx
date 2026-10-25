@@ -62,10 +62,10 @@ const sizes: { value: Size; label: string; text: string }[] = [
 ];
 
 const toolButton =
-  "inline-flex h-8.5 min-w-8.5 items-center justify-center gap-1 rounded-[10px] px-2 text-cocoa transition-colors hover:bg-white/80 disabled:opacity-40 aria-pressed:bg-white aria-pressed:shadow-[0_1px_3px_rgba(74,52,38,0.15)]";
+  "inline-flex h-8.5 min-w-8.5 items-center justify-center gap-1 rounded-[10px] px-2 text-ink transition-colors hover:bg-white/80 disabled:opacity-40 aria-pressed:bg-white aria-pressed:shadow-[0_1px_3px_rgb(var(--ink-rgb)/0.15)]";
 
 function Separator() {
-  return <span aria-hidden="true" className="mx-1 h-5 w-px bg-cocoa/20" />;
+  return <span aria-hidden="true" className="mx-1 h-5 w-px bg-ink/20" />;
 }
 
 export function RichTextEditor({
@@ -113,7 +113,7 @@ export function RichTextEditor({
   });
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-cocoa/18 bg-white focus-within:border-caramel-light focus-within:shadow-[0_0_0_4px_rgba(184,138,94,0.2)]">
+    <div className="overflow-hidden rounded-2xl border border-ink/18 bg-white focus-within:border-brand-light focus-within:shadow-[0_0_0_4px_rgb(var(--brand-light-rgb)/0.2)]">
       {editor && <Toolbar editor={editor} uploadImage={uploadImage} />}
       <EditorContent editor={editor} />
     </div>
@@ -175,7 +175,7 @@ function Toolbar({ editor, uploadImage }: { editor: Editor; uploadImage: (file: 
   }
 
   return (
-    <div role="toolbar" aria-label="Оформлення тексту" className="flex flex-wrap items-center gap-1 border-b border-cocoa/12 bg-sand px-2.5 py-2">
+    <div role="toolbar" aria-label="Оформлення тексту" className="flex flex-wrap items-center gap-1 border-b border-ink/12 bg-mist px-2.5 py-2">
       <Select
         size="small"
         value={state.kind}
@@ -221,7 +221,7 @@ function Toolbar({ editor, uploadImage }: { editor: Editor; uploadImage: (file: 
       {state.photo && (
         <>
           <Separator />
-          <span className="px-1 text-xs font-bold text-cocoa-soft">Фото:</span>
+          <span className="px-1 text-xs font-bold text-ink-soft">Фото:</span>
           {places.map((place) => (
             <button
               key={place.value}
@@ -271,7 +271,7 @@ function Toolbar({ editor, uploadImage }: { editor: Editor; uploadImage: (file: 
         onCancel={() => setLinkOpen(false)}
         destroyOnHidden
       >
-        <p className="mb-3 text-sm text-cocoa-soft">
+        <p className="mb-3 text-sm text-ink-soft">
           Сторінка сайту (наприклад /carpigiani-gelato-university) або повна адреса (https://...). Порожнє поле прибирає
           посилання.
         </p>

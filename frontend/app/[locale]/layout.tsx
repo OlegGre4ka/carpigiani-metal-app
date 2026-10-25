@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Manrope } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -15,7 +15,7 @@ import { ContactWidget } from "@/components/contact-widget";
 import { SiteSplash } from "@/components/site-splash";
 import "../globals.css";
 
-// Fonts for the whole site: Manrope for text, Cormorant Garamond for headings.
+// Font of the whole site: Manrope (text and headings; see app/theme.css).
 // Keep the "cyrillic" subset: the site is in Ukrainian.
 const fontSans = Manrope({
   variable: "--font-manrope",
@@ -23,12 +23,6 @@ const fontSans = Manrope({
   display: "swap",
 });
 
-const fontHeading = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["latin", "cyrillic"],
-  weight: ["600", "700"],
-  display: "swap",
-});
 
 type Props = {
   children: React.ReactNode;
@@ -52,7 +46,7 @@ export default async function RootLayout({ children, params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
 
   return (
-    <html lang={locale} className={`${fontSans.variable} ${fontHeading.variable} h-full antialiased`}>
+    <html lang={locale} className={`${fontSans.variable} h-full antialiased`}>
       <body className={`${fontSans.className} min-h-full flex flex-col`}>
         {/* Without JavaScript blocks that appear on scroll (components/reveal.tsx) are simply shown */}
         <noscript>

@@ -41,14 +41,14 @@ export function CopyButton({ text, label }: { text: string; label: string }) {
       aria-label={`${t("copy")}: ${label}`}
       title={copied ? t("copied") : t("copy")}
       className={`relative inline-flex size-7.5 shrink-0 items-center justify-center rounded-full border transition-colors ${
-        copied ? "border-mint bg-mint text-mint-ink" : "border-cocoa/12 bg-white text-caramel hover:bg-sand"
+        copied ? "border-tag bg-tag text-tag-ink" : "border-ink/12 bg-white text-brand hover:bg-mist"
       }`}
     >
       {copied ? <Check size={14} strokeWidth={2.6} aria-hidden="true" /> : <Copy size={14} strokeWidth={2.2} aria-hidden="true" />}
       {/* "Copied" next to the button */}
       <span
         role="status"
-        className={`pointer-events-none absolute left-full ml-2 rounded-full bg-cocoa px-2.5 py-1 text-[11.5px] font-bold whitespace-nowrap text-white transition-opacity duration-200 ${
+        className={`pointer-events-none absolute left-full ml-2 rounded-full bg-ink px-2.5 py-1 text-[11.5px] font-bold whitespace-nowrap text-white transition-opacity duration-200 ${
           copied ? "opacity-100" : "opacity-0"
         }`}
       >

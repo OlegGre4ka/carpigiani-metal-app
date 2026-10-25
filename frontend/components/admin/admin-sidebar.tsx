@@ -99,7 +99,7 @@ function NavList({
             <li key={item.href}>
               <div
                 className={`flex items-center rounded-2xl transition-colors ${
-                  exact ? "bg-cocoa text-white" : active ? "bg-white text-cocoa" : "text-cocoa hover:bg-white"
+                  exact ? "bg-ink text-white" : active ? "bg-white text-ink" : "text-ink hover:bg-white"
                 }`}
               >
                 {item.groupOnly ? (
@@ -133,7 +133,7 @@ function NavList({
                     aria-expanded={expanded}
                     aria-controls={listId}
                     aria-label={`${expanded ? "Згорнути" : "Розгорнути"}: ${item.title}`}
-                    className="mr-1.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-cocoa/8"
+                    className="mr-1.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-ink/8"
                   >
                     <Chevron expanded={expanded} />
                   </button>
@@ -141,7 +141,7 @@ function NavList({
               </div>
 
               {expanded && (
-                <ul id={listId} className="mt-1 mb-1.5 ml-6 flex flex-col gap-0.5 border-l-2 border-sand pl-3">
+                <ul id={listId} className="mt-1 mb-1.5 ml-6 flex flex-col gap-0.5 border-l-2 border-mist pl-3">
                   {item.children!.map((child) => {
                     const childExact = pathname === child.href;
                     const childOpen = isActive(pathname, child.href);
@@ -153,17 +153,17 @@ function NavList({
                           aria-current={childExact ? "page" : undefined}
                           className={`block rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors ${
                             childExact
-                              ? "bg-cocoa text-white"
+                              ? "bg-ink text-white"
                               : childOpen
-                                ? "bg-white text-cocoa"
-                                : "text-cocoa-soft hover:bg-white hover:text-cocoa"
+                                ? "bg-white text-ink"
+                                : "text-ink-soft hover:bg-white hover:text-ink"
                           }`}
                         >
                           {child.title}
                         </Link>
                         {/* Subcategories show only under the open category */}
                         {childOpen && Boolean(child.children?.length) && (
-                          <ul className="mt-0.5 mb-1 ml-3 flex flex-col gap-0.5 border-l-2 border-sand pl-2.5">
+                          <ul className="mt-0.5 mb-1 ml-3 flex flex-col gap-0.5 border-l-2 border-mist pl-2.5">
                             {child.children!.map((grandchild) => {
                               const here = pathname === grandchild.href;
                               // Also lit on the pages of its equipment (…/items/…)
@@ -175,7 +175,7 @@ function NavList({
                                     onClick={onNavigate}
                                     aria-current={here ? "page" : undefined}
                                     className={`block rounded-xl px-3 py-2 text-[13px] font-semibold transition-colors ${
-                                      inside ? "bg-cocoa text-white" : "text-cocoa-soft hover:bg-white hover:text-cocoa"
+                                      inside ? "bg-ink text-white" : "text-ink-soft hover:bg-white hover:text-ink"
                                     }`}
                                   >
                                     {grandchild.title}
@@ -264,7 +264,7 @@ export function AdminMobileMenu({ categories, topics }: { categories: AdminSubse
         aria-label="Відкрити меню"
         aria-expanded={open}
         aria-controls="admin-drawer"
-        className="flex size-11 items-center justify-center rounded-full border border-cocoa/15 bg-white/70 text-cocoa transition-colors hover:bg-white"
+        className="flex size-11 items-center justify-center rounded-full border border-ink/15 bg-white/70 text-ink transition-colors hover:bg-white"
       >
         <svg
           aria-hidden="true"
@@ -286,7 +286,7 @@ export function AdminMobileMenu({ categories, topics }: { categories: AdminSubse
             <div
               aria-hidden="true"
               onClick={() => setOpen(false)}
-              className={`fixed inset-0 z-40 bg-cocoa/35 backdrop-blur-[2px] transition-opacity duration-300 ${
+              className={`fixed inset-0 z-40 bg-ink/35 backdrop-blur-[2px] transition-opacity duration-300 ${
                 open ? "opacity-100" : "pointer-events-none opacity-0"
               }`}
             />
@@ -297,17 +297,17 @@ export function AdminMobileMenu({ categories, topics }: { categories: AdminSubse
               aria-modal="true"
               aria-label="Меню адмін-панелі"
               inert={!open}
-              className={`fixed inset-y-0 left-0 z-50 flex w-[min(320px,86vw)] flex-col bg-cream transition-transform duration-300 ease-out ${
-                open ? "translate-x-0 shadow-[18px_0_50px_rgba(74,52,38,0.25)]" : "-translate-x-full"
+              className={`fixed inset-y-0 left-0 z-50 flex w-[min(320px,86vw)] flex-col bg-page transition-transform duration-300 ease-out ${
+                open ? "translate-x-0 shadow-[18px_0_50px_rgb(var(--ink-rgb)/0.25)]" : "-translate-x-full"
               }`}
             >
-              <div className="flex items-center justify-between border-b border-cocoa/10 px-4 py-3.5">
-                <span className="text-[11px] font-extrabold tracking-[2px] text-gold uppercase">Розділи</span>
+              <div className="flex items-center justify-between border-b border-ink/10 px-4 py-3.5">
+                <span className="text-[11px] font-extrabold tracking-[2px] text-steel uppercase">Розділи</span>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label="Закрити меню"
-                  className="flex size-10 items-center justify-center rounded-full bg-sand text-cocoa transition-colors hover:bg-[#ecdcc6]"
+                  className="flex size-10 items-center justify-center rounded-full bg-mist text-ink transition-colors hover:bg-mist-strong"
                 >
                   <svg
                     aria-hidden="true"

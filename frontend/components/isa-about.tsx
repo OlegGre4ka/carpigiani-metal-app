@@ -10,7 +10,7 @@ import { Link } from "@/i18n/navigation";
  *  lead to the pages of these showcases (old addresses). */
 export async function IsaAbout() {
   const t = await getTranslations("IsaAbout");
-  const bold = (chunks: ReactNode) => <b className="font-bold text-cocoa">{chunks}</b>;
+  const bold = (chunks: ReactNode) => <b className="font-bold text-ink">{chunks}</b>;
   const link = (href: string) =>
     function ShowcaseLink(chunks: ReactNode) {
       return (
@@ -40,7 +40,7 @@ export async function IsaAbout() {
           })}
         </p>
         <p className="mt-5">{t.rich("p3", { b: bold })}</p>
-        <ul className="mt-3 flex list-disc flex-col gap-2 pl-6 marker:text-caramel-light">
+        <ul className="mt-3 flex list-disc flex-col gap-2 pl-6 marker:text-brand-light">
           <li>{t("group1")}</li>
           <li>{t("group2")}</li>
         </ul>

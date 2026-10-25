@@ -10,7 +10,7 @@ import { Services } from "@/components/services";
 // Home page. The cards and other blocks are added here step by step.
 export default function HomePage() {
   return (
-    <main className="flex-1 pb-16 max-[820px]:pb-10">
+    <main className="flex-1">
       <HeroSlider />
       <Services />
       {/* Equipment categories come from the admin panel (read on the server); a loader is shown in their place until they are ready */}

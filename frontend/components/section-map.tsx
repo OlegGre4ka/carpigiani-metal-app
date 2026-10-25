@@ -42,15 +42,15 @@ export function SectionMap({
   return (
     <nav aria-label={title}>
       {header !== null && (
-        <div className="mb-1.5 border-b border-cocoa/10 px-1.5 pb-3">
-          {header ?? <b className="block px-1 font-heading text-2xl leading-none font-bold text-caramel">{title}</b>}
+        <div className="mb-1.5 border-b border-ink/10 px-1.5 pb-3">
+          {header ?? <b className="block px-1 font-heading tracking-[-0.02em] text-xl leading-none font-extrabold text-ink">{title}</b>}
         </div>
       )}
       {topLink && (
         <Link
           href={topLink.href}
           onClick={onNavigate}
-          className="group mb-0.5 flex items-center gap-1.5 rounded-[14px] px-2 py-2 text-sm font-extrabold text-caramel transition-colors hover:bg-[rgba(243,228,207,0.5)]"
+          className="group mb-0.5 flex items-center gap-1.5 rounded-[14px] px-2 py-2 text-sm font-extrabold text-brand transition-colors hover:bg-[rgb(var(--mist-rgb)/0.5)]"
         >
           {topLink.title}
           <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-0.5">
@@ -65,31 +65,30 @@ export function SectionMap({
         const bodyId = `map-${category.href.replace(/\W+/g, "-")}`;
         let index = 0;
         return (
-          <div key={category.href} className="border-b border-cocoa/8 last:border-b-0">
+          <div key={category.href} className="border-b border-ink/8 last:border-b-0">
             <button
               type="button"
               aria-expanded={expanded}
               aria-controls={bodyId}
               onClick={() => setOpen((list) => (expanded ? list.filter((h) => h !== category.href) : [...list, category.href]))}
-              className={`flex w-full items-center justify-between gap-2 rounded-[14px] px-2 py-2.75 text-left text-[15px] font-extrabold transition-colors hover:bg-[rgba(243,228,207,0.5)] ${
-                expanded ? "text-caramel" : "text-cocoa"
+              className={`flex w-full items-center justify-between gap-2 rounded-[14px] px-2 py-2.75 text-left text-[15px] font-extrabold transition-colors hover:bg-[rgb(var(--mist-rgb)/0.5)] ${
+                expanded ? "text-brand" : "text-ink"
               }`}
             >
               <span>
                 {category.title}
-                <em className="ml-1.5 text-xs font-bold text-gold not-italic">{count}</em>
+                <em className="ml-1.5 text-xs font-bold text-steel not-italic">{count}</em>
               </span>
               <svg
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#7A5232"
                 strokeWidth="2.6"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"
-                className={`shrink-0 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
+                className={`shrink-0 stroke-brand transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}
               >
                 <path d="M6 9l6 6 6-6" />
               </svg>
@@ -104,7 +103,7 @@ export function SectionMap({
                   {category.groups.map((group) => (
                     <div key={group.title}>
                       {category.groups.length > 1 && (
-                        <p className="mx-2 mt-2 mb-0.5 text-[10.5px] font-extrabold tracking-[1.1px] text-gold uppercase">{group.title}</p>
+                        <p className="mx-2 mt-2 mb-0.5 text-[10.5px] font-extrabold tracking-[1.1px] text-steel uppercase">{group.title}</p>
                       )}
                       {group.items.map((item) => {
                         const here = item.href === current;
@@ -118,8 +117,8 @@ export function SectionMap({
                             style={delay}
                             className={`map-item relative my-px block rounded-xl py-1.5 text-[14.5px] transition-colors ${
                               here
-                                ? "map-current bg-cocoa pr-3 pl-6.5 font-extrabold text-white before:absolute before:top-1/2 before:left-2.75 before:-mt-0.75 before:size-1.5 before:rounded-full before:bg-[#e8c9a0]"
-                                : "px-3 font-semibold text-[#5d4838] hover:bg-[rgba(243,228,207,0.6)] hover:text-cocoa"
+                                ? "map-current bg-ink pr-3 pl-6.5 font-extrabold text-white before:absolute before:top-1/2 before:left-2.75 before:-mt-0.75 before:size-1.5 before:rounded-full before:bg-brand-pale"
+                                : "px-3 font-semibold text-body hover:bg-[rgb(var(--mist-rgb)/0.6)] hover:text-ink"
                             }`}
                           >
                             {item.title}
@@ -134,7 +133,7 @@ export function SectionMap({
                       href={category.more.href}
                       onClick={onNavigate}
                       style={{ "--d": `${Math.min(index * 38, 500)}ms` } as CSSProperties}
-                      className="map-item mt-0.5 block rounded-xl px-3 py-1.5 text-[13px] font-extrabold text-gold transition-colors hover:bg-[rgba(243,228,207,0.6)] hover:text-caramel"
+                      className="map-item mt-0.5 block rounded-xl px-3 py-1.5 text-[13px] font-extrabold text-steel transition-colors hover:bg-[rgb(var(--mist-rgb)/0.6)] hover:text-brand"
                     >
                       {t("allInTopic", { count: category.more.count })}
                     </Link>

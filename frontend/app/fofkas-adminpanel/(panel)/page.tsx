@@ -11,8 +11,8 @@ import { backendFetch } from "@/lib/admin/backend";
 export default function AdminHomePage() {
   return (
     <div>
-      <h1 className="motion-safe:animate-fade-up font-heading text-[44px] leading-none font-bold text-caramel max-[600px]:text-[36px]">Головна</h1>
-      <p className="mt-3 max-w-[60ch] motion-safe:animate-fade-up motion-safe:[animation-delay:80ms] text-[16px] leading-relaxed text-cocoa-soft">
+      <h1 className="motion-safe:animate-fade-up font-heading tracking-[-0.02em] text-[36px] leading-none font-extrabold text-ink max-[600px]:text-[30px]">Головна</h1>
+      <p className="mt-3 max-w-[60ch] motion-safe:animate-fade-up motion-safe:[animation-delay:80ms] text-[16px] leading-relaxed text-ink-soft">
         Заявки, відвідування й наповнення сайту в одному місці.
       </p>
 
@@ -36,10 +36,10 @@ function Card({ title, badge, children, className = "", delay = 0 }: CardProps) 
   return (
     <section
       style={{ animationDelay: `${delay}ms` }}
-      className={`motion-safe:animate-fade-up rounded-[28px] border border-white/90 bg-white/75 p-6 shadow-[0_14px_40px_rgba(90,60,40,0.08)] max-[600px]:rounded-3xl max-[600px]:p-5 ${className}`}
+      className={`motion-safe:animate-fade-up rounded-[28px] steel-card p-6 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[600px]:rounded-3xl max-[600px]:p-5 ${className}`}
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-heading text-[28px] leading-none font-bold text-cocoa">{title}</h2>
+        <h2 className="font-heading tracking-[-0.02em] text-[23px] leading-none font-extrabold text-ink">{title}</h2>
         {badge}
       </div>
       {children}
@@ -49,8 +49,8 @@ function Card({ title, badge, children, className = "", delay = 0 }: CardProps) 
 
 function NotConnected({ children = "Ще не підключено" }: { children?: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-sand px-3 py-1 text-xs font-bold text-gold">
-      <span className="size-1.5 rounded-full bg-gold" aria-hidden="true" />
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-mist px-3 py-1 text-xs font-bold text-steel">
+      <span className="size-1.5 rounded-full bg-steel" aria-hidden="true" />
       {children}
     </span>
   );
@@ -58,13 +58,13 @@ function NotConnected({ children = "Ще не підключено" }: { childre
 
 function Empty({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
-    <div className="flex items-start gap-4 rounded-[22px] border border-dashed border-cocoa/20 bg-cream/60 p-5">
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sand text-caramel">
+    <div className="flex items-start gap-4 rounded-[22px] border border-dashed border-ink/20 bg-page/60 p-5">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-mist text-brand">
         <SectionIcon className="size-5.5">{icon}</SectionIcon>
       </span>
       <div>
         <p className="font-bold">{title}</p>
-        <p className="mt-1 text-sm leading-normal text-cocoa-soft">{children}</p>
+        <p className="mt-1 text-sm leading-normal text-ink-soft">{children}</p>
       </div>
     </div>
   );
@@ -85,7 +85,7 @@ function QuickActions() {
         <Link
           key={action.href}
           href={action.href}
-          className="btn-shine inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(180deg,#b88a5e,#7a5232)] px-5 py-3 text-sm max-[600px]:gap-1.5 max-[600px]:px-3 max-[600px]:text-[13px] font-extrabold text-white shadow-[0_10px_22px_rgba(122,82,50,0.25)] transition hover:-translate-y-0.5 hover:brightness-108 max-[600px]:last:col-span-2"
+          className="btn-shine inline-flex items-center justify-center gap-2 rounded-full bg-[image:var(--grad-btn)] px-5 py-3 text-sm max-[600px]:gap-1.5 max-[600px]:px-3 max-[600px]:text-[13px] font-extrabold text-white shadow-[0_10px_22px_rgb(var(--brand-rgb)/0.25)] transition hover:-translate-y-0.5 hover:brightness-108 max-[600px]:last:col-span-2"
         >
           <span aria-hidden="true" className="text-lg leading-none">
             +
@@ -123,8 +123,8 @@ function newRequests(n: number) {
 // The card shows at once; the requests come from the server inside Suspense
 function Requests() {
   return (
-    <Card delay={240} title="Заявки" badge={<Link href="/fofkas-adminpanel/requests" className="text-sm font-bold text-caramel hover:text-cocoa">Усі заявки →</Link>}>
-      <Suspense fallback={<p className="text-cocoa-soft">…</p>}>
+    <Card delay={240} title="Заявки" badge={<Link href="/fofkas-adminpanel/requests" className="text-sm font-bold text-brand hover:text-ink">Усі заявки →</Link>}>
+      <Suspense fallback={<p className="text-ink-soft">…</p>}>
         <RequestsSummary />
       </Suspense>
     </Card>
@@ -137,8 +137,8 @@ async function RequestsSummary() {
   return (
     <>
       <div className="mb-4 flex items-baseline gap-2">
-        <span className="text-[40px] leading-none font-extrabold text-caramel">{data?.new ?? 0}</span>
-        <span className="text-sm font-semibold text-cocoa-soft">{newRequests(data?.new ?? 0)}</span>
+        <span className="text-[40px] leading-none font-extrabold text-brand">{data?.new ?? 0}</span>
+        <span className="text-sm font-semibold text-ink-soft">{newRequests(data?.new ?? 0)}</span>
       </div>
       {latest.length === 0 ? (
         <Empty
@@ -150,16 +150,16 @@ async function RequestsSummary() {
           Тут будуть останні заявки з форми «Зв&apos;язатися з нами» на сайті.
         </Empty>
       ) : (
-        <ul className="flex flex-col divide-y divide-cocoa/8">
+        <ul className="flex flex-col divide-y divide-ink/8">
           {latest.map((item) => (
             <li key={item.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
-              <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${item.is_read ? "bg-cocoa/15" : "bg-caramel"}`} />
-              <Link href="/fofkas-adminpanel/requests" className="min-w-0 flex-1 hover:text-caramel">
+              <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${item.is_read ? "bg-ink/15" : "bg-brand"}`} />
+              <Link href="/fofkas-adminpanel/requests" className="min-w-0 flex-1 hover:text-brand">
                 <b className={`block truncate text-[15px] ${item.is_read ? "font-semibold" : "font-extrabold"}`}>
                   {item.name || item.email}
-                  {item.subject && <span className="font-semibold text-cocoa-soft"> · {item.subject}</span>}
+                  {item.subject && <span className="font-semibold text-ink-soft"> · {item.subject}</span>}
                 </b>
-                <span className="block truncate text-sm text-cocoa-soft">{item.message || "(без повідомлення)"}</span>
+                <span className="block truncate text-sm text-ink-soft">{item.message || "(без повідомлення)"}</span>
               </Link>
             </li>
           ))}
@@ -239,21 +239,21 @@ async function ContentWithCounts() {
 /** counts = null while the numbers are loading */
 function ContentList({ counts }: { counts: Record<string, string | null> | null }) {
   return (
-    <ul className="flex flex-col divide-y divide-cocoa/8">
+    <ul className="flex flex-col divide-y divide-ink/8">
       {adminSections.filter((section) => !NOT_CONTENT.includes(section.href)).map((section) => {
         const count = counts?.[section.href];
         return (
           <li key={section.href} className="flex items-center gap-3.5 py-3.5 first:pt-0 last:pb-0">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-sand text-caramel">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-mist text-brand">
               <SectionIcon className="size-5.5">{section.icon}</SectionIcon>
             </span>
             <div className="min-w-0 flex-1">
               <p className="leading-snug font-bold">{section.title}</p>
-              <p className={`mt-0.5 text-sm ${count ? "font-semibold text-caramel" : "text-cocoa-soft"}`}>
+              <p className={`mt-0.5 text-sm ${count ? "font-semibold text-brand" : "text-ink-soft"}`}>
                 {counts === null ? "…" : (count ?? "Ще нічого не додано")}
               </p>
             </div>
-            <Link href={section.href} className="shrink-0 text-sm font-bold text-caramel hover:text-cocoa">
+            <Link href={section.href} className="shrink-0 text-sm font-bold text-brand hover:text-ink">
               {count ? "Відкрити →" : "Додати →"}
             </Link>
           </li>
@@ -306,35 +306,35 @@ function Visits() {
     <Card delay={400} title="Відвідування" badge={<NotConnected>Лічильник Umami підключимо на сервері</NotConnected>} className="col-span-full">
       <div className="grid grid-cols-3 gap-3 max-[600px]:gap-2">
         {periods.map((period) => (
-          <div key={period} className="rounded-[20px] bg-cream/80 px-4 py-3.5 max-[600px]:px-3">
-            <p className="text-xs font-bold tracking-[1px] text-gold uppercase">{period}</p>
-            <p className="mt-1.5 text-[32px] leading-none font-extrabold text-cocoa/30">—</p>
-            <p className="mt-1 text-xs text-cocoa-soft">відвідувачів</p>
+          <div key={period} className="rounded-[20px] bg-page/80 px-4 py-3.5 max-[600px]:px-3">
+            <p className="text-xs font-bold tracking-[1px] text-steel uppercase">{period}</p>
+            <p className="mt-1.5 text-[32px] leading-none font-extrabold text-ink/30">—</p>
+            <p className="mt-1 text-xs text-ink-soft">відвідувачів</p>
           </div>
         ))}
       </div>
 
       {/* Place for the chart */}
-      <div className="relative mt-4 flex h-48 items-center justify-center overflow-hidden rounded-[22px] border border-dashed border-cocoa/20 bg-cream/60 px-6 text-center max-[600px]:h-40">
-        <svg aria-hidden="true" viewBox="0 0 400 120" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 h-3/5 w-full text-sand">
+      <div className="relative mt-4 flex h-48 items-center justify-center overflow-hidden rounded-[22px] border border-dashed border-ink/20 bg-page/60 px-6 text-center max-[600px]:h-40">
+        <svg aria-hidden="true" viewBox="0 0 400 120" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 h-3/5 w-full text-mist">
           <path d="M0 120V60h400v60z" fill="currentColor" opacity="0.35" />
           <path d="M0 30h400M0 60h400M0 90h400" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 6" />
         </svg>
-        <p className="relative max-w-[42ch] text-sm leading-normal text-cocoa-soft">
+        <p className="relative max-w-[42ch] text-sm leading-normal text-ink-soft">
           Тут буде графік відвідувань по днях. Дані з&apos;являться, коли лічильник почне рахувати відвідувачів сайту.
         </p>
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3 max-[900px]:grid-cols-1">
         {details.map((item) => (
-          <div key={item.title} className="flex items-start gap-3 rounded-[20px] bg-cream/80 p-4">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-sand text-caramel">
+          <div key={item.title} className="flex items-start gap-3 rounded-[20px] bg-page/80 p-4">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-mist text-brand">
               <SectionIcon className="size-5">{item.icon}</SectionIcon>
             </span>
             <div>
               <p className="text-sm font-bold">{item.title}</p>
-              <p className="mt-0.5 text-xs leading-normal text-cocoa-soft">{item.text}</p>
-              <p className="mt-2 text-xs font-semibold text-cocoa/45">Немає даних</p>
+              <p className="mt-0.5 text-xs leading-normal text-ink-soft">{item.text}</p>
+              <p className="mt-2 text-xs font-semibold text-ink/45">Немає даних</p>
             </div>
           </div>
         ))}

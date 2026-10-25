@@ -32,8 +32,8 @@ type Contacts = {
 };
 
 const panel =
-  "mb-4.5 rounded-[30px] bg-[rgba(255,253,248,0.94)] px-7 py-6.5 shadow-[0_14px_40px_rgba(90,60,40,0.08)] max-[700px]:px-4.5 max-[700px]:py-5";
-const heading = "mb-3.5 font-heading text-[28px] font-bold text-caramel";
+  "mb-4.5 rounded-[30px] bg-[rgb(var(--paper-rgb)/0.94)] px-7 py-6.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[700px]:px-4.5 max-[700px]:py-5";
+const heading = "mb-3.5 font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink";
 
 export function ContactsForm() {
   const { message } = App.useApp();
@@ -122,7 +122,7 @@ export function ContactsForm() {
   }
 
   if (failed) {
-    return <div className="rounded-[28px] bg-white/75 p-8 text-cocoa-soft">Не вдалося завантажити контакти. Оновіть сторінку.</div>;
+    return <div className="rounded-[28px] bg-white/75 p-8 text-ink-soft">Не вдалося завантажити контакти. Оновіть сторінку.</div>;
   }
   if (!data) return <AdminLoader />;
 
@@ -141,8 +141,8 @@ export function ContactsForm() {
     <div className="pb-4">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
         <div>
-          <h1 className="font-heading text-[40px] leading-tight font-bold text-caramel motion-safe:animate-fade-up max-[600px]:text-[32px]">Контакти</h1>
-          <p className="mt-1.5 max-w-[62ch] text-cocoa-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
+          <h1 className="font-heading tracking-[-0.02em] text-[33px] leading-tight font-extrabold text-ink motion-safe:animate-fade-up max-[600px]:text-[26px]">Контакти</h1>
+          <p className="mt-1.5 max-w-[62ch] text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
             Показуються на сторінці «Контакти», у футері всіх сторінок і під формою зв&apos;язку.
           </p>
         </div>
@@ -202,7 +202,7 @@ export function ContactsForm() {
 
       <section className={`${panel} motion-safe:animate-fade-up motion-safe:[animation-delay:160ms]`}>
         <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-heading text-[28px] font-bold text-caramel">Адреса й графік</h2>
+          <h2 className="font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">Адреса й графік</h2>
           <Segmented<Lang>
             value={lang}
             onChange={setLang}
@@ -238,7 +238,7 @@ export function ContactsForm() {
           </div>
         </Field>
         {found && found.length === 0 && (
-          <p className="mt-2 text-sm text-[#8a3424]">Нічого не знайдено. Спробуйте інакше (наприклад, «Київ, Шумського 1») або поставте точку кліком.</p>
+          <p className="mt-2 text-sm text-danger-ink">Нічого не знайдено. Спробуйте інакше (наприклад, «Київ, Шумського 1») або поставте точку кліком.</p>
         )}
         {found && found.length > 1 && (
           <ul className="mt-2 flex flex-col gap-1.5">
@@ -247,19 +247,19 @@ export function ContactsForm() {
                 <button
                   type="button"
                   onClick={() => pickPlace(place)}
-                  className={`flex w-full items-start gap-2 rounded-2xl border px-3.5 py-2.5 text-left text-sm transition-colors hover:bg-sand ${
-                    Math.abs(place.lat - data.lat) < 1e-6 && Math.abs(place.lng - data.lng) < 1e-6 ? "border-caramel bg-sand" : "border-cocoa/12 bg-white"
+                  className={`flex w-full items-start gap-2 rounded-2xl border px-3.5 py-2.5 text-left text-sm transition-colors hover:bg-mist ${
+                    Math.abs(place.lat - data.lat) < 1e-6 && Math.abs(place.lng - data.lng) < 1e-6 ? "border-brand bg-mist" : "border-ink/12 bg-white"
                   }`}
                 >
-                  <MapPin size={16} className="mt-0.5 shrink-0 text-caramel" aria-hidden="true" />
+                  <MapPin size={16} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
                   {place.label}
                 </button>
               </li>
             ))}
           </ul>
         )}
-        <p className="mt-3.5 mb-3 flex items-start gap-2 rounded-2xl bg-sand px-4 py-3 text-sm text-[#5d4838]">
-          <MapPin size={17} className="mt-0.5 shrink-0 text-caramel" aria-hidden="true" />
+        <p className="mt-3.5 mb-3 flex items-start gap-2 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
+          <MapPin size={17} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
           Знайдіть адресу або клікніть на мапі там, де офіс; ріжок можна перетягнути. Колесом мишки мапа збільшується після
           першого кліку. Потім натисніть «Зберегти контакти».
         </p>
@@ -280,8 +280,8 @@ export function ContactsForm() {
         </div>
       </section>
 
-      <div className="sticky bottom-4 z-5 mt-4.5 flex items-center justify-end gap-3.5 rounded-full border border-white bg-[rgba(255,252,246,0.95)] px-4.5 py-3.5 shadow-[0_14px_40px_rgba(90,60,40,0.18)] max-[700px]:bottom-3 max-[700px]:rounded-[26px] max-[700px]:p-2.5">
-        <span role="status" className="mr-auto pl-2.5 text-sm text-cocoa-soft max-[700px]:sr-only">
+      <div className="sticky bottom-4 z-5 mt-4.5 flex items-center justify-end gap-3.5 rounded-full border border-white bg-[rgb(var(--paper-rgb)/0.95)] px-4.5 py-3.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.18)] max-[700px]:bottom-3 max-[700px]:rounded-[26px] max-[700px]:p-2.5">
+        <span role="status" className="mr-auto pl-2.5 text-sm text-ink-soft max-[700px]:sr-only">
           {dirty ? "Зміни ще не збережено" : "Усі зміни збережено"}
         </span>
         <Button type="primary" size="large" loading={saving} onClick={save} className="max-[700px]:flex-1">

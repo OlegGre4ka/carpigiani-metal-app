@@ -61,13 +61,13 @@ export function NewsFields({
         </Field>
       </div>
 
-      <label className="flex w-fit items-center gap-3 rounded-2xl bg-sand/70 px-4 py-2.5 text-sm font-bold text-cocoa">
+      <label className="flex w-fit items-center gap-3 rounded-2xl bg-mist/70 px-4 py-2.5 text-sm font-bold text-ink">
         <Switch checked={meta.is_visible} onChange={(is_visible) => set({ is_visible })} />
         Показувати на сайті
       </label>
 
       <div>
-        <span className="block text-[13px] font-extrabold text-cocoa-soft">Головне фото</span>
+        <span className="block text-[13px] font-extrabold text-ink-soft">Головне фото</span>
         <PhotoEditor
           block={{ id: "main", type: "photo", visible: true, image: meta.image }}
           onChange={(block) => set({ image: block.image })}

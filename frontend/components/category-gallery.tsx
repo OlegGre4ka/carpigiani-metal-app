@@ -20,7 +20,7 @@ export function Magnifier() {
   return (
     <span
       aria-hidden="true"
-      className="absolute right-3.5 bottom-3.5 flex size-11 items-center justify-center rounded-full border-2 border-white/90 bg-[radial-gradient(circle_at_35%_30%,#fff8ec,#f3dcc0_70%)] text-caramel shadow-[inset_0_-3px_6px_rgba(122,82,50,0.18),0_8px_18px_rgba(74,52,38,0.25)] transition-all duration-300 group-hover:scale-110 group-hover:border-white group-hover:bg-[linear-gradient(180deg,#b88a5e,#7a5232)] group-hover:text-white group-hover:shadow-[0_12px_24px_rgba(122,82,50,0.4)] max-[820px]:hidden"
+      className="absolute right-3.5 bottom-3.5 flex size-11 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--grad-round)] text-brand shadow-[inset_0_-3px_6px_rgb(var(--brand-rgb)/0.18),0_8px_18px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 group-hover:scale-110 group-hover:border-white group-hover:bg-[image:var(--grad-btn)] group-hover:text-white group-hover:shadow-[0_12px_24px_rgb(var(--brand-rgb)/0.4)] max-[820px]:hidden"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="size-5">
         <circle cx="11" cy="11" r="6.5" />
@@ -36,7 +36,7 @@ export function CategoryGallery({ block }: { block: GalleryBlock }) {
   // Only photos without a link take part in the big view
   const zoomable = block.zoom ? block.photos.filter((photo) => !photo.link) : [];
 
-  const frame = `relative block overflow-hidden rounded-[28px] bg-white shadow-[0_14px_34px_rgba(90,60,40,0.12)] max-[820px]:rounded-2xl ${
+  const frame = `relative block overflow-hidden rounded-[28px] bg-white shadow-[0_14px_34px_rgb(var(--shadow-rgb)/0.12)] max-[820px]:rounded-2xl ${
     block.captions ? "aspect-[4/3]" : "aspect-[4/3] max-[820px]:aspect-square"
   }`;
   const picture = "object-cover transition-transform duration-500 group-hover:scale-105";
@@ -53,7 +53,7 @@ export function CategoryGallery({ block }: { block: GalleryBlock }) {
                 {!photo.link && block.zoom && <Magnifier />}
               </span>
               {block.captions && photo.caption && (
-                <span className="mt-2.5 block text-center text-[15px] font-bold text-cocoa max-[820px]:text-xs">
+                <span className="mt-2.5 block text-center text-[15px] font-bold text-ink max-[820px]:text-xs">
                   {photo.caption}
                 </span>
               )}
@@ -151,7 +151,7 @@ export function Lightbox({
       role="dialog"
       aria-modal="true"
       aria-label={t("viewer")}
-      className="fixed inset-0 z-80 flex items-center justify-center bg-[rgba(36,24,17,0.88)] p-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200 max-[820px]:p-3"
+      className="fixed inset-0 z-80 flex items-center justify-center bg-[rgb(var(--scrim-rgb)/0.88)] p-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200 max-[820px]:p-3"
       onClick={(event) => event.target === event.currentTarget && onClose()}
       onTouchStart={(e) => (touchX.current = e.touches[0].clientX)}
       onTouchEnd={(e) => {
@@ -181,7 +181,7 @@ export function Lightbox({
               </span>
             );
           })}
-        <figcaption className="mt-3 min-h-6 text-center text-[15px] font-semibold text-[#f3e6d2]">
+        <figcaption className="mt-3 min-h-6 text-center text-[15px] font-semibold text-white/90">
           {photo.caption}
           {many && <span className="ml-2 opacity-70">{`${index + 1} / ${photos.length}`}</span>}
         </figcaption>

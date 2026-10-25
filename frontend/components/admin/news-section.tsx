@@ -12,7 +12,7 @@ import { NEWS_BASE, NewsTopics, TopicForm, type Topic } from "./news-topics";
 import { AdminLoader } from "@/components/cone-loader";
 
 const heading =
-  "font-heading text-[40px] leading-tight font-bold text-caramel motion-safe:animate-fade-up max-[600px]:text-[32px]";
+  "font-heading tracking-[-0.02em] text-[33px] leading-tight font-extrabold text-ink motion-safe:animate-fade-up max-[600px]:text-[26px]";
 
 /** Section "News": the topics (like folders) and all news */
 export function NewsSection() {
@@ -22,10 +22,10 @@ export function NewsSection() {
   return (
     <div>
       <h1 className={heading}>Новини</h1>
-      <p className="mt-1 text-sm font-extrabold tracking-[1.5px] text-gold uppercase motion-safe:animate-fade-up motion-safe:[animation-delay:40ms]">
+      <p className="mt-1 text-sm font-extrabold tracking-[1.5px] text-steel uppercase motion-safe:animate-fade-up motion-safe:[animation-delay:40ms]">
         (Теми та новини)
       </p>
-      <p className="mt-2 max-w-[62ch] text-cocoa-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
+      <p className="mt-2 max-w-[62ch] text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
         Новини показуються на сторінці /news і на сторінках своїх тем, а три останні — на головній. Новину можна додати
         тут або на сторінці теми.
       </p>
@@ -60,8 +60,8 @@ export function TopicNews({ topicId }: { topicId: number }) {
   if (failed) {
     return (
       <div className="rounded-[28px] bg-white/75 p-8">
-        <p className="mb-4 text-cocoa-soft">Тему не знайдено. Можливо, її видалили.</p>
-        <Link href={NEWS_BASE} className="font-extrabold text-caramel hover:underline">
+        <p className="mb-4 text-ink-soft">Тему не знайдено. Можливо, її видалили.</p>
+        <Link href={NEWS_BASE} className="font-extrabold text-brand hover:underline">
           До новин
         </Link>
       </div>
@@ -76,14 +76,14 @@ export function TopicNews({ topicId }: { topicId: number }) {
     <div>
       <Link
         href={NEWS_BASE}
-        className="mb-2.5 inline-flex items-center gap-2 text-sm font-extrabold text-caramel hover:underline motion-safe:animate-fade-up"
+        className="mb-2.5 inline-flex items-center gap-2 text-sm font-extrabold text-brand hover:underline motion-safe:animate-fade-up"
       >
         <ArrowLeft size={16} aria-hidden="true" />
         До новин і тем
       </Link>
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div className="min-w-0">
-          <p className="mb-1.5 text-xs font-extrabold tracking-[2px] text-gold uppercase motion-safe:animate-fade-up">
+          <p className="mb-1.5 text-xs font-extrabold tracking-[2px] text-steel uppercase motion-safe:animate-fade-up">
             Тема новин · {topic.href}
           </p>
           <h1 className={heading}>{topic.title_uk}</h1>
@@ -105,7 +105,7 @@ export function TopicNews({ topicId }: { topicId: number }) {
         </div>
       </div>
       {!topic.is_visible && (
-        <p className="mt-4 rounded-2xl bg-sand px-4 py-3 text-sm text-[#5d4838]">
+        <p className="mt-4 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
           Тему сховано з сайту: її немає в меню, а новини показуються без неї.
         </p>
       )}

@@ -32,7 +32,7 @@ from app.services.rate_limit import check_rate_limit, client_ip, reset_rate_limi
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 # Address of the site, used for the link in the "forgot password" email
-SITE_URL = os.environ.get("SITE_URL", "http://localhost:3000").rstrip("/")
+SITE_URL = os.environ.get("SITE_URL", "http://localhost:3010").rstrip("/")
 ADMIN_PATH = "/fofkas-adminpanel"
 RESET_TOKEN_LIFETIME = timedelta(hours=1)
 # Secure cookies need https, so they are turned on only on the live site

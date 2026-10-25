@@ -105,22 +105,22 @@ export function ContactForm({
 
   const title = (heading ?? (variant === "page" ? "quote" : "contact")) === "quote" ? t("quoteTitle") : t("title");
   const inquiry = subject ? (
-    <p className="mb-2.5 inline-flex max-w-full items-center gap-1.75 rounded-full bg-[#f3e4cf] px-3 py-1.5 text-[12.5px] font-extrabold text-caramel">
+    <p className="mb-2.5 inline-flex max-w-full items-center gap-1.75 rounded-full bg-mist px-3 py-1.5 text-[12.5px] font-extrabold text-brand">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
         <path d="M3 12V4h8l10 10-8 8z" />
         <circle cx="7.5" cy="8.5" r="1.2" />
       </svg>
       <span className="truncate">
-        {t("inquiry")} <span className="text-cocoa">{subject}</span>
+        {t("inquiry")} <span className="text-ink">{subject}</span>
       </span>
     </p>
   ) : null;
   const phones = (
-    <p className="mt-2.5 text-center text-[12.5px] leading-normal text-cocoa-soft">
+    <p className="mt-2.5 text-center text-[12.5px] leading-normal text-ink-soft">
       {t("orCall")}
       <br />
       {contactPhones.map((phone, index) => (
-        <a key={phone.href} href={phone.href} className={`font-extrabold whitespace-nowrap text-caramel hover:text-cocoa ${index ? "ml-3" : ""}`}>
+        <a key={phone.href} href={phone.href} className={`font-extrabold whitespace-nowrap text-brand hover:text-ink ${index ? "ml-3" : ""}`}>
           {phone.label}
         </a>
       ))}
@@ -130,13 +130,13 @@ export function ContactForm({
   if (status === "sent") {
     return (
       <div role="status" className="cf-swap px-1 pt-2.5 pb-1 text-center">
-        <div className="cf-pop mx-auto mt-0.5 mb-3.5 flex size-16 items-center justify-center rounded-full bg-mint">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2F5A44" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <div className="cf-pop mx-auto mt-0.5 mb-3.5 flex size-16 items-center justify-center rounded-full bg-tag">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" className="stroke-tag-ink" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path className="cf-draw" d="M4 12.5l5 5L20 6.5" />
           </svg>
         </div>
-        <h3 className="mb-2 font-heading text-[28px] leading-none font-bold text-caramel">{t("thanksTitle")}</h3>
-        <p className="mb-3.5 text-sm leading-normal text-cocoa-soft">{t("thanksText")}</p>
+        <h3 className="mb-2 font-heading tracking-[-0.02em] text-[23px] leading-none font-extrabold text-ink">{t("thanksTitle")}</h3>
+        <p className="mb-3.5 text-sm leading-normal text-ink-soft">{t("thanksText")}</p>
         {inquiry}
         {phones}
       </div>
@@ -144,19 +144,19 @@ export function ContactForm({
   }
 
   const field = (error?: string) =>
-    `mb-2 block w-full resize-none rounded-[15px] border bg-white px-3.75 py-2.75 text-[14.5px] font-semibold text-cocoa outline-none transition-[border-color,box-shadow] placeholder:font-semibold placeholder:text-[#9c8a7a] focus:border-caramel-light focus:shadow-[0_0_0_4px_rgba(184,138,94,0.2)] ${
-      error ? "border-[#c0564b] bg-[#fff6f4] shadow-[0_0_0_3px_rgba(192,86,75,0.12)]" : "border-cocoa/16"
+    `mb-2 block w-full resize-none rounded-[15px] border bg-white px-3.75 py-2.75 text-[14.5px] font-semibold text-ink outline-none transition-[border-color,box-shadow] placeholder:font-semibold placeholder:text-hint focus:border-brand-light focus:shadow-[0_0_0_4px_rgb(var(--brand-light-rgb)/0.2)] ${
+      error ? "border-danger bg-danger-pale shadow-[0_0_0_3px_rgb(var(--danger-rgb)/0.12)]" : "border-ink/16"
     }`;
   const fieldIds = { email: "contact-email-error", phone: "contact-phone-error" };
 
   return (
-    <form onSubmit={submit} noValidate className="text-cocoa">
-      <h3 className={`mb-1 font-heading text-[28px] leading-[1.02] font-bold text-caramel ${variant === "popup" ? "pr-10" : ""}`}>{title}</h3>
-      <p className="mb-2.5 text-[13px] leading-[1.45] text-cocoa-soft">{t("text")}</p>
+    <form onSubmit={submit} noValidate className="text-ink">
+      <h3 className={`mb-1 font-heading tracking-[-0.02em] text-[23px] leading-[1.02] font-extrabold text-ink ${variant === "popup" ? "pr-10" : ""}`}>{title}</h3>
+      <p className="mb-2.5 text-[13px] leading-[1.45] text-ink-soft">{t("text")}</p>
       {inquiry}
 
       {(status === "failed" || status === "tooMany") && (
-        <p role="alert" className="cf-drop mb-2.5 flex items-start gap-2.5 rounded-2xl bg-[#fdece8] px-3.25 py-2.75 text-[13px] leading-snug font-bold text-[#8e352c]">
+        <p role="alert" className="cf-drop mb-2.5 flex items-start gap-2.5 rounded-2xl bg-danger-bg px-3.25 py-2.75 text-[13px] leading-snug font-bold text-danger-ink">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true" className="mt-px shrink-0">
             <circle cx="12" cy="12" r="9" />
             <path d="M12 7.5v5.5M12 16.5h.01" />
@@ -223,7 +223,7 @@ export function ContactForm({
       <button
         type="submit"
         disabled={sending}
-        className="btn-shine mt-0.5 flex w-full items-center justify-center gap-2.5 rounded-full bg-[linear-gradient(180deg,#b88a5e,#7a5232)] p-3.5 text-[15px] font-extrabold text-white shadow-[0_10px_22px_rgba(122,82,50,0.3)] transition hover:brightness-108 disabled:cursor-default disabled:saturate-70"
+        className="btn-shine mt-0.5 flex w-full items-center justify-center gap-2.5 rounded-full bg-[image:var(--grad-btn)] p-3.5 text-[15px] font-extrabold text-white shadow-[0_10px_22px_rgb(var(--brand-rgb)/0.3)] transition hover:brightness-108 disabled:cursor-default disabled:saturate-70"
       >
         {sending && <Spinner />}
         {sending ? t("sending") : status === "failed" ? t("retry") : t("send")}
@@ -235,7 +235,7 @@ export function ContactForm({
 
 function FieldError({ id, text }: { id: string; text: string }) {
   return (
-    <p id={id} className="cf-fade -mt-1 mb-2 pl-1 text-xs font-bold text-[#b0473c]">
+    <p id={id} className="cf-fade -mt-1 mb-2 pl-1 text-xs font-bold text-danger-ink">
       {text}
     </p>
   );

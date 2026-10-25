@@ -211,10 +211,10 @@ async function readError(response: Response) {
 }
 
 const roundIcon =
-  "flex size-8.5 shrink-0 items-center justify-center rounded-full text-cocoa transition-colors hover:bg-cocoa/7 disabled:cursor-not-allowed disabled:opacity-30";
+  "flex size-8.5 shrink-0 items-center justify-center rounded-full text-ink transition-colors hover:bg-ink/7 disabled:cursor-not-allowed disabled:opacity-30";
 
 const panel =
-  "mb-4.5 rounded-[30px] bg-[rgba(255,253,248,0.94)] px-7 py-6.5 shadow-[0_14px_40px_rgba(90,60,40,0.08)] max-[700px]:px-4.5 max-[700px]:py-5";
+  "mb-4.5 rounded-[30px] bg-[rgb(var(--paper-rgb)/0.94)] px-7 py-6.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[700px]:px-4.5 max-[700px]:py-5";
 
 export function PageBuilder({ target }: { target: PageTarget }) {
   const { message, modal } = App.useApp();
@@ -452,7 +452,7 @@ export function PageBuilder({ target }: { target: PageTarget }) {
   if (failed) {
     return (
       <div className="rounded-[28px] bg-white/75 p-8">
-        <p className="mb-4 text-cocoa-soft">Не вдалося завантажити сторінку.</p>
+        <p className="mb-4 text-ink-soft">Не вдалося завантажити сторінку.</p>
         <Button onClick={load}>Спробувати ще раз</Button>
       </div>
     );
@@ -486,7 +486,7 @@ export function PageBuilder({ target }: { target: PageTarget }) {
     <div className="pb-4">
       <Link
         href={back.href}
-        className="mb-2.5 inline-flex items-center gap-2 text-sm font-extrabold text-caramel hover:underline motion-safe:animate-fade-up"
+        className="mb-2.5 inline-flex items-center gap-2 text-sm font-extrabold text-brand hover:underline motion-safe:animate-fade-up"
       >
         <ArrowLeft size={16} aria-hidden="true" />
         {back.text}
@@ -494,17 +494,17 @@ export function PageBuilder({ target }: { target: PageTarget }) {
 
       <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
         <div className="min-w-0">
-          <p className="mb-1.5 text-xs font-extrabold tracking-[2px] text-gold uppercase motion-safe:animate-fade-up">
+          <p className="mb-1.5 text-xs font-extrabold tracking-[2px] text-steel uppercase motion-safe:animate-fade-up">
             {isCategory
               ? `Категорія · ${page.category_title} · ${href}`
               : isNews
                 ? `Новина · ${page.topic_title || "Без теми"} · ${href}`
                 : `Обладнання · ${page.item_title} · ${href || "адресу не вказано"}`}
           </p>
-          <h1 className="font-heading text-[46px] leading-[1.05] font-bold text-caramel motion-safe:animate-fade-up motion-safe:[animation-delay:40ms] max-[600px]:text-[34px]">
+          <h1 className="font-heading tracking-[-0.02em] text-[38px] leading-[1.05] font-extrabold text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:40ms] max-[600px]:text-[28px]">
             {isCategory ? "Сторінка категорії" : isNews ? "Сторінка новини" : "Сторінка обладнання"}
           </h1>
-          <p className="mt-1.5 max-w-160 text-[15px] leading-normal text-cocoa-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
+          <p className="mt-1.5 max-w-160 text-[15px] leading-normal text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
             Збирайте сторінку з блоків, як з кубиків. На сайті вони йдуть зверху вниз у тому ж порядку.
           </p>
         </div>
@@ -536,8 +536,8 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       </div>
 
       {/* One language switch for the whole page; it stays at the top while scrolling */}
-      <div className="sticky top-20 z-6 mb-4.5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[22px] max-[700px]:gap-x-2.5 max-[700px]:px-3 max-[700px]:py-2 border border-white bg-[rgba(255,252,246,0.96)] px-4 py-2.5 shadow-[0_10px_28px_rgba(90,60,40,0.1)] motion-safe:animate-fade-up motion-safe:[animation-delay:140ms] max-[900px]:top-17">
-        <span className="text-sm font-extrabold text-cocoa">Редагую:</span>
+      <div className="sticky top-20 z-6 mb-4.5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[22px] max-[700px]:gap-x-2.5 max-[700px]:px-3 max-[700px]:py-2 border border-white bg-[rgb(var(--paper-rgb)/0.96)] px-4 py-2.5 shadow-[0_10px_28px_rgb(var(--shadow-rgb)/0.1)] motion-safe:animate-fade-up motion-safe:[animation-delay:140ms] max-[900px]:top-17">
+        <span className="text-sm font-extrabold text-ink">Редагую:</span>
         <Segmented<Lang>
           value={lang}
           onChange={setLang}
@@ -547,7 +547,7 @@ export function PageBuilder({ target }: { target: PageTarget }) {
           ]}
         />
         {/* On phones the hint is left out, so the bar stays one line */}
-        <span className="text-[13px] text-[#8a7766] max-[700px]:hidden">
+        <span className="text-[13px] text-hint max-[700px]:hidden">
           {lang === "uk"
             ? "Фото, порядок і налаштування блоків спільні для обох мов."
             : "Сірим показано український текст. Де англійського немає, на /en буде український."}
@@ -555,29 +555,29 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       </div>
 
       {isCategory && !onSite && (
-        <p className="mb-4 rounded-2xl bg-sand px-4 py-3 text-sm text-[#5d4838]">
+        <p className="mb-4 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
           Картка цієї категорії веде на іншу адресу ({href}), тому сторінка на сайті не відкриється. Щоб показати її,
           вкажіть у категорії адресу сторінки сайту, наприклад /gelato.
         </p>
       )}
       {isNews && page.is_visible === false && (
-        <p className="mb-4 rounded-2xl bg-sand px-4 py-3 text-sm text-[#5d4838]">
+        <p className="mb-4 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
           Новину сховано з сайту. Коли заповните її, увімкніть «Показувати на сайті» нижче і збережіть.
         </p>
       )}
       {target.kind === "equipment" && !href && (
-        <p className="mb-4 rounded-2xl bg-sand px-4 py-3 text-sm text-[#5d4838]">
+        <p className="mb-4 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
           У цього обладнання ще не вказано адресу сторінки, тому на сайті її не відкрити. Вкажіть адресу в підкатегорії:
           олівець біля обладнання, поле «Адреса сторінки» (наприклад /labotronic).
         </p>
       )}
       {target.kind === "equipment" && href && page.item_visible === false && (
-        <p className="mb-4 rounded-2xl bg-sand px-4 py-3 text-sm text-[#5d4838]">
+        <p className="mb-4 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
           Обладнання або його підкатегорію сховано з сайту, тому сторінки на сайті не видно.
         </p>
       )}
       {!page.saved && (
-        <p className="mb-4 rounded-2xl bg-mint px-4 py-3 text-sm text-mint-ink">
+        <p className="mb-4 rounded-2xl bg-tag px-4 py-3 text-sm text-tag-ink">
           {isCategory
             ? "Сторінки ще немає: поки її не збережено, на сайті за цією адресою «Сторінка в розробці»."
             : "Сторінки ще немає: поки її не збережено, картка обладнання на сайті не веде нікуди, а за адресою «Сторінка в розробці»."}
@@ -586,7 +586,7 @@ export function PageBuilder({ target }: { target: PageTarget }) {
 
       {/* The page title is always first */}
       <section className={`${panel} motion-safe:animate-fade-up motion-safe:[animation-delay:160ms]`}>
-        <h2 className="mb-3.5 font-heading text-[28px] font-bold text-caramel">{isNews ? "Заголовок новини" : "Заголовок сторінки"}</h2>
+        <h2 className="mb-3.5 font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">{isNews ? "Заголовок новини" : "Заголовок сторінки"}</h2>
         <Field label={lang === "uk" ? "Українською" : "Англійською"}>
           <Input
             value={draft[titleKey]}
@@ -600,13 +600,13 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       {/* News: its card in the list of news (and the main photo at the top of its page) */}
       {draft.news && (
         <section className={`${panel} motion-safe:animate-fade-up motion-safe:[animation-delay:180ms]`}>
-          <h2 className="mb-3.5 font-heading text-[28px] font-bold text-caramel">Картка новини</h2>
+          <h2 className="mb-3.5 font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">Картка новини</h2>
           <NewsFields meta={draft.news} lang={lang} topics={topics} upload={upload} onChange={(news) => change({ news })} />
         </section>
       )}
 
       {draft.blocks.length === 0 && (
-        <p className="mb-3 rounded-[26px] border border-white/90 bg-white/60 px-6 py-8 text-center text-cocoa-soft">
+        <p className="mb-3 rounded-[26px] steel-card px-6 py-8 text-center text-ink-soft">
           {isNews
             ? "Блоків ще немає. Додайте перший блок нижче: наприклад, текст новини."
             : "Блоків ще немає. Додайте перший блок нижче: наприклад, слайдер з фото."}
@@ -646,17 +646,17 @@ export function PageBuilder({ target }: { target: PageTarget }) {
         </SortableContext>
       </DndContext>
 
-      <section className="mt-1.5 rounded-[26px] border-2 border-dashed border-caramel/40 bg-sand/45 p-5.5 max-[700px]:p-4">
-        <h2 className="mb-3.5 text-base font-bold text-cocoa">Додати блок</h2>
+      <section className="mt-1.5 rounded-[26px] border-2 border-dashed border-brand/40 bg-mist/45 p-5.5 max-[700px]:p-4">
+        <h2 className="mb-3.5 text-base font-bold text-ink">Додати блок</h2>
         <div className="grid grid-cols-7 gap-2.5 max-[1200px]:grid-cols-4 max-[700px]:grid-cols-3">
           {blockTypes.map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => addBlock(type)}
-              className="flex flex-col items-center gap-2 rounded-[18px] border border-cocoa/14 bg-white px-1.5 py-3.5 text-[13px] text-cocoa transition-[border-color,box-shadow] hover:border-caramel-light hover:shadow-[0_8px_20px_rgba(122,82,50,0.15)]"
+              className="flex flex-col items-center gap-2 rounded-[18px] border border-ink/14 bg-white px-1.5 py-3.5 text-[13px] text-ink transition-[border-color,box-shadow] hover:border-brand-light hover:shadow-[0_8px_20px_rgb(var(--brand-rgb)/0.15)]"
             >
-              <span aria-hidden="true" className="text-caramel">
+              <span aria-hidden="true" className="text-brand">
                 {kinds[type].icon}
               </span>
               <b>{kinds[type].name}</b>
@@ -665,9 +665,9 @@ export function PageBuilder({ target }: { target: PageTarget }) {
         </div>
       </section>
 
-      <div className="sticky bottom-4 z-5 mt-4.5 flex items-center justify-end gap-3.5 rounded-full border border-white bg-[rgba(255,252,246,0.95)] px-4.5 py-3.5 shadow-[0_14px_40px_rgba(90,60,40,0.18)] max-[700px]:bottom-3 max-[700px]:gap-2.5 max-[700px]:rounded-[26px] max-[700px]:p-2.5">
+      <div className="sticky bottom-4 z-5 mt-4.5 flex items-center justify-end gap-3.5 rounded-full border border-white bg-[rgb(var(--paper-rgb)/0.95)] px-4.5 py-3.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.18)] max-[700px]:bottom-3 max-[700px]:gap-2.5 max-[700px]:rounded-[26px] max-[700px]:p-2.5">
         {/* On phones only the two buttons, so the bar stays small */}
-        <span role="status" className="mr-auto pl-2.5 text-sm text-cocoa-soft max-[700px]:sr-only">
+        <span role="status" className="mr-auto pl-2.5 text-sm text-ink-soft max-[700px]:sr-only">
           {dirty ? "Зміни ще не збережено" : !page.saved ? "Сторінку ще не збережено" : "Усі зміни збережено"}
         </span>
         <Button size="large" disabled={!dirty || saving} onClick={cancel} className="max-[700px]:min-w-0 max-[700px]:flex-1">
@@ -747,23 +747,23 @@ function BlockCard({
       <section
         id={`block-${block.id}`}
         aria-label={`Блок ${index + 1}: ${kind.name}`}
-        className={`overflow-hidden rounded-[26px] border bg-[rgba(255,253,248,0.97)] transition-[border-color,box-shadow,opacity,scale] motion-safe:animate-fade-up ${
+        className={`overflow-hidden rounded-[26px] border bg-[rgb(var(--paper-rgb)/0.97)] transition-[border-color,box-shadow,opacity,scale] motion-safe:animate-fade-up ${
           isDragging
-            ? "scale-[1.01] border-caramel-light shadow-[0_24px_50px_rgba(90,60,40,0.25)]"
-            : "border-white/90 shadow-[0_10px_30px_rgba(90,60,40,0.07)]"
+            ? "scale-[1.01] border-brand-light shadow-[0_24px_50px_rgb(var(--shadow-rgb)/0.25)]"
+            : "border-white/90 shadow-[0_10px_30px_rgb(var(--shadow-rgb)/0.07)]"
         } ${block.visible ? "" : "opacity-65"}`}
       >
         <div className="flex items-center gap-3 px-4.5 py-3.5 max-[700px]:gap-1.5 max-[700px]:px-2.5">
           <DragHandle setRef={setActivatorNodeRef} attributes={attributes} listeners={listeners} name={kind.name} dragging={isDragging} />
-          <span className="flex size-6.5 shrink-0 items-center justify-center rounded-full bg-[#f3e4cf] text-[13px] font-extrabold text-caramel">
+          <span className="flex size-6.5 shrink-0 items-center justify-center rounded-full bg-mist text-[13px] font-extrabold text-brand">
             {index + 1}
           </span>
-          <span aria-hidden="true" className="flex size-9.5 shrink-0 items-center justify-center rounded-xl bg-sand text-caramel max-[700px]:hidden">
+          <span aria-hidden="true" className="flex size-9.5 shrink-0 items-center justify-center rounded-xl bg-mist text-brand max-[700px]:hidden">
             {kind.icon}
           </span>
           <button type="button" aria-expanded={expanded} aria-controls={bodyId} onClick={onToggle} className="min-w-0 flex-1 text-left">
             <b className="block text-base">{kind.name}</b>
-            <em className="block truncate text-[13px] text-[#8a7766] not-italic">{summary}</em>
+            <em className="block truncate text-[13px] text-hint not-italic">{summary}</em>
           </button>
           <span className="flex shrink-0 items-center gap-1.5 max-[700px]:gap-0.5">
             {/* On phones blocks are moved by the handle, the arrows would not fit */}
@@ -801,7 +801,7 @@ function BlockCard({
               okButtonProps={{ danger: true }}
               onConfirm={onDelete}
             >
-              <button type="button" aria-label="Видалити блок" className={`${roundIcon} hover:bg-[#c0504d]/12 hover:text-[#c0504d]`}>
+              <button type="button" aria-label="Видалити блок" className={`${roundIcon} hover:bg-danger/12 hover:text-danger`}>
                 <Trash2 size={17} aria-hidden="true" />
               </button>
             </Popconfirm>
@@ -818,7 +818,7 @@ function BlockCard({
           </span>
         </div>
         {expanded && (
-          <div id={bodyId} className="border-t border-cocoa/8 px-5.5 pt-1.5 pb-6 max-[700px]:px-3.5 max-[700px]:pb-5">
+          <div id={bodyId} className="border-t border-ink/8 px-5.5 pt-1.5 pb-6 max-[700px]:px-3.5 max-[700px]:pb-5">
             {children}
           </div>
         )}
@@ -850,7 +850,7 @@ function DragHandle({
       title="Перетягніть, щоб змінити порядок"
       // A "grab" hand (inline, so the site-wide "pointer on buttons" rule does not replace it)
       style={{ cursor: dragging ? "grabbing" : "grab" }}
-      className="flex size-8 shrink-0 touch-none items-center justify-center rounded-lg text-cocoa-soft hover:bg-cocoa/6"
+      className="flex size-8 shrink-0 touch-none items-center justify-center rounded-lg text-ink-soft hover:bg-ink/6"
     >
       <GripVertical size={20} aria-hidden="true" />
     </button>
@@ -945,7 +945,7 @@ function NewSubcategory({
       onCancel={onCancel}
       destroyOnHidden
     >
-      <p className="mb-4 text-sm text-cocoa-soft">
+      <p className="mb-4 text-sm text-ink-soft">
         Підкатегорія буде в категорії «{categoryTitle}». Після створення сторінку категорії збережемо, і ви перейдете до
         підкатегорії: там додасте її обладнання.
       </p>

@@ -97,7 +97,7 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
       // eslint-disable-next-line @next/next/no-img-element -- small preview of the uploaded photo
       <img src={item.image} alt="" className={`${className} rounded-xl object-cover`} />
     ) : (
-      <span className={`${className} flex items-center justify-center rounded-xl bg-sand text-gold`} title="Фото ще не додано">
+      <span className={`${className} flex items-center justify-center rounded-xl bg-mist text-steel`} title="Фото ще не додано">
         <ImageOff size={20} aria-hidden="true" />
       </span>
     );
@@ -136,7 +136,7 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
       key: "title",
       render: (_, item) => (
         <div className="min-w-0">
-          <button type="button" onClick={() => open(item)} className="text-left font-bold hover:text-caramel">
+          <button type="button" onClick={() => open(item)} className="text-left font-bold hover:text-brand">
             {item.title_uk}
           </button>
           <div className="mt-1">
@@ -153,7 +153,7 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
             key: "topic",
             width: 150,
             render: (_: unknown, item: NewsItem) =>
-              item.topic_title ? <span className="font-semibold">{item.topic_title}</span> : <span className="text-cocoa-soft">Без теми</span>,
+              item.topic_title ? <span className="font-semibold">{item.topic_title}</span> : <span className="text-ink-soft">Без теми</span>,
           },
         ]),
     {
@@ -181,8 +181,8 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
     <section>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="font-heading text-[32px] leading-tight font-bold text-caramel">{topicId ? "Новини теми" : "Усі новини"}</h2>
-          <p className="mt-1 max-w-[62ch] text-sm text-cocoa-soft">
+          <h2 className="font-heading tracking-[-0.02em] text-[26px] leading-tight font-extrabold text-ink">{topicId ? "Новини теми" : "Усі новини"}</h2>
+          <p className="mt-1 max-w-[62ch] text-sm text-ink-soft">
             {"Нові зверху. На сайті найновіша — великою карткою, решта — по три в ряд. Нова новина з'явиться на сайті, коли ви ввімкнете «На сайті»."}
           </p>
         </div>
@@ -192,7 +192,7 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
       </div>
 
       {/* Large screens: table */}
-      <div className="overflow-hidden rounded-[28px] border border-white/90 bg-white/75 p-2 shadow-[0_14px_40px_rgba(90,60,40,0.08)] max-[700px]:hidden">
+      <div className="overflow-hidden rounded-[28px] steel-card p-2 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[700px]:hidden">
         <Table<NewsItem>
           rowKey="id"
           columns={columns}
@@ -206,11 +206,11 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
 
       {/* Phones: one card per news item */}
       <div className="hidden flex-col gap-3 max-[700px]:flex">
-        {!loading && news.length === 0 && <div className="rounded-3xl border border-white/90 bg-white/75 p-4">{emptyState}</div>}
+        {!loading && news.length === 0 && <div className="rounded-3xl steel-card p-4">{emptyState}</div>}
         {news.map((item) => (
           <div
             key={item.id}
-            className={`rounded-3xl border border-white/90 bg-white/75 p-3 shadow-[0_10px_28px_rgba(90,60,40,0.08)] ${
+            className={`rounded-3xl steel-card p-3 shadow-[0_10px_28px_rgb(var(--shadow-rgb)/0.08)] ${
               item.is_visible ? "" : "opacity-60"
             }`}
           >
@@ -218,14 +218,14 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
               {photo(item, "h-16 w-22 shrink-0")}
               <div className="min-w-0">
                 <div className="font-bold">{item.title_uk}</div>
-                <div className="mt-0.5 text-sm text-cocoa-soft">
+                <div className="mt-0.5 text-sm text-ink-soft">
                   {shortDate(item.published_on)}
                   {!topicId && ` · ${item.topic_title || "Без теми"}`}
                 </div>
               </div>
             </div>
             <Tag className="m-0! mt-2.5! max-w-full truncate font-semibold">{item.href}</Tag>
-            <div className="mt-3 flex items-center justify-between gap-2 border-t border-cocoa/8 px-1 pt-3">
+            <div className="mt-3 flex items-center justify-between gap-2 border-t border-ink/8 px-1 pt-3">
               <label className="flex items-center gap-2 text-sm font-semibold">
                 {visibilitySwitch(item)}
                 На сайті
@@ -310,7 +310,7 @@ function NewNews({
   return (
     <Modal
       open={open}
-      title={<span className="font-heading text-[28px] font-bold text-caramel">Нова новина</span>}
+      title={<span className="font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">Нова новина</span>}
       onCancel={onClose}
       okText="Створити"
       cancelText="Скасувати"
@@ -318,7 +318,7 @@ function NewNews({
       destroyOnHidden
       width={560}
     >
-      <p className="mb-3 text-sm text-cocoa-soft">
+      <p className="mb-3 text-sm text-ink-soft">
         Після створення відкриється сторінка новини: там додасте фото, короткий опис і саму новину.
       </p>
       <Form<FormValues> id="news-form" form={form} layout="vertical" onFinish={submit} requiredMark={false}>
@@ -358,7 +358,7 @@ function NewNews({
         </div>
 
         {error && (
-          <p role="alert" className="mb-1 rounded-2xl bg-[#f6dcd5] px-4 py-3 text-sm font-semibold text-[#8a3424]">
+          <p role="alert" className="mb-1 rounded-2xl bg-danger-bg px-4 py-3 text-sm font-semibold text-danger-ink">
             {error}
           </p>
         )}

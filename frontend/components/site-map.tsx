@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { useEffect, useRef } from "react";
 
 // Map of the office: OpenStreetMap through the Leaflet library (free, no key), the tiles
-// softly tinted to the cream colours of the site, the brand cone as the marker.
+// a little muted to the cool colours of the site, the brand cone as the marker.
 // The library is loaded only in the browser and only where the map is (Contacts, admin).
 // The mouse wheel zooms only after a click on the map, so scrolling the page is not caught.
 // The address stands next to the cone all the time (label), so it is seen even when the map is
@@ -48,13 +48,13 @@ export function SiteMap({ lat, lng, zoom = 16, label = "", onPick, className = "
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: ATTRIBUTION }).addTo(created);
       const icon = L.divIcon({
         className: "",
-        html: '<span class="site-map-pin"><img src="/images/logo.webp" alt="" /></span>',
-        iconSize: [28, 58],
-        // The tip of the cone is the point
-        iconAnchor: [14, 57],
+        html: '<span class="site-map-pin"><img src="/images/brand-mark.svg" alt="" /></span>',
+        iconSize: [40, 50],
+        // The tip of the cone (bottom middle of the mark) is the point
+        iconAnchor: [20, 49],
       });
       const point = L.marker([lat, lng], { icon, draggable: Boolean(pick.current), keyboard: false, title: label }).addTo(created);
-      point.bindTooltip(label, { permanent: true, direction: "right", offset: [12, -30], className: "site-map-label" });
+      point.bindTooltip(label, { permanent: true, direction: "right", offset: [14, -26], className: "site-map-label" });
       if (!label) point.closeTooltip();
       point.on("dragend", () => {
         const at = point.getLatLng();
@@ -105,7 +105,7 @@ export function SiteMap({ lat, lng, zoom = 16, label = "", onPick, className = "
     // isolate: the layers of the map stay under the menus and windows of the site
     <div
       ref={box}
-      className={`site-map relative isolate overflow-hidden bg-[#efe4d2] ${onPick ? "cursor-crosshair" : ""} ${className}`}
+      className={`site-map relative isolate overflow-hidden bg-mist ${onPick ? "cursor-crosshair" : ""} ${className}`}
     />
   );
 }

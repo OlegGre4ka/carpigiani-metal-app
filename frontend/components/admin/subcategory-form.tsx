@@ -175,7 +175,7 @@ export function SubcategoryForm({ id }: { id: number }) {
   if (failed) {
     return (
       <div className="rounded-[28px] bg-white/75 p-8">
-        <p className="mb-4 text-cocoa-soft">Не вдалося завантажити підкатегорію.</p>
+        <p className="mb-4 text-ink-soft">Не вдалося завантажити підкатегорію.</p>
         <Button onClick={load}>Спробувати ще раз</Button>
       </div>
     );
@@ -257,7 +257,7 @@ export function SubcategoryForm({ id }: { id: number }) {
       // eslint-disable-next-line @next/next/no-img-element -- small preview of the uploaded photo
       <img src={item.image} alt="" className={`${className} bg-white object-contain`} />
     ) : (
-      <span className={`${className} flex items-center justify-center bg-sand text-xs text-cocoa-soft`}>Без фото</span>
+      <span className={`${className} flex items-center justify-center bg-mist text-xs text-ink-soft`}>Без фото</span>
     );
 
   const emptyState = (
@@ -270,15 +270,15 @@ export function SubcategoryForm({ id }: { id: number }) {
 
   const columns: TableColumnsType<Item> = [
     { title: "Порядок", key: "order", width: 96, render: (_, __, index) => orderButtons(index) },
-    { title: "Фото", key: "image", width: 132, render: (_, item) => preview(item, "h-16 w-24 rounded-xl border border-cocoa/10") },
+    { title: "Фото", key: "image", width: 132, render: (_, item) => preview(item, "h-16 w-24 rounded-xl border border-ink/10") },
     {
       title: "Назва та опис",
       key: "title",
       render: (_, item) => (
         <div>
           <div className="font-bold">{item.title.uk}</div>
-          {item.title.en && <div className="text-sm text-cocoa-soft">EN: {item.title.en}</div>}
-          {item.text.uk && <div className="mt-1 line-clamp-2 max-w-[60ch] text-sm text-cocoa-soft">{item.text.uk}</div>}
+          {item.title.en && <div className="text-sm text-ink-soft">EN: {item.title.en}</div>}
+          {item.text.uk && <div className="mt-1 line-clamp-2 max-w-[60ch] text-sm text-ink-soft">{item.text.uk}</div>}
         </div>
       ),
     },
@@ -291,20 +291,20 @@ export function SubcategoryForm({ id }: { id: number }) {
     <div>
       <Link
         href={categoryLink(sub)}
-        className="mb-2.5 inline-flex items-center gap-2 text-sm font-extrabold text-caramel hover:underline motion-safe:animate-fade-up"
+        className="mb-2.5 inline-flex items-center gap-2 text-sm font-extrabold text-brand hover:underline motion-safe:animate-fade-up"
       >
         <ArrowLeft size={16} aria-hidden="true" /> До сторінки категорії «{sub.category_title}»
       </Link>
 
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
-          <p className="mb-1.5 text-xs font-extrabold tracking-[2px] text-gold uppercase motion-safe:animate-fade-up">
+          <p className="mb-1.5 text-xs font-extrabold tracking-[2px] text-steel uppercase motion-safe:animate-fade-up">
             Підкатегорія · {sub.category_title}
           </p>
-          <h1 className="font-heading text-[40px] leading-tight font-bold text-caramel motion-safe:animate-fade-up motion-safe:[animation-delay:40ms] max-[600px]:text-[32px]">
+          <h1 className="font-heading tracking-[-0.02em] text-[33px] leading-tight font-extrabold text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:40ms] max-[600px]:text-[26px]">
             {sub.title_uk}
           </h1>
-          <p className="mt-2 max-w-[62ch] text-cocoa-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
+          <p className="mt-2 max-w-[62ch] text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
             Обладнання цієї підкатегорії показується на сторінці категорії там, де стоїть блок «Підкатегорія»: картки по 4
             в ряд. Над назвою кожної картки сайт сам пише назву категорії. Поки обладнання немає, блок на сайті не
             показується.
@@ -316,14 +316,14 @@ export function SubcategoryForm({ id }: { id: number }) {
       </div>
 
       {/* Name of the subcategory */}
-      <section className="mt-6 rounded-[28px] border border-white/90 bg-white/75 px-6 py-5 shadow-[0_14px_40px_rgba(90,60,40,0.08)] motion-safe:animate-fade-up motion-safe:[animation-delay:120ms] max-[700px]:px-4">
+      <section className="mt-6 rounded-[28px] steel-card px-6 py-5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] motion-safe:animate-fade-up motion-safe:[animation-delay:120ms] max-[700px]:px-4">
         <div className="grid grid-cols-2 gap-4 max-[700px]:grid-cols-1">
           <label className="block">
-            <span className="mb-1.5 block text-[13px] font-extrabold text-cocoa-soft">Назва підкатегорії українською</span>
+            <span className="mb-1.5 block text-[13px] font-extrabold text-ink-soft">Назва підкатегорії українською</span>
             <Input value={names.title_uk} maxLength={120} onChange={(e) => setNames((n) => ({ ...n, title_uk: e.target.value }))} />
           </label>
           <label className="block">
-            <span className="mb-1.5 block text-[13px] font-extrabold text-cocoa-soft">Назва підкатегорії англійською (для /en)</span>
+            <span className="mb-1.5 block text-[13px] font-extrabold text-ink-soft">Назва підкатегорії англійською (для /en)</span>
             <Input
               value={names.title_en}
               maxLength={120}
@@ -358,14 +358,14 @@ export function SubcategoryForm({ id }: { id: number }) {
             </Button>
           </Popconfirm>
         </div>
-        <p className="mt-2 text-[13px] text-[#8a7766]">
+        <p className="mt-2 text-[13px] text-hint">
           Назва — це заголовок над картками на сайті і пункт у меню зліва. Англійську можна не вказувати: на /en тоді буде
           українська.
         </p>
       </section>
 
       {/* Large screens: table */}
-      <div className="mt-5 overflow-hidden rounded-[28px] border border-white/90 bg-white/75 p-2 shadow-[0_14px_40px_rgba(90,60,40,0.08)] motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[700px]:hidden">
+      <div className="mt-5 overflow-hidden rounded-[28px] steel-card p-2 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[700px]:hidden">
         <Table<Item>
           rowKey="id"
           columns={columns}
@@ -378,22 +378,22 @@ export function SubcategoryForm({ id }: { id: number }) {
 
       {/* Phones: one card per piece of equipment */}
       <div className="mt-5 hidden flex-col gap-3 motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[700px]:flex">
-        {items.length === 0 && <div className="rounded-3xl border border-white/90 bg-white/75 p-4">{emptyState}</div>}
+        {items.length === 0 && <div className="rounded-3xl steel-card p-4">{emptyState}</div>}
         {items.map((item, index) => (
           <div
             key={item.id}
-            className={`rounded-3xl border border-white/90 bg-white/75 p-3 shadow-[0_10px_28px_rgba(90,60,40,0.08)] ${
+            className={`rounded-3xl steel-card p-3 shadow-[0_10px_28px_rgb(var(--shadow-rgb)/0.08)] ${
               item.visible ? "" : "opacity-60"
             }`}
           >
-            {preview(item, "h-40 w-full rounded-2xl border border-cocoa/10")}
+            {preview(item, "h-40 w-full rounded-2xl border border-ink/10")}
             <div className="px-1.5 pt-3">
               <div className="font-bold">{item.title.uk}</div>
-              {item.title.en && <div className="text-sm text-cocoa-soft">EN: {item.title.en}</div>}
-              {item.text.uk && <div className="mt-1 line-clamp-3 text-sm text-cocoa-soft">{item.text.uk}</div>}
+              {item.title.en && <div className="text-sm text-ink-soft">EN: {item.title.en}</div>}
+              {item.text.uk && <div className="mt-1 line-clamp-3 text-sm text-ink-soft">{item.text.uk}</div>}
               {address(item, "mt-2!")}
             </div>
-            <div className="mt-3 flex items-center justify-between gap-2 border-t border-cocoa/8 px-1 pt-3">
+            <div className="mt-3 flex items-center justify-between gap-2 border-t border-ink/8 px-1 pt-3">
               {orderButtons(index)}
               <label className="flex items-center gap-2 text-sm font-semibold">
                 {visibilitySwitch(item)}
@@ -508,7 +508,7 @@ function ItemForm({
   return (
     <Modal
       open={open}
-      title={<span className="font-heading text-[28px] font-bold text-caramel">{isNew ? "Нове обладнання" : "Редагувати обладнання"}</span>}
+      title={<span className="font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">{isNew ? "Нове обладнання" : "Редагувати обладнання"}</span>}
       onCancel={onClose}
       okText={isNew ? "Додати" : "Зберегти"}
       cancelText="Скасувати"
@@ -535,7 +535,7 @@ function ItemForm({
             showUploadList={{ showPreviewIcon: false }}
           >
             {files.length === 0 && (
-              <div className="flex flex-col items-center gap-1.5 text-caramel">
+              <div className="flex flex-col items-center gap-1.5 text-brand">
                 <ImagePlus size={24} />
                 <span className="text-sm font-semibold">Обрати фото</span>
               </div>
@@ -585,7 +585,7 @@ function ItemForm({
         </Form.Item>
 
         {error && (
-          <p role="alert" className="mb-1 rounded-2xl bg-[#f6dcd5] px-4 py-3 text-sm font-semibold text-[#8a3424]">
+          <p role="alert" className="mb-1 rounded-2xl bg-danger-bg px-4 py-3 text-sm font-semibold text-danger-ink">
             {error}
           </p>
         )}
