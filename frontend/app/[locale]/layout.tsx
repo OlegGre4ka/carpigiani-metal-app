@@ -7,8 +7,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
 import { getCurrentUser } from "@/lib/admin/backend";
-import { loadEquipmentCategories, type EquipmentCategory } from "@/lib/equipment-categories";
-import { loadContacts, loadEquipmentMap, loadNewsMenu, type EquipmentMapCategory } from "@/lib/site-pages";
+import { loadEquipmentCategories, loadSiteBrands } from "@/lib/equipment-categories";
+import { loadContacts, loadEquipmentMap, loadNewsMenu } from "@/lib/site-pages";
 import { ContactsSync } from "@/components/contacts-sync";
 import { SiteFooter } from "@/components/site-footer";
 import { ContactWidget } from "@/components/contact-widget";
@@ -80,41 +80,31 @@ export default async function RootLayout({ children, params }: Props) {
 }
 
 // Header with data from the server: is this visitor a logged-in admin (only asked when the
-// login cookie exists), the equipment categories for the "Equipment catalog" menu and the
-// topics for the "News" menu
+// login cookie exists), the visible brands (admin panel → "Виробники") with their categories for
+// the "Manufacturers" and "Equipment catalog" menus, and the news pages
 async function HeaderForVisitor() {
   const locale = await getLocale();
-  const [user, categories, ifiCategories, isaCategories, map, ifi, isa, news] = await Promise.all([
-    getCurrentUser(),
-    loadEquipmentCategories(),
-    loadEquipmentCategories("ifi"),
-    loadEquipmentCategories("isa"),
-    loadEquipmentMap(locale),
-    loadEquipmentMap(locale, "ifi"),
-    loadEquipmentMap(locale, "isa"),
-    loadNewsMenu(locale),
-  ]);
-  // Pages of IFI / ISA showcases: "Equipment catalog" in the menu is lit on them too
-  const showcasePages = [...ifi, ...isa].flatMap((c) => [c.href, ...c.groups.flatMap((g) => g.items.map((i) => i.href))]);
-  // Categories for the menu, each with its equipment / showcases that have a page (the submenu
-  // that slides out on hover)
-  const toMenu = (list: EquipmentCategory[], brandMap: EquipmentMapCategory[]) => {
-    const groups = new Map(brandMap.map((c) => [c.href, c.groups]));
-    return list.map((c) => ({
-      href: c.href,
-      title: locale === "en" ? c.title_en : c.title_uk,
-      groups: groups.get(c.href) ?? [],
-    }));
-  };
-  return (
-    <SiteHeader
-      isAdmin={Boolean(user)}
-      categories={toMenu(categories, map)}
-      showcases={{ ifi: toMenu(ifiCategories, ifi), isa: toMenu(isaCategories, isa) }}
-      showcasePages={showcasePages}
-      news={news}
-    />
+  const [user, siteBrands, news] = await Promise.all([getCurrentUser(), loadSiteBrands(), loadNewsMenu(locale)]);
+  // Each brand: its categories, each with its equipment that has a page (the submenu that
+  // slides out on hover)
+  const brands = await Promise.all(
+    siteBrands.map(async (brand) => {
+      const [list, map] = await Promise.all([loadEquipmentCategories(brand.key), loadEquipmentMap(locale, brand.key)]);
+      const groups = new Map(map.map((c) => [c.href, c.groups]));
+      return {
+        key: brand.key,
+        href: brand.href,
+        title: locale === "en" ? brand.title_en : brand.title_uk,
+        logo: brand.logo_url,
+        categories: list.map((c) => ({
+          href: c.href,
+          title: locale === "en" ? c.title_en : c.title_uk,
+          groups: groups.get(c.href) ?? [],
+        })),
+      };
+    }),
   );
+  return <SiteHeader isAdmin={Boolean(user)} brands={brands} news={news} />;
 }
 
 // Footer with the contacts from the admin panel; the phones also go to the contact forms

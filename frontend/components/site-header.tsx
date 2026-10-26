@@ -1,32 +1,20 @@
 "use client";
 
 import NextLink from "next/link";
-import { useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronDown, ChevronRight, Menu, Settings, X } from "lucide-react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { BrandLogo } from "@/components/brand-logo";
+import { BrandMark } from "@/components/brand-logo";
 
-// All addresses are the same as on the old site (carpigiani.com.ua).
-const brands = [
-  { label: "CARPIGIANI", href: "/carpigiani" },
-  { label: "IFI", href: "/ifi" },
-  { label: "ISA", href: "/isa" },
-];
-
-// All three columns are filled from the admin panel: categories of Carpigiani equipment and
-// categories of IFI / ISA showcases (each with a submenu of its equipment / showcases that have
-// a page). The Carpigiani column is hidden while it has no categories; the IFI and ISA columns
-// always show at least the link to the brand page.
-const catalog = [
-  { key: "carpigiani", href: "/carpigiani" },
-  { key: "ifi", href: "/ifi" },
-  { key: "isa", href: "/isa" },
-] as const;
-
-type CatalogKey = (typeof catalog)[number]["key"];
+// Brands (manufacturers) come from the admin panel → "Виробники", in its order; hidden ones are
+// not sent. Their pages keep the addresses of the old site (/carpigiani, /ifi, /isa).
+// "Manufacturers": a metal button next to the logo with the logos of the brands stacked in it;
+// a click opens the list of brands (also on phones).
+// "Equipment catalog": a column per brand with its categories (each with a submenu of its
+// equipment / showcases that have a page).
 
 /** Category for the menu: title already in the page language.
  *  groups: its equipment with a page, under the names of subcategories (a submenu on hover) */
@@ -44,35 +32,149 @@ const supportItems = [
   { key: "sitemap", href: "/sitemap" },
 ] as const;
 
+/** A brand for the menus: title already in the page language */
+export type MenuBrand = {
+  key: string;
+  href: string;
+  title: string;
+  logo: string | null;
+  categories: MenuCategory[];
+};
+
 /** Topics of news for the "News" menu, and the addresses of all news and topics on the site */
 export type NewsMenu = { topics: { title: string; href: string }[]; pages: string[] };
 
 /** Which item of the main menu is the open page in: Home, News (the list, topics, news),
- *  Equipment catalog (brand pages, categories and equipment from the menu), Support (its pages)
- *  or Contacts. */
-function activeSection(pathname: string, categories: MenuCategory[], showcasePages: string[] = [], newsPages: string[] = []) {
+ *  Manufacturers (brand pages), Equipment catalog (categories and equipment from the menu),
+ *  Support (its pages) or Contacts. */
+function activeSection(pathname: string, brands: MenuBrand[], newsPages: string[] = []) {
   if (pathname === "/") return "home";
   if (pathname === "/news" || newsPages.includes(pathname)) return "news";
   if (pathname === "/contacts") return "contacts";
   if (pathname === "/support" || supportItems.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`)))
     return "support";
-  const inCatalog =
-    catalog.some((group) => group.href === pathname) ||
-    categories.some(
+  if (brands.some((brand) => brand.href === pathname)) return "brands";
+  const inCatalog = brands.some((brand) =>
+    brand.categories.some(
       (category) =>
         category.href === pathname || category.groups?.some((group) => group.items.some((item) => item.href === pathname)),
-    );
-  return inCatalog || showcasePages.includes(pathname) ? "catalog" : null;
+    ),
+  );
+  return inCatalog ? "catalog" : null;
 }
 
-// A brand pill is dark only on its own page: /carpigiani, /ifi or /isa.
-// On all other pages (home, news, categories...) no pill is dark.
-function activeBrand(pathname: string) {
-  return brands.find((b) => b.href === pathname)?.href ?? null;
+/** Small logo of a brand on a white tile (logos are colour on a transparent background) */
+function BrandTile({ brand, size = "md" }: { brand: MenuBrand; size?: "md" | "sm" }) {
+  return (
+    <span
+      className={`flex shrink-0 items-center justify-center rounded-[10px] bg-white shadow-[inset_0_-2px_4px_rgb(0_10_40/0.12)] ${
+        size === "md" ? "h-10 w-18 p-1.5" : "h-8 w-14 p-1"
+      }`}
+    >
+      {brand.logo ? (
+        // eslint-disable-next-line @next/next/no-img-element -- small logo from the admin panel
+        <img src={brand.logo} alt="" className="max-h-full max-w-full object-contain" />
+      ) : (
+        <span className="truncate px-1 text-[10px] font-extrabold tracking-[0.5px] text-ink uppercase">{brand.title}</span>
+      )}
+    </span>
+  );
+}
+
+/** List of brands: in the "Manufacturers" dropdown and in its own menu on phones */
+function BrandsList({ brands, pathname, onPick }: { brands: MenuBrand[]; pathname: string; onPick?: () => void }) {
+  const t = useTranslations("Nav");
+  return (
+    <>
+      <p className="px-3.5 pt-1 pb-2 text-xs font-extrabold tracking-[1.5px] text-sky uppercase">{t("manufacturersTitle")}</p>
+      {brands.map((brand) => {
+        const here = pathname === brand.href;
+        return (
+          <Link
+            key={brand.key}
+            href={brand.href}
+            onClick={onPick}
+            aria-current={here ? "page" : undefined}
+            className={`${panelLink} flex items-center gap-3.5 ${here ? "bg-white/10 text-white" : ""}`}
+          >
+            <BrandTile brand={brand} />
+            {brand.title}
+          </Link>
+        );
+      })}
+    </>
+  );
+}
+
+/** "Manufacturers": a chrome pill next to the logo with the round logos of the brands stacked
+ *  in it (they fan out on hover). A click opens the list of brands; a click outside, Esc or
+ *  another page closes it. On phones only the stack of logos is shown. Looks: globals.css (.brands-btn). */
+function BrandsButton({ brands, pathname }: { brands: MenuBrand[]; pathname: string }) {
+  const t = useTranslations("Nav");
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (event: PointerEvent) => {
+      if (!box.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const here = brands.some((brand) => brand.href === pathname);
+  return (
+    <div ref={box} className="relative">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="true"
+        aria-label={t("manufacturers")}
+        onClick={() => setOpen((v) => !v)}
+        className={`brands-btn btn-shine ${open ? "open" : ""} ${here ? "here" : ""}`}
+      >
+        <span aria-hidden="true" className="brands-stack">
+          {brands.slice(0, 4).map((brand, i) => (
+            <i key={brand.key} style={{ "--i": i } as CSSProperties}>
+              {brand.logo ? (
+                // eslint-disable-next-line @next/next/no-img-element -- small logo from the admin panel
+                <img src={brand.logo} alt="" />
+              ) : (
+                <b>{brand.title.slice(0, 1)}</b>
+              )}
+            </i>
+          ))}
+        </span>
+        <span className="brands-label">{t("manufacturers")}</span>
+        <ChevronDown aria-hidden="true" className="brands-chev" />
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 z-30 pt-2.5 max-[420px]:-left-12">
+          <div className={`${panelBox} w-max min-w-72 max-w-[calc(100vw-32px)] motion-safe:animate-fade-up`}>
+            <BrandsList brands={brands} pathname={pathname} onPick={() => setOpen(false)} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 const navLink = "rounded-full px-3.5 py-2.5 font-semibold whitespace-nowrap max-[1440px]:px-3 transition-colors";
-/** Main menu item: dark (as the brand pills) while its page is open */
+/** Main menu item: lit while its page is open */
 const navItem = (active: boolean) => `${navLink} ${active ? "bg-[image:var(--grad-btn)] text-white shadow-[0_8px_22px_rgb(20_100_255/0.4)]" : "text-on-navy hover:bg-white/10 hover:text-white"}`;
 /** Item of the phone menu: marked while its page is open */
 const mobileItem = (active: boolean) => (active ? `${panelLink} bg-white/10 text-white` : panelLink);
@@ -131,64 +233,38 @@ const ADMIN_HREF = "/fofkas-adminpanel";
  *  categories: equipment categories from the admin panel for the "Equipment catalog" menu. */
 export function SiteHeader({
   isAdmin = false,
-  categories = [],
-  showcases = { ifi: [], isa: [] },
-  showcasePages = [],
+  brands = [],
   news = { topics: [], pages: [] },
 }: {
   isAdmin?: boolean;
-  categories?: MenuCategory[];
-  /** Categories of IFI / ISA showcases from the admin panel, for their columns of the menu */
-  showcases?: { ifi: MenuCategory[]; isa: MenuCategory[] };
-  /** Addresses of IFI / ISA categories and showcases (the menu marks "Equipment catalog" on them) */
-  showcasePages?: string[];
+  /** Visible brands with their categories, from the admin panel */
+  brands?: MenuBrand[];
   /** News: the pages on which "News" is lit (topics are not in the menu any more) */
   news?: NewsMenu;
 }) {
   const t = useTranslations("Nav");
-  const tc = useTranslations("Catalog");
   const ts = useTranslations("SupportMenu");
   const pathname = usePathname();
-  const brand = activeBrand(pathname);
-  const section = activeSection(pathname, categories, showcasePages, news.pages);
+  const section = activeSection(pathname, brands, news.pages);
+  // Phones: the main menu (burger)
   const [open, setOpen] = useState(false);
-  // No equipment categories yet: the "Equipment Carpigiani" column is not shown at all
-  const groups = catalog.filter((group) => group.key !== "carpigiani" || categories.length > 0);
-  const itemsOf = (key: CatalogKey) => (key === "carpigiani" ? categories : showcases[key]);
   const close = () => setOpen(false);
   const dropdown = useDropdownClose();
   const catalogMenu = dropdown("catalog");
   const supportMenu = dropdown("support");
+  // Catalog: a column per brand, up to 4 in a row
+  const columns = Math.min(Math.max(brands.length, 1), 4);
 
   return (
     // Navy band on every page; on the home page it is see-through over the navy background
     <header className="site-header relative z-30 w-full bg-navy text-white">
       <div className="mx-auto flex w-full max-w-360 items-center justify-between gap-3.5 px-20 py-5 max-[1280px]:px-8 max-[820px]:px-4 max-[820px]:py-3">
-        <div className="flex shrink-0 items-center gap-5.5 max-[820px]:gap-2.5">
-          <Link href="/" aria-label={t("toHome")} className="flex items-center gap-3">
-            <BrandLogo hideWordOnPhone />
+        {/* The mark and, next to it, the "Manufacturers" button (where the brand pills were) */}
+        <div className="flex shrink-0 items-center gap-5 max-[820px]:gap-3">
+          <Link href="/" aria-label={t("toHome")} className="flex shrink-0 items-center">
+            <BrandMark className="h-12 w-auto max-[820px]:h-10" />
           </Link>
-
-          {/* Three brands: always visible, also on phones */}
-          <nav aria-label={t("brands")} className="flex gap-2 max-[820px]:gap-1.25">
-            {brands.map((b) => {
-              const active = b.href === brand;
-              return (
-                <Link
-                  key={b.href}
-                  href={b.href}
-                  aria-current={active ? "true" : undefined}
-                  className={`rounded-full border px-3.5 py-1.75 text-xs font-extrabold tracking-[1.5px] transition-colors max-[820px]:px-2.25 max-[820px]:py-1.5 max-[820px]:text-[10px] max-[820px]:tracking-[0.8px] ${
-                    active
-                      ? "border-transparent bg-[image:var(--grad-btn)] text-white shadow-[0_8px_22px_rgb(20_100_255/0.45)]"
-                      : "border-white/25 bg-white/5 text-white hover:border-white/50 hover:bg-white/10"
-                  }`}
-                >
-                  {b.label}
-                </Link>
-              );
-            })}
-          </nav>
+          {brands.length > 0 && <BrandsButton brands={brands} pathname={pathname} />}
         </div>
 
         {/* Main menu (desktop) */}
@@ -208,23 +284,24 @@ export function SiteHeader({
             </button>
             <div className={`${panel} right-0 ${catalogMenu.hidden}`}>
               <div
-                className={`${panelBox} grid gap-2 ${groups.length === 3 ? "w-190 grid-cols-3" : "w-127 grid-cols-2"}`}
+                className={`${panelBox} grid gap-2`}
+                style={{ gridTemplateColumns: `repeat(${columns}, 15rem)` }}
               >
-                {groups.map((group, column) => (
-                  <div key={group.key}>
+                {brands.map((brand, index) => (
+                  <div key={brand.key}>
                     <Link
-                      href={group.href}
+                      href={brand.href}
                       className="mb-1 block rounded-[14px] px-3.5 py-2 text-xs font-extrabold tracking-[1.5px] text-sky uppercase hover:bg-white/10"
                     >
-                      {tc(group.key)}
+                      {brand.title}
                     </Link>
-                    {itemsOf(group.key).map((item) =>
+                    {brand.categories.map((item) =>
                       item.href.startsWith("http") ? (
                         <a key={item.href} href={item.href} target="_blank" rel="noopener" className={panelLink}>
                           {item.title}
                         </a>
                       ) : (
-                        <CategoryItem key={item.href} category={item} openLeft={column === groups.length - 1} />
+                        <CategoryItem key={item.href} category={item} openLeft={index % columns === columns - 1} />
                       ),
                     )}
                   </div>
@@ -299,14 +376,14 @@ export function SiteHeader({
               <div className="px-3.5 pt-2.5 pb-1 text-xs font-extrabold tracking-[1.5px] text-sky uppercase">
                 {t("catalog")}
               </div>
-              {groups.map((group) => (
-                <div key={group.key}>
-                  <Link href={group.href} onClick={close} className={`${mobileItem(pathname === group.href)} pl-6`}>
-                    {tc(group.key)}
+              {brands.map((brand) => (
+                <div key={brand.key}>
+                  <Link href={brand.href} onClick={close} className={`${mobileItem(pathname === brand.href)} pl-6`}>
+                    {brand.title}
                   </Link>
                   {/* Categories of the brand: each is a link to its page, and the arrow next to it
                       opens its equipment / showcases (as the submenu on large screens) */}
-                  {itemsOf(group.key).map((category) => (
+                  {brand.categories.map((category) => (
                     <MobileCategory key={category.href} category={category} onPick={close} />
                   ))}
                 </div>
@@ -334,6 +411,8 @@ export function SiteHeader({
           )}
         </div>
       </div>
+      {/* The brand trail line under the menu */}
+      <div aria-hidden="true" className="brand-line" />
     </header>
   );
 }

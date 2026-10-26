@@ -1733,3 +1733,134 @@ button:not(:disabled),
   }
 }
 
+/* "Manufacturers" button next to the logo in the header: a chrome pill with small logo cards
+   of the brands fanned like playing cards. A soft blue halo breathes around it so the eye finds it;
+   on hover (and while its list is open) the logos fan out. Phones: only the stack of logos. */
+@layer components {
+  .brands-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 46px;
+    padding: 0 16px 0 8px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #05070b;
+    background: var(--metal);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.9),
+      inset 0 -1px 0 rgb(0 0 0 / 0.18),
+      0 10px 26px rgb(0 0 0 / 0.35);
+    cursor: pointer;
+    transition: transform 0.3s;
+    animation: brands-halo 3.2s ease-out 1.2s infinite;
+  }
+  .brands-btn:hover,
+  .brands-btn.open {
+    transform: translateY(-2px);
+  }
+  /* On a brand page: a steady blue rim instead of the breathing halo */
+  .brands-btn.here {
+    animation: none;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.9),
+      0 0 0 2px #35a9e8,
+      0 10px 26px rgb(0 0 0 / 0.35);
+  }
+  .brands-stack {
+    display: flex;
+    align-items: center;
+  }
+  .brands-stack i {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 30px;
+    margin-left: -28px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow:
+      0 0 0 1.5px #0b1d44,
+      0 3px 8px rgb(0 0 0 / 0.35);
+    transform: rotate(calc((var(--i) - 1) * 8deg));
+    transition:
+      margin 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.2),
+      transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+    animation: brands-pop 0.5s calc(var(--i) * 90ms + 0.3s) both;
+  }
+  .brands-stack i:first-child {
+    margin-left: 0;
+  }
+  .brands-stack img {
+    width: 86%;
+    height: 80%;
+    object-fit: contain;
+  }
+  .brands-stack b {
+    font-size: 12px;
+    font-weight: 800;
+    color: #05070b;
+  }
+  .brands-btn:hover .brands-stack i:not(:first-child),
+  .brands-btn.open .brands-stack i:not(:first-child) {
+    margin-left: 4px;
+  }
+  .brands-btn:hover .brands-stack i,
+  .brands-btn.open .brands-stack i {
+    transform: translateY(-1px) rotate(0);
+  }
+  .brands-chev {
+    width: 16px;
+    height: 16px;
+    transition: rotate 0.3s;
+  }
+  .brands-btn.open .brands-chev {
+    rotate: 180deg;
+  }
+  @media (max-width: 600px) {
+    .brands-btn {
+      height: 44px;
+      padding: 0 8px;
+    }
+    .brands-label,
+    .brands-chev {
+      display: none;
+    }
+    .brands-stack i {
+      width: 42px;
+      height: 28px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brands-btn,
+    .brands-stack i {
+      animation: none;
+    }
+  }
+}
+@keyframes brands-halo {
+  0% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.9),
+      inset 0 -1px 0 rgb(0 0 0 / 0.18),
+      0 10px 26px rgb(0 0 0 / 0.35),
+      0 0 0 0 rgb(53 169 232 / 0.55);
+  }
+  70%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.9),
+      inset 0 -1px 0 rgb(0 0 0 / 0.18),
+      0 10px 26px rgb(0 0 0 / 0.35),
+      0 0 0 12px rgb(53 169 232 / 0);
+  }
+}
+@keyframes brands-pop {
+  from {
+    opacity: 0;
+    scale: 0.3;
+  }
+}
