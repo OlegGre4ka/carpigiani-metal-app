@@ -24,7 +24,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useLeaveGuard } from "./leave-guard";
 
-import { brandOf, brands } from "@/lib/admin/brands";
+import { brandBase } from "@/lib/admin/brands";
 import { oldEquipmentPages } from "@/lib/admin/old-site-pages";
 import { AdminLoader } from "@/components/cone-loader";
 
@@ -38,14 +38,14 @@ import { AdminLoader } from "@/components/cone-loader";
 type Text = { uk: string; en: string };
 type Item = { id: string; visible: boolean; image: string | null; title: Text; text: Text; href: string };
 
-/** Page of the category in the admin panel: under Equipment or under IFI / ISA showcases */
+/** Page of the category in the admin panel: under the section of its brand */
 const categoryLink = (sub: { category_id: number; category_brand?: string }) =>
-  `${brands[brandOf(sub.category_brand)].base}/${sub.category_id}`;
+  `${brandBase(sub.category_brand)}/${sub.category_id}`;
 
 type Subcategory = {
   id: number;
   category_id: number;
-  // Brand of the category: Carpigiani equipment or IFI / ISA showcases (own section in the menu)
+  // Brand of the category (its own section in the menu)
   category_brand?: string;
   category_title: string;
   category_href: string;

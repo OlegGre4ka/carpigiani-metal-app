@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { PageBuilder } from "@/components/admin/page-builder";
 import { AdminLoader } from "@/components/cone-loader";
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ key: string; id: string }> };
 
 // Page builder of one equipment category (the "Page" button in the list of categories,
 // or the category in the menu on the left).

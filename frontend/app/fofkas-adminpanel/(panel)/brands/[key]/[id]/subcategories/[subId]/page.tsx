@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { SubcategoryForm } from "@/components/admin/subcategory-form";
 import { AdminLoader } from "@/components/cone-loader";
 
-type Props = { params: Promise<{ id: string; subId: string }> };
+type Props = { params: Promise<{ key: string; id: string; subId: string }> };
 
 // A subcategory: its name and the list of its equipment (shown on the category page).
 // The address (subcategory number) is read inside Suspense, as Next.js asks: the menu and the

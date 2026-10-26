@@ -38,7 +38,11 @@ export type CatalogsBlock = {
 /** Main photo of an equipment page */
 export type PhotoBlock = { id: string; type: "photo"; image: string };
 
+/** Brand pages: the place of the cards of the brand's categories (the site loads them itself) */
+export type CategoriesBlock = { id: string; type: "categories" };
+
 export type PageBlock =
+  | CategoriesBlock
   | PhotoBlock
   | SliderBlock
   | TextBlock
@@ -60,8 +64,11 @@ export type SitePageData = {
   category_href: string;
   /** Equipment page: the name of the equipment ("Carpigiani Maestro") */
   item_title: string;
-  /** Brand of its category: Carpigiani equipment or IFI / ISA showcases */
-  brand?: "carpigiani" | "ifi" | "isa";
+  /** Brand of its category (its key: "ifi"), the title of the brand page and its address
+   *  (for the breadcrumbs and the map of equipment) */
+  brand?: string;
+  brand_title?: string;
+  brand_href?: string;
   blocks: PageBlock[];
   /** News: its date ("2023-05-23"), main photo, topic (empty without one) and the colour of
    *  the topic label. Topic page: topic_title and topic_href are the topic itself. */
@@ -216,6 +223,31 @@ export const loadContacts = cache(async (lang: string): Promise<SiteContacts | n
     const response = await fetch(`${BACKEND_URL}/api/pages/contacts?${query}`, { cache: "no-store" });
     if (!response.ok) return null;
     return (await response.json()) as SiteContacts;
+  } catch {
+    return null;
+  }
+});
+
+/** The page of a brand (/ifi), built in the admin panel: title, line under it (empty: not shown),
+ *  blocks ("categories" marks where its category cards go) and whether all its equipment with
+ *  filter chips is shown at the bottom. */
+export type BrandPageData = {
+  key: string;
+  title: string;
+  subtitle: string;
+  blocks: PageBlock[];
+  show_equipment: boolean;
+};
+
+/** The page of a visible brand with this address (/ifi), or null. Asked once per visit. */
+export const loadBrandPage = cache(async (href: string, lang: string): Promise<BrandPageData | null> => {
+  // A brand page is always one word: /ifi, /bravo
+  if (!/^\/[a-z0-9-]{2,40}$/.test(href)) return null;
+  try {
+    const query = new URLSearchParams({ href, lang: lang === "en" ? "en" : "uk" });
+    const response = await fetch(`${BACKEND_URL}/api/brands/page?${query}`, { cache: "no-store" });
+    if (!response.ok) return null;
+    return (await response.json()) as BrandPageData;
   } catch {
     return null;
   }

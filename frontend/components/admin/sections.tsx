@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
 
+import { BRANDS_PATH, brandBase, type AdminBrand } from "@/lib/admin/brands";
+
 export type AdminSubsection = {
   href: string;
   title: string;
-  /** Categories from the database: whose they are (Carpigiani equipment, IFI or ISA showcases) */
+  /** Categories from the database: the key of their brand */
   brand?: string;
   /** Shown under the sub-section only while one of its pages is open (subcategories of a category) */
   children?: AdminSubsection[];
@@ -16,39 +18,54 @@ export type AdminSection = {
   icon: ReactNode;
   /** Sub-sections open under the section in the menu */
   children?: AdminSubsection[];
-  /** No page of its own: a click only opens its sub-sections ("Showcases") */
+  /** No page of its own: a click only opens its sub-sections */
   groupOnly?: boolean;
+  /** Lit only on its own address, not on the pages under it ("Виробники") */
+  exactOnly?: boolean;
+  /** Section of a brand: its key (its categories go under it) */
+  brand?: string;
+  /** A brand hidden from the site: dimmed in the menu */
+  hidden?: boolean;
 };
 
-const showcaseIcon = (
+/** Icon of a brand section: a machine with a cone */
+export const brandIcon = (
   <>
-    <rect x="3" y="9" width="18" height="10" rx="2" />
-    <path d="M5 9l2-4h10l2 4M3 14h18" />
+    <rect x="5" y="3" width="14" height="18" rx="2" />
+    <path d="M5 9h14M9 13l3 5 3-5z" />
   </>
 );
 
-// Sections of the admin panel. New sections and sub-sections are added here.
-// Under "Equipment", "IFI showcases" and "ISA showcases" the categories of that brand from the
-// database, with their subcategories; under "News" its topics (see AdminSidebar).
+/** "Виробники": the list of brands (add, edit, hide, order, delete). Lit only on its own page,
+ *  not on the pages of a brand (each brand has its own section under it). */
+export const brandsSection: AdminSection = {
+  href: BRANDS_PATH,
+  title: "Виробники",
+  text: "Бренди обладнання: назва, лого, адреса сторінки, порядок і показ на сайті",
+  icon: (
+    <>
+      <path d="M3 21V10l5 3V10l5 3V7l8 4v10z" />
+      <path d="M7 17h2M12 17h2M17 17h1" />
+    </>
+  ),
+  exactOnly: true,
+};
+
+/** Section of each brand from the database: its categories → subcategories → equipment */
+export function brandSections(brands: AdminBrand[]): AdminSection[] {
+  return brands.map((brand) => ({
+    href: brandBase(brand.key),
+    title: brand.title_uk,
+    text: `Категорії ${brand.title_uk} з підкатегоріями й обладнанням`,
+    icon: brandIcon,
+    brand: brand.key,
+    hidden: !brand.is_visible,
+  }));
+}
+
+// Other sections of the admin panel (after the brands). New sections are added here.
+// Under "News" its topics (see AdminSidebar).
 export const adminSections: AdminSection[] = [
-  {
-    href: "/fofkas-adminpanel/equipment",
-    title: "Обладнання для виробництва морозива",
-    text: "Картки видів морозива на головній: Gelato, Soft, Stick та інші",
-    icon: (
-      <>
-        <path d="M8 11a4 4 0 1 1 8 0" />
-        <path d="M7 11h10l-5 10z" />
-      </>
-    ),
-  },
-  // IFI and ISA showcases: the same as equipment (categories → subcategories → showcases)
-  ...(["ifi", "isa"] as const).map((brand) => ({
-    href: `/fofkas-adminpanel/showcases/${brand}`,
-    title: `Вітрини ${brand.toUpperCase()}`,
-    text: `Категорії вітрин ${brand.toUpperCase()} з підкатегоріями й вітринами`,
-    icon: showcaseIcon,
-  })),
   {
     href: "/fofkas-adminpanel/news",
     title: "Новини",

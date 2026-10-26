@@ -66,7 +66,11 @@ export type CatalogFile = { url: string; name: string; size: number };
 export type Catalog = { id: string; label: Text; file_uk: CatalogFile | null; file_en: CatalogFile | null };
 export type CatalogsBlock = { id: string; type: "catalogs"; visible: boolean; items: Catalog[] };
 
+/** Brand pages: the cards of the brand's categories (they are managed right in the block) */
+export type CategoriesBlock = { id: string; type: "categories"; visible: boolean };
+
 export type Block =
+  | CategoriesBlock
   | SliderBlock
   | TextBlock
   | GalleryBlock

@@ -26,6 +26,9 @@ from sqlalchemy import select
 
 from app.db.session import DbSession
 from app.models import (
+    Brand as BrandModel,
+)
+from app.models import (
     CategoryPage,
     EquipmentCategory,
     EquipmentPage,
@@ -359,6 +362,9 @@ def block_for_site(block: dict, lang: Lang, db: DbSession) -> dict | None:
     if kind == "subcategory":
         shown = subcategory_for_site(block, lang, db)
         return {**base, **shown} if shown else None
+    if kind == "categories":
+        # The site puts the category cards of the brand here
+        return base
     if kind == "catalogs":
         catalogs = []
         for catalog in block["items"]:
@@ -374,6 +380,23 @@ def blocks_for_site(blocks: list[dict], lang: Lang, db: DbSession) -> list[dict]
     return [shown for block in blocks if (shown := block_for_site(block, lang, db))]
 
 
+def brand_of(db: DbSession, key: str) -> BrandModel | None:
+    """The brand of a category if it is shown on the site (a hidden brand hides all its pages)."""
+    brand = db.scalar(select(BrandModel).where(BrandModel.key == key))
+    return brand if brand is not None and brand.is_visible else None
+
+
+def brand_title(brand: BrandModel, lang: Lang) -> str:
+    """The name of a brand in the breadcrumbs: the title of its page, or its name."""
+    return pick(
+        {
+            "uk": brand.page_title_uk or brand.title_uk,
+            "en": brand.page_title_en or brand.title_en,
+        },
+        lang,
+    )
+
+
 def equipment_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | None:
     """The page of the equipment with this address, if the equipment, its subcategory and
     its category are shown on the site and the page has been made."""
@@ -387,6 +410,9 @@ def equipment_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | Non
         category = db.get(EquipmentCategory, sub.category_id)
         if not item.get("visible", True) or category is None or not category.is_visible:
             continue
+        brand = brand_of(db, category.brand)
+        if brand is None:
+            continue
         page = find_equipment_page(db, sub.id, item["id"])
         if page is None:
             continue
@@ -394,6 +420,8 @@ def equipment_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | Non
         return PublicPage(
             kind="equipment",
             brand=category.brand,
+            brand_title=brand_title(brand, lang),
+            brand_href=brand.href,
             title=pick({"uk": page.title_uk, "en": page.title_en}, lang),
             category_title=pick(
                 {"uk": category.title_uk, "en": category.title_en}, lang
@@ -430,7 +458,9 @@ def equipment_neighbours(
                 "image": item.get("image"),
             }
             for item in sub.items
-            if item.get("visible", True) and item.get("href") and item["id"] in with_page
+            if item.get("visible", True)
+            and item.get("href")
+            and item["id"] in with_page
         ]
     here = next((i for i, model in enumerate(models) if model["href"] == href), None)
     if here is None:
@@ -499,6 +529,9 @@ def get_showcases(db: DbSession, lang: Lang = "uk", brand: Brand = "ifi") -> dic
         .where(EquipmentCategory.is_visible.is_(True), EquipmentCategory.brand == brand)
         .order_by(EquipmentCategory.sort_order, EquipmentCategory.id)
     )
+    owner = db.scalar(select(BrandModel).where(BrandModel.key == brand))
+    # Chips switched off on the brand page: the equipment stays under "All"
+    hidden = set(owner.hidden_chips or []) if owner else set()
     chips, items = [], []
     for category in categories:
         label = pick({"uk": category.title_uk, "en": category.title_en}, lang)
@@ -527,7 +560,7 @@ def get_showcases(db: DbSession, lang: Lang = "uk", brand: Brand = "ifi") -> dic
                         "href": item.get("href", "") if item["id"] in with_page else "",
                     }
                 )
-        if found:
+        if found and category.id not in hidden:
             chips.append({"id": category.id, "title": label})
     return {"chips": chips, "items": items}
 
@@ -544,10 +577,13 @@ def get_public_page(
         )
     )
     page = find_page(db, category.id) if category else None
-    if category is not None and page is not None:
+    brand = brand_of(db, category.brand) if category else None
+    if category is not None and page is not None and brand is not None:
         return PublicPage(
             kind="category",
             brand=category.brand,
+            brand_title=brand_title(brand, lang),
+            brand_href=brand.href,
             title=pick({"uk": page.title_uk, "en": page.title_en}, lang),
             category_title=pick(
                 {"uk": category.title_uk, "en": category.title_en}, lang
@@ -602,7 +638,7 @@ def save_category_page(category_id: int, data: PageSave, db: DbSession):
     category = get_category(db, category_id)
     page = find_page(db, category_id)
     blocks = blocks_adapter.dump_python(data.blocks, mode="json")
-    check_kinds(blocks, {"catalogs", "photo"}, "категорії")
+    check_kinds(blocks, {"catalogs", "photo", "categories"}, "категорії")
 
     old_images = page_images(page.blocks) if page else set()
     if page is None:
@@ -799,7 +835,7 @@ def save_equipment_page(
     item = find_item(sub, item_id)
     blocks = blocks_adapter.dump_python(data.blocks, mode="json")
     # A slider saved before the "Main photo" block appeared is still accepted
-    check_kinds(blocks, {"subcategory"}, "обладнання")
+    check_kinds(blocks, {"subcategory", "categories"}, "обладнання")
     page = find_equipment_page(db, sub.id, item_id)
 
     old_images = page_images(page.blocks) if page else set()

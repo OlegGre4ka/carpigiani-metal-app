@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
 
+import { BrandPage } from "@/components/brand-page";
 import { SitePage } from "@/components/site-page";
 import { ComingSoon } from "@/components/coming-soon";
 import { NewsArticle } from "@/components/news-article";
 import { NewsListPage } from "@/components/news-list-page";
 import { PageLoader } from "@/components/page-loader";
 import { routing } from "@/i18n/routing";
-import { loadSitePage } from "@/lib/site-pages";
+import { loadBrandPage, loadSitePage } from "@/lib/site-pages";
 import { comingSoonPages } from "@/lib/coming-soon-pages";
 
 type Props = {
@@ -17,7 +18,8 @@ type Props = {
 };
 
 // Addresses without their own folder in app/[locale]:
-// 1. a page made in the admin panel: of an equipment category (/gelato, /soft, ...),
+// 1. a page made in the admin panel: of a brand (/carpigiani, /ifi, /isa and new brands),
+//    of an equipment category (/gelato, /soft, ...),
 //    of a piece of equipment (/maestro, /labotronic, ...), of a news item (/230500-back-to-roots)
 //    or of a news topic (/news/content/5-interesting: its news, page by page: ?page=2);
 // 2. otherwise a temporary page "being prepared": for addresses from the menu and the slider
@@ -56,6 +58,8 @@ function addressOf(slug: string[]) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
+  const brand = await loadBrandPage(addressOf(slug), locale);
+  if (brand) return { title: `${brand.title} · Carpigiani`, description: brand.subtitle || undefined };
   const page = await loadSitePage(addressOf(slug), locale);
   if (page) return { title: `${page.title} · Carpigiani` };
 
@@ -78,6 +82,8 @@ export default function SlugPage({ params, searchParams }: Props) {
 
 async function PageContent({ params, searchParams }: Props) {
   const { locale, slug } = await params;
+  const brand = await loadBrandPage(addressOf(slug), locale);
+  if (brand) return <BrandPage page={brand} />;
   const page = await loadSitePage(addressOf(slug), locale);
   if (page?.kind === "news") return <NewsArticle page={page} href={addressOf(slug)} />;
   if (page?.kind === "news_topic") {

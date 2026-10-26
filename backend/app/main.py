@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.routers.auth_router import router as auth_router
+from app.routers.brands_router import admin_router as brands_admin_router
+from app.routers.brands_router import public_router as brands_public_router
 from app.routers.contact_router import router as contact_router
 from app.routers.equipment_categories_router import (
     admin_router as categories_admin_router,
@@ -46,6 +48,8 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(auth_router)
 app.include_router(items_router)
+app.include_router(brands_public_router)
+app.include_router(brands_admin_router)
 app.include_router(categories_public_router)
 app.include_router(categories_admin_router)
 app.include_router(news_public_router)

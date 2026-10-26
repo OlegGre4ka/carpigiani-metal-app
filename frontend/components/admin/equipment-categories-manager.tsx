@@ -9,6 +9,7 @@ import {
   Input,
   Modal,
   Popconfirm,
+  Select,
   Space,
   Switch,
   Table,
@@ -21,11 +22,11 @@ import { ArrowDown, ArrowUp, ImagePlus, LayoutTemplate, Pencil, Plus, Trash2 } f
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-import { brands, type Brand } from "@/lib/admin/brands";
+import { brandBase, type AdminBrand } from "@/lib/admin/brands";
+import { oldCategoryPages } from "@/lib/admin/old-site-pages";
 
-// Categories of one brand: Carpigiani equipment ("Equipment for ice cream production", cards on
-// the home page) or IFI / ISA showcases (cards on /ifi, /isa). The same list for all three;
-// texts, ready addresses and links come from lib/admin/brands.ts.
+// Categories of one brand (Carpigiani, IFI, ISA or any brand added on the "Виробники" page),
+// shown as cards on the page of the brand. The same list for every brand.
 // The browser talks to FastAPI through /api/... (the login cookie goes along).
 const API = "/api/admin/equipment-categories";
 
@@ -37,9 +38,10 @@ type Category = {
   image_url: string;
   sort_order: number;
   is_visible: boolean;
+  brand: string;
 };
 
-type FormValues = { title_uk: string; title_en: string; href: string; is_visible: boolean };
+type FormValues = { title_uk: string; title_en: string; href: string; is_visible: boolean; brand: string };
 
 async function readError(response: Response) {
   try {
@@ -49,8 +51,17 @@ async function readError(response: Response) {
   return "Щось пішло не так. Спробуйте ще раз.";
 }
 
-export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: Brand }) {
-  const info = brands[brand];
+/** embedded: inside the "Categories" block of the brand page builder (no page title of its own) */
+export function EquipmentCategoriesManager({
+  brand,
+  brands,
+  embedded = false,
+}: {
+  brand: AdminBrand;
+  brands: AdminBrand[];
+  embedded?: boolean;
+}) {
+  const base = brandBase(brand.key);
   const { message } = App.useApp();
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
@@ -70,7 +81,7 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
 
   const load = useCallback(async () => {
     try {
-      const response = await call(`${API}?brand=${brand}`);
+      const response = await call(`${API}?brand=${brand.key}`);
       if (!response.ok) throw new Error(await readError(response));
       setCategories(await response.json());
     } catch (error) {
@@ -78,7 +89,7 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
     } finally {
       setLoading(false);
     }
-  }, [call, message, brand]);
+  }, [call, message, brand.key]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- first load of the list
@@ -169,7 +180,7 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
     <Button
       icon={<LayoutTemplate size={16} />}
       className={className}
-      onClick={() => router.push(`${info.base}/${category.id}`)}
+      onClick={() => router.push(`${base}/${category.id}`)}
     >
       Сторінка
     </Button>
@@ -239,28 +250,48 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
     },
   ];
 
+  const addButton = (
+    <Button type="primary" size={embedded ? "middle" : "large"} icon={<Plus size={18} />} onClick={() => setEditing("new")}>
+      Додати категорію
+    </Button>
+  );
+
   return (
     <div>
+      {embedded ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="max-w-[60ch] text-sm text-ink-soft">
+            Картки категорій на сторінці {brand.href}, по 3 в ряд. Зміни категорій зберігаються одразу, без кнопки
+            «Зберегти сторінку».
+          </p>
+          {addButton}
+        </div>
+      ) : (
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="font-heading tracking-[-0.02em] text-[33px] leading-tight font-extrabold text-ink motion-safe:animate-fade-up max-[600px]:text-[26px]">
-            {info.title}
+            {brand.title_uk}
           </h1>
           <p className="mt-1 text-sm font-extrabold tracking-[1.5px] text-steel uppercase motion-safe:animate-fade-up motion-safe:[animation-delay:40ms]">
-            {info.caption}
+            (Категорії)
           </p>
           <p className="mt-2 max-w-[62ch] text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
-            Кожна категорія показується {info.shownOn} карткою з фото й назвою. Картки стоять по 3 в ряд. Поки категорій
-            немає, блок на сайті не показується.
+            Кожна категорія показується на сторінці {brand.href} карткою з фото й назвою. Картки стоять по 3 в ряд. Поки
+            категорій немає, блок на сайті не показується.
           </p>
+          {!brand.is_visible && (
+            <p className="mt-3 max-w-[62ch] rounded-2xl bg-mist px-4 py-3 text-sm font-semibold text-ink motion-safe:animate-fade-up">
+              Виробник прихований: його сторінка й категорії зараз не показуються на сайті. Показати його можна на
+              сторінці «Виробники».
+            </p>
+          )}
         </div>
-        <Button type="primary" size="large" icon={<Plus size={18} />} onClick={() => setEditing("new")}>
-          Додати категорію
-        </Button>
+        {addButton}
       </div>
+      )}
 
       {/* Large screens: table */}
-      <div className="mt-6 overflow-hidden rounded-[28px] steel-card p-2 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[700px]:hidden">
+      <div className="mt-5 overflow-hidden rounded-[28px] steel-card p-2 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[700px]:hidden">
         <Table<Category>
           rowKey="id"
           columns={columns}
@@ -308,14 +339,24 @@ export function EquipmentCategoriesManager({ brand = "carpigiani" }: { brand?: B
         category={editing}
         onClose={() => setEditing(null)}
         onSaved={(saved, isNew) => {
-          setCategories((list) => (isNew ? [...list, saved] : list.map((t) => (t.id === saved.id ? saved : t))));
+          // Moved to another brand: it leaves this list and appears under that brand
+          const moved = saved.brand !== brand.key;
+          setCategories((list) =>
+            moved
+              ? list.filter((t) => t.id !== saved.id)
+              : isNew
+                ? [...list, saved]
+                : list.map((t) => (t.id === saved.id ? saved : t)),
+          );
           setEditing(null);
           // Categories are in the menu on the left too
           router.refresh();
-          message.success(isNew ? "Категорію додано" : "Зміни збережено");
+          const target = brands.find((item) => item.key === saved.brand)?.title_uk ?? saved.brand;
+          message.success(moved ? `Категорію перенесено до «${target}»` : isNew ? "Категорію додано" : "Зміни збережено");
         }}
         call={call}
         brand={brand}
+        brands={brands}
       />
     </div>
   );
@@ -328,14 +369,15 @@ function CategoryForm({
   onSaved,
   call,
   brand,
+  brands,
 }: {
   category: Category | "new" | null;
   onClose: () => void;
   onSaved: (category: Category, isNew: boolean) => void;
   call: (input: string, init?: RequestInit) => Promise<Response>;
-  brand: Brand;
+  brand: AdminBrand;
+  brands: AdminBrand[];
 }) {
-  const info = brands[brand];
   const [form] = Form.useForm<FormValues>();
   const [files, setFiles] = useState<UploadFile[]>([]);
   const [saving, setSaving] = useState(false);
@@ -350,7 +392,7 @@ function CategoryForm({
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reset the window when it opens
     setError(null);
     if (category === "new") {
-      form.setFieldsValue({ is_visible: true });
+      form.setFieldsValue({ is_visible: true, brand: brand.key });
       setFiles([]);
     } else {
       form.setFieldsValue({
@@ -358,10 +400,11 @@ function CategoryForm({
         title_en: category.title_en,
         href: category.href,
         is_visible: category.is_visible,
+        brand: category.brand ?? brand.key,
       });
       setFiles([{ uid: "current", name: "Поточне фото", status: "done", url: category.image_url }]);
     }
-  }, [open, category, form]);
+  }, [open, category, form, brand.key]);
 
   async function submit(values: FormValues) {
     const newFile = files.find((file) => file.originFileObj)?.originFileObj;
@@ -375,7 +418,7 @@ function CategoryForm({
     body.set("href", values.href.trim());
     body.set("is_visible", String(values.is_visible));
     if (newFile) body.set("image", newFile);
-    if (isNew) body.set("brand", brand);
+    body.set("brand", values.brand);
 
     setSaving(true);
     setError(null);
@@ -442,7 +485,7 @@ function CategoryForm({
             { max: 120, message: "До 120 символів" },
           ]}
         >
-          <Input placeholder={info.examples.uk} />
+          <Input placeholder="Італійське морозиво Gelato" />
         </Form.Item>
         <Form.Item
           name="title_en"
@@ -452,12 +495,12 @@ function CategoryForm({
             { max: 120, message: "До 120 символів" },
           ]}
         >
-          <Input placeholder={info.examples.en} />
+          <Input placeholder="Italian Gelato" />
         </Form.Item>
         <Form.Item
           name="href"
           label="Адреса сторінки категорії"
-          extra={`Куди веде картка. Оберіть зі списку або впишіть свою, наприклад ${info.examples.href} (сторінка сайту), чи повну адресу https://...`}
+          extra={`Куди веде картка. Оберіть зі списку або впишіть свою, наприклад /gelato (сторінка сайту), чи повну адресу https://...`}
           rules={[
             { required: true, whitespace: true, message: "Вкажіть адресу сторінки категорії" },
             {
@@ -467,9 +510,21 @@ function CategoryForm({
           ]}
         >
           <AutoComplete
-            options={info.pageOptions}
-            placeholder={info.examples.href}
+            options={oldCategoryPages}
+            placeholder="/gelato"
             filterOption={(input, option) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase())}
+          />
+        </Form.Item>
+        <Form.Item
+          name="brand"
+          label="Виробник"
+          extra={isNew ? undefined : "Оберіть іншого виробника, щоб перенести категорію разом із підкатегоріями й обладнанням."}
+        >
+          <Select
+            options={brands.map((item) => ({
+              value: item.key,
+              label: item.is_visible ? item.title_uk : `${item.title_uk} (приховано)`,
+            }))}
           />
         </Form.Item>
         <Form.Item name="is_visible" label="Показувати на сайті" valuePropName="checked">

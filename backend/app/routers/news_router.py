@@ -62,7 +62,14 @@ admin_router = APIRouter(
 blocks_adapter = TypeAdapter(list[Block])
 
 # A news page has text, photos (gallery or slider) and video; nothing about equipment
-NEWS_FORBIDDEN_BLOCKS = {"features", "table", "subcategory", "photo", "catalogs"}
+NEWS_FORBIDDEN_BLOCKS = {
+    "features",
+    "table",
+    "subcategory",
+    "photo",
+    "catalogs",
+    "categories",
+}
 # News shown at once on the list; "Show more" adds as many
 PER_PAGE = 12
 # How many newest news of each topic the map of a news page lists

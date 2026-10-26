@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { PageBuilder } from "@/components/admin/page-builder";
 import { AdminLoader } from "@/components/cone-loader";
 
-type Props = { params: Promise<{ id: string; subId: string; itemId: string }> };
+type Props = { params: Promise<{ key: string; id: string; subId: string; itemId: string }> };
 
 // Page of one piece of equipment (the "Page" button next to the equipment in its subcategory).
 // The same page builder as for categories; only the set of blocks differs.

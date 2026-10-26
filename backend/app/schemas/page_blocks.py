@@ -311,8 +311,15 @@ class CatalogsBlock(BlockBase):
     items: Annotated[list[Catalog], Field(max_length=4)] = []
 
 
+class CategoriesBlock(BlockBase):
+    """Brand pages only: the cards of the brand's categories (managed right in the block)."""
+
+    type: Literal["categories"]
+
+
 Block = Annotated[
-    SliderBlock
+    CategoriesBlock
+    | SliderBlock
     | TextBlock
     | GalleryBlock
     | FeaturesBlock

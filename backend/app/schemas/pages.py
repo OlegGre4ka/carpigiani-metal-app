@@ -186,6 +186,9 @@ class PublicPage(BaseModel):
     kind: Literal["category", "equipment", "news", "news_topic"] = "category"
     # Brand of the category: the map of the right column shows the categories of this brand
     brand: str = "carpigiani"
+    # The brand for the breadcrumbs: the title of its page and its address (/ifi)
+    brand_title: str = ""
+    brand_href: str = ""
     title: str
     category_title: str = ""
     category_href: str = ""

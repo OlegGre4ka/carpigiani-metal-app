@@ -23,6 +23,7 @@ import {
   ChevronDown,
   Clapperboard,
   ExternalLink,
+  FolderOpen,
   FileDown,
   GripVertical,
   Image as ImageIcon,
@@ -62,11 +63,13 @@ import {
   type SubcategoryOption,
   type Uploader,
 } from "./page-block-editors";
+import { EquipmentCategoriesManager } from "./equipment-categories-manager";
 import { AdminLoader } from "@/components/cone-loader";
-import { brandOf, brands } from "@/lib/admin/brands";
+import { BRANDS_PATH, brandBase, type AdminBrand } from "@/lib/admin/brands";
 
-// THE page builder of the site: one for every page made of blocks — pages of categories
-// (/gelato), pages of single pieces of equipment and showcases (/labotronic, /ifi-tonda) and
+// THE page builder of the site: one for every page made of blocks — pages of brands (/ifi:
+// title, line under it, the "Categories" block with the category cards managed right in it, and
+// the equipment with filter chips), pages of categories (/gelato), pages of single pieces of equipment and showcases (/labotronic, /ifi-tonda) and
 // news (/230500-back-to-roots; above the blocks the fields of the news card).
 // The page is put together from blocks, like building bricks; on the site they go from top
 // to bottom in the same order. One switch "UA | EN" changes the language of all texts at once.
@@ -79,14 +82,24 @@ import { brandOf, brands } from "@/lib/admin/brands";
 export type PageTarget =
   | { kind: "category"; id: number }
   | { kind: "equipment"; categoryId: number; subcategoryId: number; itemId: string }
-  | { kind: "news"; id: number };
+  | { kind: "news"; id: number }
+  /** brands: all brands (a category can be moved to another one) */
+  | { kind: "brand"; brand: AdminBrand; brands: AdminBrand[] };
+
+/** A brand page: the line under the title and the equipment with filter chips */
+type BrandMeta = {
+  subtitle_uk: string;
+  subtitle_en: string;
+  show_equipment: boolean;
+  hidden_chips: number[];
+};
 
 type Loaded = {
   title_uk: string;
   title_en: string;
   blocks: Block[];
   category_id?: number;
-  // Brand of the category: its pages are under Equipment (carpigiani) or IFI / ISA showcases
+  // Brand of the category: its pages are under the section of that brand
   category_brand?: string;
   category_title?: string;
   // False: never saved yet
@@ -106,12 +119,20 @@ type Loaded = {
   image?: string | null;
   summary?: { uk: string; en: string };
   is_visible?: boolean;
+  // Brand page: the line under the title, the equipment with filters and its chips
+  subtitle_uk?: string;
+  subtitle_en?: string;
+  show_equipment?: boolean;
+  hidden_chips?: number[];
+  chips?: { id: number; title_uk: string; enabled: boolean }[];
+  brand_title?: string;
 };
 
 /** news: the fields of the news card (news pages only) */
-type Draft = { title_uk: string; title_en: string; blocks: Block[]; news?: NewsMeta };
+type Draft = { title_uk: string; title_en: string; blocks: Block[]; news?: NewsMeta; brand?: BrandMeta };
 
 const kinds: Record<BlockType, { name: string; icon: ReactNode }> = {
+  categories: { name: "Категорії", icon: <FolderOpen size={19} /> },
   slider: { name: "Слайдер", icon: <Images size={19} /> },
   text: { name: "Текст", icon: <Type size={19} /> },
   gallery: { name: "Фото", icon: <LayoutGrid size={19} /> },
@@ -130,6 +151,8 @@ const blocksOf: Record<PageTarget["kind"], BlockType[]> = {
   equipment: ["photo", "text", "gallery", "features", "table", "video", "catalogs"],
   // The main photo of a news item is a field of its card, above the blocks
   news: ["text", "gallery", "slider", "video"],
+  // Brand pages: the cards of its categories and the blocks of category pages
+  brand: ["categories", "slider", "text", "gallery", "features", "table", "video", "catalogs"],
 };
 
 const newId = () => Math.random().toString(36).slice(2, 10);
@@ -138,6 +161,8 @@ const row = (columns: number) => Array.from({ length: columns }, emptyText);
 function emptyBlock(type: BlockType): Block {
   const base = { id: newId(), visible: true };
   switch (type) {
+    case "categories":
+      return { ...base, type };
     case "slider":
       return { ...base, type, images: [], autoplay: true };
     case "text":
@@ -164,6 +189,8 @@ const text = (value: { uk: string; en: string }, lang: Lang) => (lang === "en" &
 /** Short line under the block name, so a closed block still says what is inside */
 function summary(block: Block, lang: Lang, subcategories: SubcategoryOption[]): string {
   switch (block.type) {
+    case "categories":
+      return "Картки категорій бренду: додавайте й змінюйте категорії прямо тут";
     case "slider":
       return block.images.length ? `${block.images.length} фото з 6` : "Фото ще не додано";
     case "text": {
@@ -221,12 +248,15 @@ export function PageBuilder({ target }: { target: PageTarget }) {
   const router = useRouter();
   const isCategory = target.kind === "category";
   const isNews = target.kind === "news";
+  const isBrand = target.kind === "brand";
   const api =
     target.kind === "category"
       ? `/api/admin/equipment-categories/${target.id}/page`
       : target.kind === "news"
         ? `/api/admin/news/${target.id}/page`
-        : `/api/admin/subcategories/${target.subcategoryId}/items/${encodeURIComponent(target.itemId)}/page`;
+        : target.kind === "brand"
+          ? `/api/admin/brands/${target.brand.id}/page`
+          : `/api/admin/subcategories/${target.subcategoryId}/items/${encodeURIComponent(target.itemId)}/page`;
   const [page, setPage] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [failed, setFailed] = useState(false);
@@ -366,14 +396,17 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       message.error("Вкажіть дату новини");
       return false;
     }
-    // A news item is saved with the fields of its card next to the title and the blocks
-    const { news, ...pageVersion } = version;
+    // A news item is saved with the fields of its card next to the title and the blocks;
+    // a brand page with the line under the title and the filters
+    const { news, brand, ...pageVersion } = version;
     setSaving(true);
     try {
       const response = await call(api, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(news ? { ...pageVersion, ...news, href: news.href.trim() } : pageVersion),
+        body: JSON.stringify(
+          news ? { ...pageVersion, ...news, href: news.href.trim() } : brand ? { ...pageVersion, ...brand } : pageVersion,
+        ),
       });
       if (!response.ok) {
         message.error(await readError(response));
@@ -412,7 +445,7 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       const saved = await save(version);
       if (!saved) return;
     }
-    if (target.kind === "category" && page) router.push(`${brands[brandOf(page.category_brand)].base}/${target.id}/subcategories/${subcategoryId}`);
+    if (target.kind === "category" && page) router.push(`${brandBase(page.category_brand)}/${target.id}/subcategories/${subcategoryId}`);
   }
 
   /** New subcategory from a "Subcategory" block: chosen in the block, page saved, then opened */
@@ -463,12 +496,17 @@ export function PageBuilder({ target }: { target: PageTarget }) {
   const href = (isCategory ? page.category_href : page.href) ?? "";
   const onSite = href.startsWith("/");
   const canView =
-    onSite && page.saved && (isNews ? page.is_visible === true : isCategory || page.item_visible !== false);
+    onSite &&
+    (isBrand
+      ? page.is_visible === true
+      : page.saved && (isNews ? page.is_visible === true : isCategory || page.item_visible !== false));
   const blockTypes = blocksOf[target.kind];
-  // Equipment of Carpigiani or IFI / ISA showcases: the pages of each are in their own section
-  const base = brands[brandOf(page.category_brand)].base;
+  // The pages of each brand are in its own section
+  const base = brandBase(page.category_brand);
   const back =
-    target.kind === "category"
+    target.kind === "brand"
+      ? { href: BRANDS_PATH, text: "До виробників" }
+      : target.kind === "category"
       ? { href: base, text: "До списку категорій" }
       : target.kind === "news"
         ? page.topic_id
@@ -495,14 +533,16 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
         <div className="min-w-0">
           <p className="mb-1.5 text-xs font-extrabold tracking-[2px] text-steel uppercase motion-safe:animate-fade-up">
-            {isCategory
+            {isBrand
+              ? `Виробник · ${page.brand_title} · ${href}`
+              : isCategory
               ? `Категорія · ${page.category_title} · ${href}`
               : isNews
                 ? `Новина · ${page.topic_title || "Без теми"} · ${href}`
                 : `Обладнання · ${page.item_title} · ${href || "адресу не вказано"}`}
           </p>
           <h1 className="font-heading tracking-[-0.02em] text-[38px] leading-[1.05] font-extrabold text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:40ms] max-[600px]:text-[28px]">
-            {isCategory ? "Сторінка категорії" : isNews ? "Сторінка новини" : "Сторінка обладнання"}
+            {isBrand ? "Сторінка бренду" : isCategory ? "Сторінка категорії" : isNews ? "Сторінка новини" : "Сторінка обладнання"}
           </h1>
           <p className="mt-1.5 max-w-160 text-[15px] leading-normal text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
             Збирайте сторінку з блоків, як з кубиків. На сайті вони йдуть зверху вниз у тому ж порядку.
@@ -518,7 +558,9 @@ export function PageBuilder({ target }: { target: PageTarget }) {
               title={
                 canView
                   ? "Відкрити збережену сторінку на сайті"
-                  : isNews
+                  : isBrand
+                    ? "Виробника сховано з сайту: показати його можна на сторінці «Виробники»"
+                    : isNews
                     ? "Новину сховано з сайту"
                     : page.saved
                       ? "Обладнання сховано з сайту"
@@ -576,9 +618,17 @@ export function PageBuilder({ target }: { target: PageTarget }) {
           Обладнання або його підкатегорію сховано з сайту, тому сторінки на сайті не видно.
         </p>
       )}
+      {isBrand && page.is_visible === false && (
+        <p className="mb-4 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
+          Виробника сховано з сайту: його сторінки й категорій на сайті не видно. Показати його можна на сторінці
+          «Виробники».
+        </p>
+      )}
       {!page.saved && (
         <p className="mb-4 rounded-2xl bg-tag px-4 py-3 text-sm text-tag-ink">
-          {isCategory
+          {isBrand
+            ? "Сторінку ще не збережено: поки що на сайті показуються заголовок і картки категорій."
+            : isCategory
             ? "Сторінки ще немає: поки її не збережено, на сайті за цією адресою «Сторінка в розробці»."
             : "Сторінки ще немає: поки її не збережено, картка обладнання на сайті не веде нікуди, а за адресою «Сторінка в розробці»."}
         </p>
@@ -595,7 +645,30 @@ export function PageBuilder({ target }: { target: PageTarget }) {
             onChange={(e) => change({ [titleKey]: e.target.value })}
           />
         </Field>
+        {/* Brand page: a line under the title; left empty, it is not shown */}
+        {draft.brand && (
+          <Field label={`Підзаголовок (${lang === "uk" ? "українською" : "англійською"}), можна залишити порожнім`} className="mt-4">
+            <Input.TextArea
+              value={lang === "uk" ? draft.brand.subtitle_uk : draft.brand.subtitle_en}
+              placeholder={lang === "en" && draft.brand.subtitle_uk ? draft.brand.subtitle_uk : "Коротко про бренд одним реченням"}
+              maxLength={400}
+              autoSize={{ minRows: 2, maxRows: 4 }}
+              onChange={(e) =>
+                change({ brand: { ...draft.brand!, [lang === "uk" ? "subtitle_uk" : "subtitle_en"]: e.target.value } })
+              }
+            />
+          </Field>
+        )}
       </section>
+
+      {/* Brand page: all its equipment with filter chips (by category) at the bottom */}
+      {draft.brand && (
+        <EquipmentFilters
+          meta={draft.brand}
+          chips={page.chips ?? []}
+          onChange={(brand) => change({ brand })}
+        />
+      )}
 
       {/* News: its card in the list of news (and the main photo at the top of its page) */}
       {draft.news && (
@@ -631,6 +704,11 @@ export function PageBuilder({ target }: { target: PageTarget }) {
               onDelete={() => setBlocks((blocks) => blocks.filter((b) => b.id !== block.id))}
             >
               <BlockForm
+                categories={
+                  target.kind === "brand" ? (
+                    <EquipmentCategoriesManager key={target.brand.key} brand={target.brand} brands={target.brands} embedded />
+                  ) : null
+                }
                 block={block}
                 lang={lang}
                 onChange={(next) => setBlock(index, next)}
@@ -649,7 +727,8 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       <section className="mt-1.5 rounded-[26px] border-2 border-dashed border-brand/40 bg-mist/45 p-5.5 max-[700px]:p-4">
         <h2 className="mb-3.5 text-base font-bold text-ink">Додати блок</h2>
         <div className="grid grid-cols-7 gap-2.5 max-[1200px]:grid-cols-4 max-[700px]:grid-cols-3">
-          {blockTypes.map((type) => (
+          {/* The category cards go on a page once */}
+          {blockTypes.filter((type) => type !== "categories" || !draft.blocks.some((b) => b.type === "categories")).map((type) => (
             <button
               key={type}
               type="button"
@@ -692,6 +771,15 @@ export function PageBuilder({ target }: { target: PageTarget }) {
 
 function toDraft(data: Loaded): Draft {
   const draft: Draft = { title_uk: data.title_uk, title_en: data.title_en, blocks: data.blocks };
+  // A brand page: the line under the title and the filters
+  if (data.show_equipment !== undefined) {
+    draft.brand = {
+      subtitle_uk: data.subtitle_uk ?? "",
+      subtitle_en: data.subtitle_en ?? "",
+      show_equipment: data.show_equipment,
+      hidden_chips: data.hidden_chips ?? [],
+    };
+  }
   // A news item: the fields of its card
   if (data.published_on !== undefined) {
     draft.news = {
@@ -858,6 +946,7 @@ function DragHandle({
 }
 
 function BlockForm({
+  categories,
   block,
   lang,
   onChange,
@@ -868,6 +957,8 @@ function BlockForm({
   onCreateSubcategory,
   onEditSubcategory,
 }: {
+  /** The list of the brand's categories (brand pages) */
+  categories: ReactNode;
   block: Block;
   lang: Lang;
   onChange: (b: Block) => void;
@@ -879,6 +970,8 @@ function BlockForm({
   onEditSubcategory: (id: number) => void;
 }) {
   switch (block.type) {
+    case "categories":
+      return categories;
     case "slider":
       return <SliderEditor block={block} onChange={onChange} upload={upload} />;
     case "text":
@@ -907,6 +1000,62 @@ function BlockForm({
     case "catalogs":
       return <CatalogsEditor block={block} lang={lang} onChange={onChange} uploadFile={uploadFile} />;
   }
+}
+
+/** Brand page: the switch "all equipment with filters" and, when the brand has 2 or more categories
+ *  on the site, a switch per filter chip (all on by default). A category hidden from the site is
+ *  not in the list; a chip switched off goes away, its equipment stays under "All". */
+function EquipmentFilters({
+  meta,
+  chips,
+  onChange,
+}: {
+  meta: BrandMeta;
+  chips: { id: number; title_uk: string }[];
+  onChange: (meta: BrandMeta) => void;
+}) {
+  const hidden = new Set(meta.hidden_chips);
+  return (
+    <section className={`${panel} motion-safe:animate-fade-up motion-safe:[animation-delay:180ms]`}>
+      <h2 className="mb-1.5 font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">Обладнання з фільтрами</h2>
+      <p className="mb-4 max-w-160 text-sm leading-normal text-ink-soft">
+        Внизу сторінки на сайті: усе обладнання бренду і кнопки-фільтри за категоріями. Заповнюється само з категорій і
+        підкатегорій.
+      </p>
+      <label className="flex items-center gap-3 text-[15px] font-bold text-ink">
+        <Switch checked={meta.show_equipment} onChange={(show_equipment) => onChange({ ...meta, show_equipment })} />
+        Показувати все обладнання на сторінці
+      </label>
+
+      {meta.show_equipment && chips.length >= 2 && (
+        <div className="mt-5 border-t border-ink/8 pt-4">
+          <p className="mb-3 text-[13px] font-extrabold text-ink-soft">Фільтри (вимкнений фільтр зникає, обладнання лишається у «Всі»)</p>
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 max-[700px]:grid-cols-1">
+            {chips.map((chip) => (
+              <li key={chip.id}>
+                <label className="flex items-center gap-3 text-[15px] text-ink">
+                  <Switch
+                    size="small"
+                    checked={!hidden.has(chip.id)}
+                    onChange={(on) =>
+                      onChange({
+                        ...meta,
+                        hidden_chips: on ? meta.hidden_chips.filter((id) => id !== chip.id) : [...meta.hidden_chips, chip.id],
+                      })
+                    }
+                  />
+                  {chip.title_uk}
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {meta.show_equipment && chips.length < 2 && (
+        <p className="mt-4 text-[13px] text-hint">Фільтри з’являться, коли на сайті буде 2 і більше категорії цього бренду.</p>
+      )}
+    </section>
+  );
 }
 
 /** Window "New subcategory": a name is enough, the rest is filled on its page */

@@ -20,6 +20,7 @@ from fastapi import (
 from sqlalchemy import func, select
 
 from app.db.session import DbSession
+from app.models import Brand as BrandModel
 from app.models import EquipmentCategory
 from app.routers.pages_router import category_images, delete_page_images, href_owner
 from app.schemas.equipment_category import (
@@ -105,7 +106,13 @@ def get_category(db: DbSession, category_id: int) -> EquipmentCategory:
 def list_visible_categories(db: DbSession, brand: Brand = "carpigiani"):
     statement = (
         select(EquipmentCategory)
-        .where(EquipmentCategory.is_visible.is_(True), EquipmentCategory.brand == brand)
+        .join(BrandModel, BrandModel.key == EquipmentCategory.brand)
+        # A hidden brand shows none of its categories
+        .where(
+            EquipmentCategory.is_visible.is_(True),
+            EquipmentCategory.brand == brand,
+            BrandModel.is_visible.is_(True),
+        )
         .order_by(EquipmentCategory.sort_order, EquipmentCategory.id)
     )
     return [to_read(category) for category in db.scalars(statement)]
@@ -137,6 +144,8 @@ def create_category(
     is_visible: Annotated[bool, Form()] = True,
     brand: Annotated[Brand, Form()] = "carpigiani",
 ):
+    if not db.scalar(select(BrandModel.id).where(BrandModel.key == brand)):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Такого бренду немає")
     href = clean_href(href)
     check_href_free(db, href)
     category = EquipmentCategory(
@@ -170,8 +179,22 @@ def update_category(
     is_visible: Annotated[bool, Form()] = True,
     # A new photo is optional: without it the old one stays
     image: Annotated[UploadFile | None, File()] = None,
+    # Another brand: the category moves there (to the end of its list)
+    brand: Annotated[Brand | None, Form()] = None,
 ):
     category = get_category(db, category_id)
+    if brand is not None and brand != category.brand:
+        if not db.scalar(select(BrandModel.id).where(BrandModel.key == brand)):
+            raise HTTPException(status.HTTP_400_BAD_REQUEST, "Такого бренду немає")
+        category.brand = brand
+        category.sort_order = (
+            db.scalar(
+                select(func.max(EquipmentCategory.sort_order)).where(
+                    EquipmentCategory.brand == brand
+                )
+            )
+            or 0
+        ) + 1
     category.title_uk = clean_title(title_uk, "українською")
     category.title_en = clean_title(title_en, "англійською")
     href = clean_href(href)

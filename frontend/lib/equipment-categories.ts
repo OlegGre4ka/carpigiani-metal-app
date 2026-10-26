@@ -11,8 +11,30 @@ export type EquipmentCategory = {
   image_url: string;
 };
 
-/** Whose categories: Carpigiani equipment or IFI / ISA showcases */
-export type Brand = "carpigiani" | "ifi" | "isa";
+/** Whose categories: the key of the brand ("carpigiani", "ifi", "isa" or a brand added in the admin panel) */
+export type Brand = string;
+
+/** A brand shown on the site (the admin panel → "Виробники"), in the admin order */
+export type SiteBrand = {
+  key: string;
+  title_uk: string;
+  title_en: string;
+  /** Its page: "/ifi" */
+  href: string;
+  logo_url: string | null;
+};
+
+/** Visible brands for the "Manufacturers" and "Equipment catalog" menus; hidden ones are not sent */
+export async function loadSiteBrands(): Promise<SiteBrand[]> {
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/brands`, { cache: "no-store" });
+    if (!response.ok) return [];
+    return (await response.json()) as SiteBrand[];
+  } catch {
+    // API is not reachable: nothing is shown
+    return [];
+  }
+}
 
 /** Categories of one brand shown on the site (only the ones marked "show"), in the admin order.
  *  Carpigiani: the cards on the home page and /carpigiani and the "Equipment catalog" menu;

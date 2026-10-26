@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { AdminMobileMenu, AdminSidebar, AdminSidebarFallback } from "@/components/admin/admin-sidebar";
 import { AntdProvider } from "@/components/admin/antd-provider";
 import { UserBadge } from "@/components/admin/user-badge";
-import { getCurrentUser, getMenuCategories, getMenuTopics } from "@/lib/admin/backend";
+import { getAdminBrands, getCurrentUser, getMenuCategories, getMenuTopics } from "@/lib/admin/backend";
 import { AdminLoader } from "@/components/cone-loader";
 import { BrandMark } from "@/components/brand-logo";
 
@@ -70,15 +70,18 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
   );
 }
 
-// Menus with the categories (and their subcategories) and the topics of news from the database
+// Menus with the brands, their categories (and subcategories) and the topics of news from the database
+async function menuData() {
+  const [brands, categories, topics] = await Promise.all([getAdminBrands(), getMenuCategories(), getMenuTopics()]);
+  return { brands, categories, topics };
+}
+
 async function Sidebar() {
-  const [categories, topics] = await Promise.all([getMenuCategories(), getMenuTopics()]);
-  return <AdminSidebar categories={categories} topics={topics} />;
+  return <AdminSidebar {...await menuData()} />;
 }
 
 async function MobileMenu() {
-  const [categories, topics] = await Promise.all([getMenuCategories(), getMenuTopics()]);
-  return <AdminMobileMenu categories={categories} topics={topics} />;
+  return <AdminMobileMenu {...await menuData()} />;
 }
 
 // Shows the page only to a logged-in admin; an expired login goes back to the login page

@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
-import { SectionIcon, adminSections, type AdminSection, type AdminSubsection } from "./sections";
+import type { AdminBrand } from "@/lib/admin/brands";
+
+import { SectionIcon, adminSections, brandSections, brandsSection, type AdminSection, type AdminSubsection } from "./sections";
 
 const home: AdminSection = {
   href: "/fofkas-adminpanel",
@@ -14,65 +16,52 @@ const home: AdminSection = {
   icon: <path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z" />,
 };
 
-/** Section of each brand: its categories (from the database) with their subcategories */
-const brandOfSection: Record<string, string> = {
-  "/fofkas-adminpanel/equipment": "carpigiani",
-  "/fofkas-adminpanel/showcases/ifi": "ifi",
-  "/fofkas-adminpanel/showcases/isa": "isa",
-};
-
 const NEWS_SECTION = "/fofkas-adminpanel/news";
 
-/** All sections; under "Equipment", "IFI showcases", "ISA showcases" the categories of that brand,
- *  under "News" its topics */
-function menuItems(categories: AdminSubsection[], topics: AdminSubsection[]): AdminSection[] {
+/** Home, "Виробники", then a section per brand (from the database) with its categories,
+ *  then the other sections; under "News" its topics */
+function menuItems(brands: AdminBrand[], categories: AdminSubsection[], topics: AdminSubsection[]): AdminSection[] {
   return [
     home,
-    ...adminSections.map((section) => {
-      if (section.href === NEWS_SECTION) return { ...section, children: topics };
-      const brand = brandOfSection[section.href];
-      if (!brand) return section;
-      return { ...section, children: categories.filter((category) => (category.brand ?? "carpigiani") === brand) };
-    }),
+    brandsSection,
+    ...brandSections(brands).map((section) => ({
+      ...section,
+      children: categories.filter((category) => category.brand === section.brand),
+    })),
+    ...adminSections.map((section) => (section.href === NEWS_SECTION ? { ...section, children: topics } : section)),
   ];
 }
 
-function isActive(pathname: string, href: string) {
-  if (href === home.href) return pathname === home.href;
+function isActive(pathname: string, href: string, exactOnly = false) {
+  if (href === home.href || exactOnly) return pathname === href;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+/** What every menu gets from the server */
+type MenuData = { brands: AdminBrand[]; categories: AdminSubsection[]; topics: AdminSubsection[] };
+
 /** List of sections. A section with sub-sections opens a nested list under it. */
-function AdminNav({
-  categories,
-  topics,
-  onNavigate,
-}: {
-  categories: AdminSubsection[];
-  topics: AdminSubsection[];
-  onNavigate?: () => void;
-}) {
-  return <NavList pathname={usePathname()} categories={categories} topics={topics} onNavigate={onNavigate} />;
+function AdminNav({ onNavigate, ...data }: MenuData & { onNavigate?: () => void }) {
+  return <NavList pathname={usePathname()} {...data} onNavigate={onNavigate} />;
 }
 
 /** The same list for the first moment of a page whose address is known only when it opens
  *  (e.g. the page builder of one category): nothing is marked yet */
 export function AdminSidebarFallback() {
-  return <NavList pathname="" categories={[]} topics={[]} />;
+  return <NavList pathname="" brands={[]} categories={[]} topics={[]} />;
 }
 
 function NavList({
   pathname,
+  brands,
   categories,
   topics,
   onNavigate,
-}: {
+}: MenuData & {
   pathname: string;
-  categories: AdminSubsection[];
-  topics: AdminSubsection[];
   onNavigate?: () => void;
 }) {
-  const items = menuItems(categories, topics);
+  const items = menuItems(brands, categories, topics);
   // The section of the current page is open by default; a click on the arrow flips it
   const [flipped, setFlipped] = useState<string[]>([]);
   // On another page the sections start again from "the section of the page is open": a section
@@ -89,7 +78,7 @@ function NavList({
     <nav aria-label="Розділи адмін-панелі">
       <ul className="flex flex-col gap-1">
         {items.map((item) => {
-          const active = isActive(pathname, item.href);
+          const active = isActive(pathname, item.href, item.exactOnly);
           const exact = pathname === item.href;
           const hasChildren = Boolean(item.children?.length);
           const expanded = hasChildren && active !== flipped.includes(item.href);
@@ -123,7 +112,13 @@ function NavList({
                     className="flex min-w-0 flex-1 items-center gap-3 px-3.5 py-3 text-[15px] leading-snug font-semibold"
                   >
                     <SectionIcon className="size-5 shrink-0">{item.icon}</SectionIcon>
-                    {item.title}
+                    <span className={item.hidden ? "opacity-55" : undefined}>{item.title}</span>
+                    {/* A brand hidden from the site: still edited here, marked in the menu */}
+                    {item.hidden && (
+                      <span className="ml-auto shrink-0 rounded-full bg-ink/8 px-2 py-0.5 text-[11px] font-bold text-ink-soft">
+                        приховано
+                      </span>
+                    )}
                   </Link>
                 )}
                 {hasChildren && !item.groupOnly && (
@@ -217,14 +212,14 @@ function Chevron({ expanded }: { expanded: boolean }) {
 }
 
 /** Menu on the left on large screens */
-export function AdminSidebar({ categories, topics }: { categories: AdminSubsection[]; topics: AdminSubsection[] }) {
-  return <AdminNav categories={categories} topics={topics} />;
+export function AdminSidebar(data: MenuData) {
+  return <AdminNav {...data} />;
 }
 
 const noop = () => () => {};
 
 /** On phones and tablets: burger button in the top bar, the menu slides out from the left */
-export function AdminMobileMenu({ categories, topics }: { categories: AdminSubsection[]; topics: AdminSubsection[] }) {
+export function AdminMobileMenu(data: MenuData) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   // The menu is placed straight into <body>: the blurred top bar would otherwise trap it
@@ -323,7 +318,7 @@ export function AdminMobileMenu({ categories, topics }: { categories: AdminSubse
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-3">
-                <AdminNav categories={categories} topics={topics} onNavigate={() => setOpen(false)} />
+                <AdminNav {...data} onNavigate={() => setOpen(false)} />
               </div>
             </div>
           </>,

@@ -1,21 +1,23 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Integer, String, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.session import Base
 
 
 class EquipmentCategory(Base):
-    """Category of equipment or showcases. Shown as a card on the page of its brand:
-    Carpigiani categories on the home page and /carpigiani, IFI on /ifi, ISA on /isa."""
+    """Category of equipment or showcases of one brand. Shown as a card on the page of its brand
+    (/carpigiani, /ifi, /isa, ...); Carpigiani categories also on the home page."""
 
     __tablename__ = "equipment_categories"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    # Whose category it is: "carpigiani" (equipment), "ifi" or "isa" (showcases)
+    # Whose category it is: the key of its brand (table "brands"): "carpigiani", "ifi", "isa", ...
+    # A brand with categories cannot be deleted; a new address of the brand updates its categories.
     brand: Mapped[str] = mapped_column(
-        String(20),
+        String(40),
+        ForeignKey("brands.key", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
         default="carpigiani",
         server_default="carpigiani",

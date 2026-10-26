@@ -1,9 +1,7 @@
-from typing import Literal
-
 from pydantic import BaseModel, ConfigDict, Field
 
-# Whose category it is: Carpigiani equipment or IFI / ISA showcases
-Brand = Literal["carpigiani", "ifi", "isa"]
+# Whose category it is: the key of a brand from the table "brands" ("carpigiani", "ifi", ...)
+Brand = str
 
 
 class EquipmentCategoryRead(BaseModel):

@@ -44,6 +44,7 @@ const equipmentTitle =
 const delay = (index: number) => (index < 3 ? 120 + index * 90 : 0);
 // Corner radius of each kind of block, so the opening of the card matches it
 const radius: Record<PageBlock["type"], number> = {
+  categories: 0,
   slider: 40,
   text: 36,
   gallery: 28,
@@ -60,11 +61,12 @@ const wideRadius: Partial<Record<PageBlock["type"], number>> = { slider: 48, tex
 export async function SitePage({ page, href, locale }: { page: SitePageData; href: string; locale: string }) {
   const t = await getTranslations();
   const equipment = page.kind === "equipment";
-  // Carpigiani equipment or IFI / ISA showcases: the map and the breadcrumbs of that brand
+  // The brand of the category: the map and the breadcrumbs of that brand
   const brand = page.brand ?? "carpigiani";
+  const brandTitle = page.brand_title || brand;
   const map = equipment ? await loadEquipmentMap(locale, brand) : [];
-  // The map of showcase pages is called "IFI showcases" / "ISA showcases"
-  const mapTitle = brand === "carpigiani" ? undefined : t(`Catalog.${brand}`);
+  // The map of other brands is called by their page ("IFI display cases")
+  const mapTitle = brand === "carpigiani" ? undefined : brandTitle;
   const blocks = page.blocks.map((block, index) => (
     <Reveal key={block.id} delay={delay(index)} radius={equipment ? radius[block.type] : (wideRadius[block.type] ?? radius[block.type])} className="min-w-0">
       <Block block={block} compact={equipment} title={page.item_title || page.title} />
@@ -73,7 +75,7 @@ export async function SitePage({ page, href, locale }: { page: SitePageData; hre
   // Home › Equipment catalog › brand › category (› equipment)
   const crumbs: Crumb[] = [
     { title: t("Nav.catalog") },
-    { title: t(`Catalog.${brand}`), href: `/${brand}` },
+    { title: brandTitle, href: page.brand_href || `/${brand}` },
     ...(page.kind === "equipment"
       ? [{ title: page.category_title, href: page.category_href || undefined }, { title: page.item_title || page.title }]
       : [{ title: page.category_title }]),
@@ -131,6 +133,9 @@ export async function SitePage({ page, href, locale }: { page: SitePageData; hre
  *  Also the blocks of news pages (components/news-article.tsx). */
 export function Block({ block, compact, title }: { block: PageBlock; compact: boolean; title: string }) {
   switch (block.type) {
+    case "categories":
+      // Only on brand pages (components/brand-page.tsx)
+      return null;
     case "photo":
       return <MainPhoto image={block.image} alt={title} />;
     case "slider":

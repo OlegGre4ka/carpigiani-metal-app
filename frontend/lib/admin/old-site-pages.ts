@@ -39,3 +39,21 @@ export const oldNewsPages = [
   "/170801-new-site", "/170801-lamber-installation", "/160601-panorama-bellevue-goodwine",
   "/neutri-basi-gelato-classification",
 ];
+
+// Addresses of category pages of the old site (its menu, 17.10.2026). Offered as ready choices
+// in the "Page address" field of a category; any other address can be typed too.
+export const oldCategoryPages = [
+  { value: "/gelato", label: "/gelato · Італійське морозиво" },
+  { value: "/soft", label: "/soft · М'яке морозиво" },
+  { value: "/stick", label: "/stick · Морозиво на паличці" },
+  { value: "/restaurant", label: "/restaurant · Для ресторану" },
+  { value: "/pastry", label: "/pastry · Для кондитерської" },
+  { value: "/fast-food", label: "/fast-food · Для фастфуду" },
+  { value: "/carpigiani", label: "/carpigiani · Обладнання Carpigiani" },
+  { value: "/ifi-gelato-cases", label: "/ifi-gelato-cases · Класичні вітрини для морозива" },
+  { value: "/ifi-panorama-pozzetti", label: "/ifi-panorama-pozzetti · Вітрини Panorama і Pozzetti" },
+  { value: "/ifi-pastry-cases", label: "/ifi-pastry-cases · Кондитерські та інші вітрини" },
+  { value: "/isa-professional", label: "/isa-professional" },
+  { value: "/isa-promotional", label: "/isa-promotional" },
+  { value: "/isa-pozzetti", label: "/isa-pozzetti" },
+];

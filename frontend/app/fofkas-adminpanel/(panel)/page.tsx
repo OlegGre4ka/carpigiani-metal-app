@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 
-import { SectionIcon, adminSections } from "@/components/admin/sections";
-import { backendFetch } from "@/lib/admin/backend";
+import { SectionIcon, adminSections, brandSections, type AdminSection } from "@/components/admin/sections";
+import { backendFetch, getAdminBrands } from "@/lib/admin/backend";
+import { BRANDS_PATH } from "@/lib/admin/brands";
 
 // Home of the admin panel: site statistics.
 // No real data yet: requests come after the contact form is connected,
@@ -74,8 +75,7 @@ function Empty({ icon, title, children }: { icon: ReactNode; title: string; chil
 
 const actions = [
   { href: "/fofkas-adminpanel/news", label: "Додати новину" },
-  { href: "/fofkas-adminpanel/equipment", label: "Додати категорію" },
-  { href: "/fofkas-adminpanel/showcases/ifi", label: "Додати вітрину" },
+  { href: BRANDS_PATH, label: "Додати виробника" },
 ];
 
 function QuickActions() {
@@ -85,7 +85,7 @@ function QuickActions() {
         <Link
           key={action.href}
           href={action.href}
-          className="btn-shine inline-flex items-center justify-center gap-2 rounded-full bg-[image:var(--grad-btn)] px-5 py-3 text-sm max-[600px]:gap-1.5 max-[600px]:px-3 max-[600px]:text-[13px] font-extrabold text-white shadow-[0_10px_22px_rgb(var(--brand-rgb)/0.25)] transition hover:-translate-y-0.5 hover:brightness-108 max-[600px]:last:col-span-2"
+          className="btn-shine inline-flex items-center justify-center gap-2 rounded-full bg-[image:var(--grad-btn)] px-5 py-3 text-sm max-[600px]:gap-1.5 max-[600px]:px-3 max-[600px]:text-[13px] font-extrabold text-white shadow-[0_10px_22px_rgb(var(--brand-rgb)/0.25)] transition hover:-translate-y-0.5 hover:brightness-108"
         >
           <span aria-hidden="true" className="text-lg leading-none">
             +
@@ -192,8 +192,8 @@ function news(n: number) {
   return `${n} новин`;
 }
 
-/** What is already filled in: categories of equipment and of IFI / ISA showcases, and news. */
-async function loadCounts(): Promise<Record<string, string | null>> {
+/** What is already filled in: categories of each brand, and news. */
+async function loadCounts(sections: AdminSection[]): Promise<Record<string, string | null>> {
   try {
     const [response, newsResponse] = await Promise.all([
       backendFetch("/api/admin/equipment-categories"),
@@ -201,14 +201,13 @@ async function loadCounts(): Promise<Record<string, string | null>> {
     ]);
     if (!response.ok) return {};
     const all = (await response.json()) as { is_visible: boolean; brand?: string }[];
-    const ofBrand = (brand: string) => all.filter((item) => (item.brand ?? "carpigiani") === brand);
     const summary = (list: { is_visible: boolean }[]) =>
       `${categories(list.length)}, на сайті ${list.filter((item) => item.is_visible).length}`;
     const counts: Record<string, string> = {};
-    const equipment = ofBrand("carpigiani");
-    if (equipment.length) counts["/fofkas-adminpanel/equipment"] = summary(equipment);
-    for (const brand of ["ifi", "isa"] as const) {
-      if (ofBrand(brand).length) counts[`/fofkas-adminpanel/showcases/${brand}`] = summary(ofBrand(brand));
+    for (const section of sections) {
+      if (!section.brand) continue;
+      const list = all.filter((item) => item.brand === section.brand);
+      if (list.length) counts[section.href] = summary(list) + (section.hidden ? " (виробник прихований)" : "");
     }
     const newsList = newsResponse.ok ? ((await newsResponse.json()) as { is_visible: boolean }[]) : [];
     if (newsList.length) {
@@ -225,22 +224,27 @@ async function loadCounts(): Promise<Record<string, string | null>> {
 function Content() {
   return (
     <Card delay={320} title="Наповнення сайту">
-      <Suspense fallback={<ContentList counts={null} />}>
+      <Suspense fallback={<ContentList sections={otherSections} counts={null} />}>
         <ContentWithCounts />
       </Suspense>
     </Card>
   );
 }
 
+/** Content sections other than the brands (news) */
+const otherSections = adminSections.filter((section) => !NOT_CONTENT.includes(section.href));
+
 async function ContentWithCounts() {
-  return <ContentList counts={await loadCounts()} />;
+  // A line per brand from the database, then news
+  const sections = [...brandSections(await getAdminBrands()), ...otherSections];
+  return <ContentList sections={sections} counts={await loadCounts(sections)} />;
 }
 
 /** counts = null while the numbers are loading */
-function ContentList({ counts }: { counts: Record<string, string | null> | null }) {
+function ContentList({ sections, counts }: { sections: AdminSection[]; counts: Record<string, string | null> | null }) {
   return (
     <ul className="flex flex-col divide-y divide-ink/8">
-      {adminSections.filter((section) => !NOT_CONTENT.includes(section.href)).map((section) => {
+      {sections.map((section) => {
         const count = counts?.[section.href];
         return (
           <li key={section.href} className="flex items-center gap-3.5 py-3.5 first:pt-0 last:pb-0">

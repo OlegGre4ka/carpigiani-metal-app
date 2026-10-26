@@ -1,3 +1,4 @@
+from app.models.brand import Brand
 from app.models.category_page import CategoryPage
 from app.models.contact_request import ContactRequest
 from app.models.equipment_category import EquipmentCategory
@@ -9,6 +10,7 @@ from app.models.site_setting import SiteSetting
 from app.models.user import PasswordResetToken, User
 
 __all__ = [
+    "Brand",
     "CategoryPage",
     "ContactRequest",
     "EquipmentCategory",
