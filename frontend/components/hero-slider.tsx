@@ -40,27 +40,27 @@ function SlideArt({ slideKey, first }: { slideKey: Slide["key"]; first: boolean 
           <Image src={`${img}hero-gelato-tray.webp`} alt="" fill sizes="100vw" priority={first} loading={first ? undefined : "lazy"} className="hero-cover" />
           <div aria-hidden="true" className="hero-layer hero-fog" />
           <div aria-hidden="true" className="hero-floor" />
-          <Image src={`${img}maestro-cut.webp`} alt="Carpigiani Maestro" width={416} height={1083} sizes="260px" loading={loading} className="hero-prod" />
+          <Image src={`${img}maestro-cut.webp`} alt="Carpigiani Maestro" width={416} height={1083} sizes="(max-width: 820px) 160px, 360px" loading={loading} className="hero-prod" />
         </>
       );
     case "sam80":
       return (
         <>
-          <div aria-hidden="true" className="hero-layer hero-navy" />
-          <Image src={`${img}blue-lines.webp`} alt="" fill sizes="100vw" loading="lazy" className="hero-lines" />
-          <div aria-hidden="true" className="hero-layer hero-spot" />
-          <div aria-hidden="true" className="hero-floorline" />
-          <Image src={`${img}ifi-sam80-cut.webp`} alt="" aria-hidden="true" width={776} height={516} sizes="600px" loading="lazy" className="hero-refl" />
-          <Image src={`${img}ifi-sam80-cut.webp`} alt="IFI Sam80" width={776} height={516} sizes="(max-width: 820px) 360px, 600px" loading={loading} className="hero-prod" />
+          {/* Gelato lab photo (client's choice, 26.10); fog under the text, the showcase stands on it */}
+          <Image src={`${img}sam80-bg.webp`} alt="" fill sizes="100vw" loading="lazy" className="hero-cover" />
+          <div aria-hidden="true" className="hero-layer hero-fog" />
+          <div aria-hidden="true" className="hero-floor" />
+          <Image src={`${img}ifi-sam80-cut.webp`} alt="IFI Sam80" width={776} height={516} sizes="(max-width: 820px) 360px, 900px" loading={loading} className="hero-prod" />
         </>
       );
     case "university":
       return (
         <>
-          <div aria-hidden="true" className="hero-layer hero-navy" />
-          <Image src={`${img}bologna-lines.webp`} alt="" width={1376} height={768} sizes="(max-width: 820px) 330px, 1200px" loading="lazy" className="hero-bologna" />
+          {/* Bologna at night, drawn in lines under the stars; blue fog only under the text */}
+          <Image src={`${img}bologna-night.webp`} alt="" fill sizes="100vw" loading="lazy" className="hero-cover" />
+          <div aria-hidden="true" className="hero-layer hero-fog" />
           <div className="hero-photo hero-photo-desk">
-            <Image src={`${img}gelato-university-3x2.webp`} alt="Carpigiani Gelato University" width={765} height={510} sizes="405px" loading="lazy" />
+            <Image src={`${img}gelato-university-3x2.webp`} alt="Carpigiani Gelato University" width={765} height={510} sizes="540px" loading="lazy" />
           </div>
         </>
       );
@@ -68,9 +68,9 @@ function SlideArt({ slideKey, first }: { slideKey: Slide["key"]; first: boolean 
       return (
         <>
           <Image src={`${img}ready-bg.webp`} alt="" fill sizes="100vw" loading="lazy" className="hero-cover" />
-          <div aria-hidden="true" className="hero-layer hero-fog hero-fog-strong" />
+          <div aria-hidden="true" className="hero-layer hero-fog" />
           <div aria-hidden="true" className="hero-floor" />
-          <Image src={`${img}ready-cut.webp`} alt="Carpigiani Ready" width={300} height={607} sizes="260px" loading={loading} className="hero-prod" />
+          <Image src={`${img}ready-cut.webp`} alt="Carpigiani Ready" width={300} height={607} sizes="(max-width: 820px) 160px, 360px" loading={loading} className="hero-prod" />
         </>
       );
   }
@@ -123,10 +123,10 @@ export function HeroSlider() {
       <div aria-hidden="true" className="hero-shade" />
 
       {/* Metal side arrows (large screens); the ring on "next" shows the 4 seconds */}
-      <button type="button" onClick={prev} aria-label={t("prev")} className={`${scoopButton} hero-arrow left-6`}>
+      <button type="button" onClick={prev} aria-label={t("prev")} className={`${scoopButton} hero-arrow !z-8 left-6`}>
         <Chevron dir="left" />
       </button>
-      <button type="button" onClick={next} aria-label={t("next")} className={`${scoopButton} hero-arrow right-6`}>
+      <button type="button" onClick={next} aria-label={t("next")} className={`${scoopButton} hero-arrow !z-8 right-6`}>
         <TimerRing key={ringKey} paused={paused} dark />
         <Chevron dir="right" />
       </button>

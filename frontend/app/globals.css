@@ -283,10 +283,19 @@
   body:has(.home-navy:not([style*="display: none"]))::before {
     background: var(--grad-navy-page);
   }
+  /* The header lies over the slider and lets its photo show through (stronger than the
+     "relative" and "bg-navy" classes of the header itself) */
   body:has(.home-navy:not([style*="display: none"])) .site-header {
-    position: absolute;
+    position: absolute !important;
     inset: 0 0 auto;
-    background: transparent;
+    background: transparent !important;
+  }
+  /* Home page: the logo in line with the text of the slider (90px), the menu as far from the right */
+  @media (min-width: 821px) {
+    body:has(.home-navy:not([style*="display: none"])) .site-header > div:first-child {
+      max-width: none !important;
+      padding-inline: 90px !important;
+    }
   }
   h1,
   h2 {
@@ -1296,7 +1305,8 @@ button:not(:disabled),
 @layer components {
   .hero {
     position: relative;
-    height: 720px;
+    /* Exactly the first screen: the see-through header lies over the slider */
+    height: clamp(600px, 100svh, 900px);
     overflow: hidden;
     background: var(--hero-bg);
     color: var(--hero-on-dark);
@@ -1328,6 +1338,13 @@ button:not(:disabled),
   .hero-ready .hero-cover {
     object-position: 70% center;
   }
+  /* Ready: a light grey photo, the text needs more blue under it (as much as on Sam80) */
+  .hero .hero-ready .hero-fog {
+    background: linear-gradient(90deg, rgb(4 16 48 / 0.95) 0%, rgb(4 16 48 / 0.88) 28%, rgb(4 16 48 / 0.55) 42%, transparent 58%);
+  }
+  .hero-university .hero-cover {
+    object-position: right center;
+  }
   .hero-fog {
     background: var(--hero-text-fog);
   }
@@ -1350,7 +1367,7 @@ button:not(:disabled),
     z-index: 3;
     left: 36%;
     right: 0;
-    top: 618px;
+    bottom: 110px;
     height: 2px;
     background: linear-gradient(90deg, transparent, rgb(180 215 255 / 0.55) 30%, rgb(180 215 255 / 0.55) 70%, transparent);
   }
@@ -1371,36 +1388,56 @@ button:not(:disabled),
   .hero-slide.on .hero-prod {
     animation: hero-rise 1s 0.2s both;
   }
+  /* Machines: big, in the middle of the free space right of the text; their size follows the
+     height of the slider (the first screen) */
   .hero-maestro .hero-prod {
-    left: calc(50% + 130px);
-    bottom: 50px;
-    height: 490px;
+    /* on the empty dark part of the background, right after the text */
+    left: max(700px, 38%);
+    bottom: 44px;
+    height: 76%;
   }
   .hero-maestro .hero-floor {
-    left: calc(50% + 100px);
-    bottom: 28px;
+    left: calc(max(700px, 38%) - 50px);
+    bottom: 22px;
+    width: 360px;
   }
   .hero-ready .hero-prod {
-    left: calc(50% + 340px);
-    bottom: 52px;
-    height: 490px;
+    left: calc(50% + 320px);
+    bottom: 40px;
+    height: 80%;
   }
   .hero-ready .hero-floor {
-    left: calc(50% + 310px);
-    bottom: 30px;
+    left: calc(50% + 290px);
+    bottom: 22px;
+    width: 400px;
+  }
+  .hero-sam80 {
+    --sam-w: min(880px, 44.5vw);
+  }
+  /* All slides: the same blue fog, only under the text (deep enough for grey photos too);
+     the rest of the picture stays as it is */
+  .hero .hero-fog {
+    background: linear-gradient(90deg, rgb(4 16 48 / 0.92) 0%, rgb(4 16 48 / 0.8) 24%, rgb(4 16 48 / 0.4) 38%, transparent 50%);
+  }
+  .hero-sam80 .hero-floor {
+    left: calc(49% + 60px);
+    bottom: calc(5% - 16px);
+    width: calc(var(--sam-w) - 120px);
   }
   .hero-sam80 .hero-prod {
-    left: calc(50% - 30px);
-    top: 222px;
-    width: 600px;
+    /* right and low: the fruit, spices and the pastry chef of the photo stay in sight */
+    left: 49%;
+    bottom: 5%;
+    width: var(--sam-w);
     height: auto;
   }
   .hero-refl {
     position: absolute;
     z-index: 3;
-    left: calc(50% - 30px);
-    top: 620px;
-    width: 600px;
+    left: max(560px, 30%);
+    /* right under the showcase, upside down */
+    bottom: calc(110px - var(--sam-w) * 0.665);
+    width: var(--sam-w);
     height: auto;
     transform: scaleY(-1);
     opacity: 0.22;
@@ -1431,9 +1468,11 @@ button:not(:disabled),
   .hero-photo-desk {
     position: absolute;
     z-index: 4;
-    left: calc(50% - 110px);
-    top: 255px;
-    width: 405px;
+    /* As on the old slider: left, under the text, low; the towers on the right stay open */
+    left: max(20%, 304px);
+    /* higher and a bit smaller: the leftmost houses of the city stay in sight */
+    bottom: 170px;
+    width: min(540px, 30vw);
     transform: rotate(-4deg);
   }
   .hero-photo-phone {
@@ -1444,30 +1483,43 @@ button:not(:disabled),
     z-index: 6;
     inset: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    /* As on the old slider: under the header (about 90px), then 64px of air */
+    padding-top: 156px;
+    /* The text layer covers the slider: clicks go through it to the arrows and the photo */
+    pointer-events: none;
   }
-  .hero-text .hero-wrap {
+  .hero-text .hero-btn,
+  .hero-text a {
+    pointer-events: auto;
+  }
+  /* As on the old slider: the text and the dots stand 90px from the left edge of the slider
+     (not in a centred column) */
+  .hero-text .hero-wrap,
+  .hero-dots .hero-wrap {
     width: 100%;
+    max-width: none;
+    padding-inline: 90px;
   }
   .hero-text h1,
   .hero-text h2 {
     margin: 0;
-    max-width: 680px;
     padding-bottom: 6px;
-    font-size: 64px;
+    /* One line on large screens, as on the old slider (phones: wraps, see below) */
+    white-space: nowrap;
+    font-size: 60px;
     line-height: 1.02;
     letter-spacing: -1.5px;
     font-weight: 800;
     text-wrap: balance;
   }
   .hero-university .hero-text h2 {
-    max-width: 540px;
-    font-size: 58px;
+    font-size: 52px;
   }
   .hero-text p {
     margin: 18px 0 34px;
-    max-width: 420px;
-    font-size: 20px;
+    max-width: 380px;
+    font-size: 21px;
     line-height: 1.5;
   }
   .hero-text p b {
@@ -1504,9 +1556,10 @@ button:not(:disabled),
     position: absolute;
     z-index: 5;
     inset: 0 0 auto;
-    height: 190px;
+    height: 160px;
     pointer-events: none;
-    background: linear-gradient(180deg, rgb(4 16 48 / 0.88), rgb(4 16 48 / 0.45) 55%, transparent);
+    /* Light: the photo of the slide shows through the see-through header */
+    background: linear-gradient(180deg, rgb(4 16 48 / 0.55), rgb(4 16 48 / 0.18) 60%, transparent);
   }
   .hero-arrow {
     z-index: 8;
@@ -1591,9 +1644,8 @@ button:not(:disabled),
       width: 480px;
     }
     .hero-photo-desk {
-      left: auto;
-      right: 6%;
-      width: 340px;
+      left: max(20%, 240px);
+      width: 300px;
     }
   }
   @media (max-width: 820px) {
@@ -1601,7 +1653,9 @@ button:not(:disabled),
       height: auto;
       display: grid;
     }
-    .hero-wrap {
+    .hero-wrap,
+    .hero-text .hero-wrap,
+    .hero-dots .hero-wrap {
       padding-inline: 16px;
     }
     .hero-slide {
@@ -1619,11 +1673,13 @@ button:not(:disabled),
       display: block;
       order: 1;
       padding-top: 92px;
+      pointer-events: auto;
     }
     .hero-text h1,
     .hero-text h2,
     .hero-university .hero-text h2 {
       max-width: none;
+      white-space: normal;
       font-size: clamp(28px, 9vw, 40px);
       letter-spacing: -0.6px;
       overflow-wrap: anywhere;
@@ -1644,7 +1700,7 @@ button:not(:disabled),
     .hero-photo-desk {
       display: none;
     }
-    .hero-fog,
+    .hero .hero-fog,
     .hero-fog-strong {
       background: var(--hero-text-fog-phone);
     }

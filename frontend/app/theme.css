@@ -97,6 +97,8 @@
   --light-card: #f5f7fa;
   /* Футер: темно-синя картка */
   --grad-footer-navy: linear-gradient(100deg, #071634 0%, #0a1b42 45%, #0e2a66 100%);
+  /* Footer: light graphite (client, 26.10) */
+  --grad-footer-graphite: linear-gradient(100deg, #3a4048 0%, #454c55 50%, #525a64 100%);
   /* Мітки тем новин на темно-синьому */
   --navy-tag-bg: rgb(47 130 255 / 0.2);
   --navy-tag-ink: #9cc4ff;

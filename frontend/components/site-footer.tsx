@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 
+import { BrandMark } from "@/components/brand-logo";
 import { Link } from "@/i18n/navigation";
 import type { SiteContacts } from "@/lib/site-pages";
 
@@ -51,18 +51,6 @@ const companyLinks = [
 const heading = "mb-3 text-xs font-extrabold tracking-[2px] text-sky uppercase";
 const link = "text-on-navy transition-colors hover:text-white";
 
-// Engraved cone on metal. Soft edges so it melts into the chocolate background.
-function Engraving({ className }: { className: string }) {
-  return (
-    <div
-      aria-hidden="true"
-      className={`aspect-900/670 mask-intersect mask-[linear-gradient(90deg,transparent_0%,#000_40%,#000_93%,transparent_100%),linear-gradient(180deg,transparent_0%,#000_14%,#000_86%,transparent_100%)] ${className}`}
-    >
-      <Image src="/images/footer-engraving.webp" alt="" fill sizes="(max-width: 820px) 120px, 320px" className="object-cover opacity-55 mix-blend-screen brightness-90 contrast-105 grayscale" />
-    </div>
-  );
-}
-
 export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
   const t = useTranslations("Footer");
   const phones = contacts?.phones.length ? contacts.phones : defaultPhones;
@@ -74,17 +62,18 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
     <div className="mx-auto w-full max-w-360 px-20 pb-10 max-[820px]:px-4">
       {/* The brand trail line above the footer */}
       <div aria-hidden="true" className="brand-line mb-8" />
-      {/* Thin metal-to-blue rim around the navy footer card (mockup «Головна (синя тема)») */}
+      {/* Thin metal rim around the light graphite footer card */}
       <div className="rounded-[41px] bg-[image:var(--navy-panel-rim)] p-px shadow-[0_24px_60px_rgb(0_10_50/0.35)] max-[820px]:rounded-[29px]">
-      <footer className="relative isolate overflow-hidden rounded-[40px] bg-[image:var(--grad-footer-navy)] text-on-navy max-[820px]:rounded-[28px]">
-        {/* Desktop: smaller engraving on the right, not the full footer height */}
-        <Engraving className="absolute top-1/2 right-8 h-[82%] -translate-y-1/2 max-[820px]:hidden" />
-
-        <div className="relative z-1 grid max-w-[calc(100%-330px)] grid-cols-[1fr_1.6fr_0.8fr] gap-10 px-12 pt-8 pb-5 max-[820px]:max-w-none max-[820px]:grid-cols-[auto_1fr] max-[820px]:gap-x-7 max-[820px]:gap-y-6 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-4">
+      <footer className="relative isolate overflow-hidden rounded-[40px] bg-[image:var(--grad-footer-graphite)] text-on-navy max-[820px]:rounded-[28px]">
+        <div className="relative z-1 grid grid-cols-[1fr_1.6fr_0.8fr] gap-10 px-12 max-[1100px]:grid-cols-2 pt-8 pb-5 max-[820px]:max-w-none max-[820px]:grid-cols-[auto_1fr] max-[820px]:gap-x-7 max-[820px]:gap-y-6 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-4">
           {/* Column 1: brand and socials */}
           <div className="max-[820px]:col-span-2 max-[820px]:flex max-[820px]:items-start max-[820px]:justify-between max-[820px]:gap-3">
             <div>
-              <div className="metal-text pb-1 text-[30px] leading-none font-extrabold tracking-[-0.5px]">Carpigiani</div>
+              {/* The mark and the name */}
+              <div className="flex items-center gap-3">
+                <BrandMark className="h-12 w-auto" />
+                <div className="metal-text pb-1 text-[30px] leading-none font-extrabold tracking-[-0.5px]">Carpigiani</div>
+              </div>
               <p className="mt-2.5 text-sm leading-normal text-on-navy-soft">{t("about")}</p>
               <div className="mt-3.5 flex gap-2.5">
                 {socials.map((s) => (
@@ -113,15 +102,13 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
                 ))}
               </div>
             </div>
-            {/* Phone: small engraving next to the brand */}
-            <Engraving className="relative hidden w-26 shrink-0 max-[820px]:block" />
           </div>
 
           {/* Column 2: contacts (address and phones side by side, so the footer stays low) */}
           <div className="max-[820px]:order-2">
             <div className={heading}>{t("contactsTitle")}</div>
-            <div className="grid grid-cols-2 gap-6 text-[15px] leading-[1.6] max-[820px]:grid-cols-1 max-[820px]:gap-2.5 max-[820px]:text-sm">
-              <address className="text-on-navy-soft not-italic min-[821px]:whitespace-nowrap">
+            <div className="grid grid-cols-2 gap-6 text-[15px] leading-[1.6] max-[1100px]:grid-cols-1 max-[1100px]:gap-2.5 max-[820px]:gap-2.5 max-[820px]:text-sm">
+              <address className="text-on-navy-soft not-italic min-[1101px]:whitespace-nowrap">
                 {contacts ? contacts.company : t("company")}
                 <br />
                 {contacts ? contacts.street : t("street")}
@@ -156,7 +143,7 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
           </div>
         </div>
 
-        <div className="relative z-1 mx-12 max-w-[calc(100%-426px)] border-t border-white/14 pt-3.5 pb-5 text-[13px] text-on-dark-soft max-[820px]:mx-6 max-[820px]:max-w-none max-[820px]:pb-4 max-[820px]:text-xs">
+        <div className="relative z-1 mx-12 border-t border-white/14 pt-3.5 pb-5 text-[13px] text-on-dark-soft max-[820px]:mx-6 max-[820px]:max-w-none max-[820px]:pb-4 max-[820px]:text-xs">
           {t("copyright")} · {t("madeBy")}{" "}
           <a href="https://aostudio.art" target="_blank" rel="noopener" className={link}>
             AO Studio

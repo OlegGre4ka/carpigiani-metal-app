@@ -262,7 +262,7 @@ export function SiteHeader({
         {/* The mark and, next to it, the "Manufacturers" button (where the brand pills were) */}
         <div className="flex shrink-0 items-center gap-5 max-[820px]:gap-3">
           <Link href="/" aria-label={t("toHome")} className="flex shrink-0 items-center">
-            <BrandMark className="h-12 w-auto max-[820px]:h-10" />
+            <BrandMark className="h-14 w-auto max-[820px]:h-11" />
           </Link>
           {brands.length > 0 && <BrandsButton brands={brands} pathname={pathname} />}
         </div>
