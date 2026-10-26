@@ -14,15 +14,16 @@ export default function HomePage() {
       {/* Header and slider stand on the navy background (globals.css: body:has(.home-navy)) */}
       <HeroSlider />
       {/* Navy flows into the white "What we do" band (backgrounds change from block to block) */}
-      <div aria-hidden="true" className="h-37.5 bg-linear-to-b from-transparent to-white max-[820px]:h-22.5" />
+      <div aria-hidden="true" className="fade-to-light" />
       <Services />
-      {/* The white band flows back into navy; the blocks below stand on the navy background */}
-      <div aria-hidden="true" className="-mt-px h-42.5 bg-linear-to-b from-white to-transparent max-[820px]:h-22.5" />
+      <div aria-hidden="true" className="fade-to-dark" />
       {/* Equipment categories come from the admin panel (read on the server); a loader is shown in their place until they are ready */}
       <Suspense fallback={<PageLoader />}>
         <EquipmentCategories />
         {/* All IFI showcases with chips, under its own title (as on the old site) */}
+        <div aria-hidden="true" className="fade-to-light mt-25 max-[820px]:mt-15" />
         <BrandShowcases brand="ifi" withTitle />
+        <div aria-hidden="true" className="fade-to-dark" />
         {/* The three newest news and "All news" */}
         <HomeNews />
       </Suspense>

@@ -72,6 +72,8 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
 
   return (
     <div className="mx-auto w-full max-w-360 px-20 pb-10 max-[820px]:px-4">
+      {/* The brand trail line above the footer */}
+      <div aria-hidden="true" className="brand-line mb-8" />
       {/* Thin metal-to-blue rim around the navy footer card (mockup «Головна (синя тема)») */}
       <div className="rounded-[41px] bg-[image:var(--navy-panel-rim)] p-px shadow-[0_24px_60px_rgb(0_10_50/0.35)] max-[820px]:rounded-[29px]">
       <footer className="relative isolate overflow-hidden rounded-[40px] bg-[image:var(--grad-footer-navy)] text-on-navy max-[820px]:rounded-[28px]">

@@ -83,7 +83,7 @@ export function ContactWidget() {
         aria-label={t("toTop")}
         tabIndex={showUp && !open ? 0 : -1}
         aria-hidden={showUp && !open ? undefined : true}
-        className={`contact-up fixed right-8 bottom-26 z-58 flex size-14 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--grad-round)] text-brand shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[image:var(--grad-btn)] hover:text-white hover:shadow-[0_16px_32px_rgb(var(--brand-rgb)/0.4)] max-[820px]:right-5 max-[820px]:bottom-22 max-[820px]:size-12 ${
+        className={`contact-up fixed right-8 bottom-26 z-58 flex size-14 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-[#05070b] shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[image:var(--grad-btn)] hover:text-white hover:shadow-[0_16px_32px_rgb(var(--brand-rgb)/0.4)] max-[820px]:right-5 max-[820px]:bottom-22 max-[820px]:size-12 ${
           showUp && !open ? "opacity-100" : "pointer-events-none translate-y-3 opacity-0"
         }`}
       >
@@ -135,7 +135,7 @@ export function ContactWidget() {
         onClick={() => (open ? close() : show())}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        className={`contact-fab fixed right-7 bottom-7 z-60 flex h-15 items-center gap-2.5 rounded-full bg-[image:var(--grad-btn)] pr-6.5 pl-5 text-[15px] font-extrabold text-white shadow-[0_14px_30px_rgb(var(--brand-rgb)/0.4)] transition hover:-translate-y-0.5 hover:brightness-108 motion-reduce:animate-none max-[820px]:right-4 max-[820px]:bottom-4 max-[820px]:h-13.5 max-[820px]:pr-5 max-[820px]:pl-4 ${
+        className={`contact-fab fixed right-7 bottom-7 z-60 flex h-15 items-center gap-2.5 rounded-full bg-[image:var(--metal)] pr-6.5 pl-5 text-[15px] font-extrabold text-[#05070b] shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_14px_30px_rgb(0_0_0/0.45)] transition hover:-translate-y-0.5 hover:brightness-108 motion-reduce:animate-none max-[820px]:right-4 max-[820px]:bottom-4 max-[820px]:h-13.5 max-[820px]:pr-5 max-[820px]:pl-4 ${
           open ? "max-[820px]:hidden" : "animate-fab-pulse"
         }`}
       >

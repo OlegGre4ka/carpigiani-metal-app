@@ -102,6 +102,18 @@
   --navy-tag-ink: #9cc4ff;
   --navy-tag-line: rgb(90 150 255 / 0.4);
 
+  /* ---------- Головна: слайдер на всю ширину (прототип «Carpigiani — нова головна») ---------- */
+  /* Лінія-«шлейф»: синій → крижаний блакитний → сріблясто-білий, краї згасають */
+  --line: linear-gradient(90deg, rgb(22 59 101 / 0) 0%, #163b65 12%, #2c6fb8 32%, #35a9e8 50%, #cfe6f5 72%, rgb(255 255 255 / 0) 100%);
+  --hero-bg: #061633;
+  --hero-navy: radial-gradient(900px 600px at 72% 45%, rgb(60 140 255 / 0.3), transparent 65%),
+    linear-gradient(110deg, #041030 0%, #0a2a66 55%, #0a3077 100%);
+  --hero-text-fog: linear-gradient(90deg, rgb(6 22 51 / 0.9) 0%, rgb(6 22 51 / 0.6) 34%, rgb(6 22 51 / 0) 56%);
+  --hero-text-fog-strong: linear-gradient(90deg, rgb(6 22 51 / 0.96) 0%, rgb(6 22 51 / 0.88) 34%, rgb(6 22 51 / 0.35) 52%, rgb(6 22 51 / 0) 64%);
+  --hero-text-fog-phone: linear-gradient(180deg, rgb(6 22 51 / 0.97) 0%, rgb(6 22 51 / 0.88) 45%, rgb(6 22 51 / 0.3) 65%, rgb(6 22 51 / 0) 80%);
+  --hero-photo-rim: linear-gradient(150deg, #ffffff, #9da7b2 45%, #6f7a86);
+  --hero-on-dark: #d3e0f5;
+
   /* ---------- Помилки ---------- */
   --danger: #c43d3a;
   --danger-ink: #9a2622;

@@ -15,7 +15,7 @@ export const chip = (active: boolean, onNavy = false) =>
         ? "border-transparent bg-[image:var(--grad-btn)] text-white shadow-[0_8px_22px_rgb(20_100_255/0.4)]"
         : "border-white/20 bg-white/5 text-on-navy hover:bg-white/10"
       : active
-        ? "border-ink bg-ink text-white"
+        ? "chip-active text-white"
         : "border-ink/15 bg-white/70 text-ink hover:bg-white"
   }`;
 

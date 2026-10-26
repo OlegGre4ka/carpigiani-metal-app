@@ -62,18 +62,19 @@ export function Services() {
 
   return (
     // White band on the full width (the home page changes backgrounds: dark, white, dark...)
-    <section className="bg-white">
-      <div className="mx-auto w-full max-w-360 px-20 pt-5 pb-25 max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:pt-2.5 max-[820px]:pb-15">
-        <h2 className="mb-3 pb-1 text-[54px] leading-[1.05] tracking-[-1.5px] max-[820px]:text-[34px]">
-          <span className="blue-text">{t("title")}</span>
+    <section className="band-light">
+      <div className="mx-auto w-full max-w-360 px-20 pt-5 pb-25 text-center max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:pt-2.5 max-[820px]:pb-15">
+        <h2 className="pb-1 text-[52px] leading-[1.05] tracking-[-1.5px] max-[820px]:text-[32px]">
+          <span className="metal-text-dark">{t("title")}</span>
         </h2>
-        <p className="mb-11 max-w-155 text-lg leading-[1.55] text-ink-soft max-[820px]:mb-7 max-[820px]:text-base">{t("text")}</p>
+        <span aria-hidden="true" className="title-line" />
+        <p className="mx-auto mt-4 mb-11 max-w-155 text-lg leading-[1.55] text-ink-soft max-[820px]:mb-7 max-[820px]:text-base">{t("text")}</p>
         <div className="grid grid-cols-3 gap-6.5 max-[1000px]:grid-cols-1 max-[820px]:gap-4">
           {services.map((s, index) => (
             <div
               key={s.key}
               style={{ animationDelay: `${index * 110}ms` }}
-              className="steel-card rounded-[31px] [--card-fill:var(--light-card)] p-8.5 shadow-[0_18px_44px_rgb(0_10_50/0.45)] transition duration-300 motion-safe:animate-fade-up hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)] max-[820px]:p-6.5"
+              className="steel-card rounded-[31px] text-left [--card-fill:var(--light-card)] p-8.5 shadow-[0_18px_44px_rgb(0_10_50/0.45)] transition duration-300 motion-safe:animate-fade-up hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)] max-[820px]:p-6.5"
             >
               <div className="mb-6 flex size-15.5 items-center justify-center rounded-[20px] bg-[image:var(--grad-btn)] text-white shadow-[0_12px_30px_rgb(20_100_255/0.4)]">
                 {s.icon}
