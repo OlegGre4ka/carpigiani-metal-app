@@ -1476,7 +1476,10 @@ button:not(:disabled),
     transform: rotate(-4deg);
   }
   .hero-photo-phone {
-    display: none;
+    /* under the button, moved right (as on the old slider); as big as the screen height allows */
+    width: clamp(260px, min(27vw, calc((100svh - 560px) * 1.45)), 520px);
+    margin: 40px 0 0 clamp(150px, 13vw, 280px);
+    transform: rotate(-4deg);
   }
   .hero-text {
     position: absolute;

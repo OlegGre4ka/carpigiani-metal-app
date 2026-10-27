@@ -59,9 +59,6 @@ function SlideArt({ slideKey, first }: { slideKey: Slide["key"]; first: boolean 
           {/* Bologna at night, drawn in lines under the stars; blue fog only under the text */}
           <Image src={`${img}bologna-night.webp`} alt="" fill sizes="100vw" loading="lazy" className="hero-cover" />
           <div aria-hidden="true" className="hero-layer hero-fog" />
-          <div className="hero-photo hero-photo-desk">
-            <Image src={`${img}gelato-university-3x2.webp`} alt="Carpigiani Gelato University" width={765} height={510} sizes="540px" loading="lazy" />
-          </div>
         </>
       );
     case "ready":
@@ -107,10 +104,11 @@ export function HeroSlider() {
                   {t(slide.button)}
                   <ArrowRight aria-hidden="true" className="size-4.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
                 </Link>
-                {/* Phones: the group photo goes under the button (as on the old site) */}
+                {/* The group photo stands under the button, in the same block as the text, so a
+                    bigger font only pushes it down and it never covers the text */}
                 {slide.key === "university" && (
                   <div className="hero-photo hero-photo-phone">
-                    <Image src={`${img}gelato-university-3x2.webp`} alt="" width={765} height={510} sizes="330px" loading="lazy" />
+                    <Image src={`${img}gelato-university-3x2.webp`} alt="Carpigiani Gelato University" width={765} height={510} sizes="(max-width: 820px) 330px, 520px" loading="lazy" />
                   </div>
                 )}
               </div>
