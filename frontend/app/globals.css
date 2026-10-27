@@ -1748,16 +1748,39 @@ button:not(:disabled),
     .hero-ready .hero-prod {
       height: 330px;
     }
-    /* Maestro stands above the tray of gelato of the phone picture, not on top of it */
-    .hero-maestro .hero-prod {
-      height: clamp(240px, calc(100svh - 500px), 330px);
-      margin-bottom: 17svh;
+    /* Maestro and Ready: in the middle, as big as the free space between the button and the
+       bottom allows (the picture fills the space, never covers the text). Maestro stands
+       above the tray of gelato of the phone picture, not on top of it. */
+    .hero-maestro .hero-prod,
+    .hero-ready .hero-prod {
+      flex: 1 1 0;
+      align-self: stretch;
+      width: 100%;
+      height: auto;
+      min-height: 210px;
+      max-height: 560px;
+      margin: 20px 0 8px;
+      object-fit: contain;
+      object-position: center bottom;
     }
+    .hero-maestro .hero-prod {
+      margin-bottom: 9svh;
+    }
+    /* Sam80 (27.10): big, over the glass domes of the photo — the pastry chef above it and the
+       fruit and spices under it stay in sight; on short phones it moves up, never onto the button */
     .hero-sam80 .hero-prod {
       align-self: center;
-      width: calc(100% - 32px);
-      max-width: 360px;
-      margin: auto auto 40px;
+      width: calc(100% - 24px);
+      max-width: 480px;
+      margin: clamp(28px, calc(100svh - 700px), 170px) auto 0;
+    }
+    .hero-sam80 .hero-cover {
+      transform: translateY(20%);
+      mask-image: linear-gradient(180deg, transparent 0, #000 14%);
+    }
+    /* Blue fog only under the text and the button; the photo stays light */
+    .hero .hero-sam80 .hero-fog {
+      background: linear-gradient(180deg, rgb(6 22 51 / 0.95) 0%, rgb(6 22 51 / 0.85) 24%, rgb(6 22 51 / 0) 40%);
     }
     .hero-spot {
       background: radial-gradient(ellipse 70% 30% at 60% 75%, rgb(150 200 255 / 0.3), transparent 70%);
