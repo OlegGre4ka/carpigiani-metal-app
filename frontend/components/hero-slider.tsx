@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { ArrowRight } from "lucide-react";
@@ -30,6 +30,25 @@ const slides: Slide[] = [
 
 const img = "/images/slides/";
 
+/** Background of a slide: its own picture for phones (tall) and for large screens (wide).
+ *  The browser downloads only the one that fits the screen. */
+function HeroBg({ desk, phone, first }: { desk: string; phone?: string; first: boolean }) {
+  if (!phone) {
+    return <Image src={`${img}${desk}`} alt="" fill sizes="100vw" priority={first} loading={first ? undefined : "lazy"} className="hero-cover" />;
+  }
+  const common = { alt: "", fill: true, sizes: "100vw" } as const;
+  const { props: deskProps } = getImageProps({ ...common, src: `${img}${desk}`, priority: first });
+  const {
+    props: { srcSet: phoneSet },
+  } = getImageProps({ ...common, src: `${img}${phone}` });
+  return (
+    <picture>
+      <source media="(max-width: 820px)" srcSet={phoneSet} />
+      <img {...deskProps} alt="" loading={first ? undefined : "lazy"} className="hero-cover" />
+    </picture>
+  );
+}
+
 /** Background and picture of each slide */
 function SlideArt({ slideKey, first }: { slideKey: Slide["key"]; first: boolean }) {
   const loading = first ? "eager" : "lazy";
@@ -37,7 +56,7 @@ function SlideArt({ slideKey, first }: { slideKey: Slide["key"]; first: boolean 
     case "maestro":
       return (
         <>
-          <Image src={`${img}hero-gelato-tray.webp`} alt="" fill sizes="100vw" priority={first} loading={first ? undefined : "lazy"} className="hero-cover" />
+          <HeroBg desk="hero-gelato-tray.webp" phone="hero-gelato-tray-phone.webp" first={first} />
           <div aria-hidden="true" className="hero-layer hero-fog" />
           <div aria-hidden="true" className="hero-floor" />
           <Image src={`${img}maestro-cut.webp`} alt="Carpigiani Maestro" width={416} height={1083} sizes="(max-width: 820px) 160px, 360px" loading={loading} className="hero-prod" />
@@ -47,24 +66,24 @@ function SlideArt({ slideKey, first }: { slideKey: Slide["key"]; first: boolean 
       return (
         <>
           {/* Gelato lab photo (client's choice, 26.10); fog under the text, the showcase stands on it */}
-          <Image src={`${img}sam80-bg.webp`} alt="" fill sizes="100vw" loading="lazy" className="hero-cover" />
+          <HeroBg desk="sam80-bg.webp" phone="sam80-bg-phone.webp" first={first} />
           <div aria-hidden="true" className="hero-layer hero-fog" />
           <div aria-hidden="true" className="hero-floor" />
-          <Image src={`${img}ifi-sam80-cut.webp`} alt="IFI Sam80" width={776} height={516} sizes="(max-width: 820px) 360px, 900px" loading={loading} className="hero-prod" />
+          <Image src={`${img}ifi-sam80.webp`} alt="IFI Sam80" width={1400} height={788} sizes="(max-width: 820px) 360px, 900px" loading={loading} className="hero-prod" />
         </>
       );
     case "university":
       return (
         <>
-          {/* Bologna at night, drawn in lines under the stars; blue fog only under the text */}
-          <Image src={`${img}bologna-night.webp`} alt="" fill sizes="100vw" loading="lazy" className="hero-cover" />
+          {/* Bologna drawn in lines on blue (client's pictures, 27.10); blue fog only under the text */}
+          <HeroBg desk="bologna-day.webp" phone="bologna-day-phone.webp" first={first} />
           <div aria-hidden="true" className="hero-layer hero-fog" />
         </>
       );
     case "ready":
       return (
         <>
-          <Image src={`${img}ready-bg.webp`} alt="" fill sizes="100vw" loading="lazy" className="hero-cover" />
+          <HeroBg desk="ready-bg.webp" first={first} />
           <div aria-hidden="true" className="hero-layer hero-fog" />
           <div aria-hidden="true" className="hero-floor" />
           <Image src={`${img}ready-cut.webp`} alt="Carpigiani Ready" width={300} height={607} sizes="(max-width: 820px) 160px, 360px" loading={loading} className="hero-prod" />
@@ -99,18 +118,24 @@ export function HeroSlider() {
               <div className="hero-wrap">
                 <Heading className="metal-text">{t(`${slide.key}.title`)}</Heading>
                 <p>{t.rich(`${slide.key}.text`, { b: bold })}</p>
-                {/* Hover: lifts, a light glare runs across, the arrow moves right */}
-                <Link href={slide.href} className="btn-shine hero-btn group/btn">
-                  {t(slide.button)}
-                  <ArrowRight aria-hidden="true" className="size-4.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
-                </Link>
-                {/* The group photo stands under the button, in the same block as the text, so a
-                    bigger font only pushes it down and it never covers the text */}
-                {slide.key === "university" && (
-                  <div className="hero-photo hero-photo-phone">
-                    <Image src={`${img}gelato-university-3x2.webp`} alt="Carpigiani Gelato University" width={765} height={510} sizes="(max-width: 820px) 330px, 520px" loading="lazy" />
-                  </div>
-                )}
+                {/* As on the old site: only the words; on hover the button widens and an
+                    arrow slides in on the right */}
+                <div className="hero-actions">
+                  <Link href={slide.href} className="btn-shine hero-btn">
+                    <span>{t(slide.button)}</span>
+                    <span aria-hidden="true" className="hero-btn-arrow">
+                      <ArrowRight className="size-4.5" />
+                    </span>
+                  </Link>
+                  {/* The group photo stands right of the button (phones: under it), in the same
+                      block as the text, so a bigger font only pushes it down and it never
+                      covers the text */}
+                  {slide.key === "university" && (
+                    <div className="hero-photo hero-photo-uni">
+                      <Image src={`${img}gelato-university-3x2.webp`} alt="Carpigiani Gelato University" width={765} height={510} sizes="(max-width: 820px) 330px, 560px" loading="lazy" />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

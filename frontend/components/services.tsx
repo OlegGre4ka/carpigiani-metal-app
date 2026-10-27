@@ -63,7 +63,7 @@ export function Services() {
   return (
     // White band on the full width (the home page changes backgrounds: dark, white, dark...)
     <section className="band-light">
-      <div className="mx-auto w-full max-w-360 px-20 pt-5 pb-25 text-center max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:pt-2.5 max-[820px]:pb-15">
+      <div className="mx-auto w-full max-w-360 px-20 pt-25 pb-25 text-center max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:pt-15 max-[820px]:pb-15">
         <h2 className="pb-1 text-[52px] leading-[1.05] tracking-[-1.5px] max-[820px]:text-[32px]">
           <span className="metal-text-dark">{t("title")}</span>
         </h2>

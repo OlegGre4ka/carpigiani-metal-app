@@ -24,8 +24,8 @@ export async function EquipmentCategories() {
   const metal = (chunks: ReactNode) => <span className="metal-text">{chunks}</span>;
 
   return (
-    <section>
-      <div className="mx-auto w-full max-w-360 px-20 pt-2.5 max-[1100px]:px-10 max-[820px]:px-4">
+    <section className="band-blue">
+      <div className="mx-auto w-full max-w-360 px-20 pt-25 pb-25 max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:pt-15 max-[820px]:pb-15">
         <h2 className="pb-1 text-center font-heading text-[54px] leading-[1.05] font-extrabold tracking-[-1.5px] text-white motion-safe:animate-fade-up max-[820px]:text-[34px]">
           {t.rich("title", { m: metal })}
         </h2>
