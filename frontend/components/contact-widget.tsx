@@ -83,7 +83,7 @@ export function ContactWidget() {
         aria-label={t("toTop")}
         tabIndex={showUp && !open ? 0 : -1}
         aria-hidden={showUp && !open ? undefined : true}
-        className={`contact-up fixed right-8 bottom-26 z-58 flex size-14 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-[#05070b] shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[image:var(--grad-btn)] hover:text-white hover:shadow-[0_16px_32px_rgb(var(--brand-rgb)/0.4)] max-[820px]:right-5 max-[820px]:bottom-22 max-[820px]:size-12 ${
+        className={`contact-up metal-round fixed right-8 bottom-26 z-58 flex size-14 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-[#05070b] shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:text-white max-[820px]:right-5 max-[820px]:bottom-22 max-[820px]:size-12 ${
           showUp && !open ? "opacity-100" : "pointer-events-none translate-y-3 opacity-0"
         }`}
       >

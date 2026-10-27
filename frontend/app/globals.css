@@ -1466,18 +1466,30 @@ button:not(:disabled),
   /* Gelato University: the button and the photo in one row (as on the old slider); the photo
      starts at the same place on every slide size, the towers on the right stay open, and it is
      as big as the height of the slider allows (never reaches the dots) */
+  /* 27.10 (Oleh's red frame): the photo fills all the room right of the button, from the
+     button down to the dots, whatever the screen or the browser zoom. The row takes the rest
+     of the slide height; the photo is as big as that room allows (3:2) and never goes past
+     the middle of the slide, so the towers stay open. */
+  .hero-text .hero-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
   .hero-actions {
     display: grid;
-    grid-template-columns: 285px auto;
+    grid-template-columns: 210px minmax(0, 1fr);
     align-items: start;
+    flex: 1 1 0;
+    min-height: 0;
+    container-type: size;
   }
   .hero-actions .hero-btn {
     justify-self: start;
   }
   .hero-photo-uni {
-    width: clamp(300px, min(30vw, (var(--hero-h) - 500px) * 1.45), 560px);
-    /* a bit lower than the top of the button: air under the text */
-    margin-top: 28px;
+    width: min(100cqw - 210px - 30px, (100cqh - 40px) * 1.5, 52vw - 300px, 700px);
+    min-width: 260px;
+    margin-top: 14px;
     transform: rotate(-4deg);
   }
   .hero-text {
@@ -1486,8 +1498,10 @@ button:not(:disabled),
     inset: 0;
     display: flex;
     align-items: flex-start;
-    /* As on the old slider: under the header (about 90px), then 64px of air */
+    /* As on the old slider: under the header (about 90px), then 64px of air; at the bottom
+       room for the dots */
     padding-top: 156px;
+    padding-bottom: 84px;
     /* The text layer covers the slider: clicks go through it to the arrows and the photo */
     pointer-events: none;
   }
@@ -1795,8 +1809,13 @@ button:not(:disabled),
       opacity: 1;
       mask-image: none;
     }
+    .hero-text .hero-wrap {
+      display: block;
+      height: auto;
+    }
     .hero-actions {
       display: block;
+      container-type: normal;
     }
     .hero-photo-uni {
       display: block;
@@ -1842,11 +1861,11 @@ button:not(:disabled),
   }
 }
 
-/* Home slider arrows on hover: deep navy with a fine texture (client's sample, 27.10) instead
-   of the bright blue of the other sliders. Outside the layers: stronger than the utility
-   classes of the shared round button (components/slider-controls.tsx). */
-.hero-arrow:hover,
-.hero-arrow:focus-visible {
+/* Round metal buttons (slider arrows of all sliders, "Up"): on hover deep navy with a fine
+   texture (client's sample, 27.10), one look for all of them. Outside the layers: stronger
+   than the utility classes of the buttons (slider-controls.tsx, contact-widget.tsx). */
+.metal-round:hover,
+.metal-round:focus-visible {
   background:
     radial-gradient(circle at 30% 22%, rgb(120 170 230 / 0.32), transparent 58%),
     radial-gradient(rgb(255 255 255 / 0.07) 0.7px, transparent 1px) 0 0 / 3px 3px,

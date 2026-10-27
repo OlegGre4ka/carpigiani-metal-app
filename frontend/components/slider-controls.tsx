@@ -57,10 +57,11 @@ export function useSlider({ count, autoplay = true }: Options) {
   return { active, paused, go, next, prev, handlers, ringKey: `${active}-${paused}` };
 }
 
-// Side arrows: round metal (chrome) buttons with volume. On hover they turn blue.
+// Side arrows: round metal (chrome) buttons with volume. On hover deep navy with a fine texture
+// (.metal-round in globals.css, the same as the "Up" button).
 // Hidden on phones (photos are swiped there). Each slider adds its own top/left/right.
 export const scoopButton =
-  "group/arrow absolute z-2 flex size-14 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-ink shadow-[inset_0_-4px_8px_rgb(var(--ink-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:border-white hover:bg-[image:var(--grad-btn)] hover:text-white hover:shadow-[0_16px_32px_rgb(var(--brand-rgb)/0.4)] max-[820px]:hidden";
+  "metal-round group/arrow absolute z-2 flex size-14 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-ink shadow-[inset_0_-4px_8px_rgb(var(--ink-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:text-white max-[820px]:hidden";
 
 export function Chevron({ dir }: { dir: "left" | "right" }) {
   return (
