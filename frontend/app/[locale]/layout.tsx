@@ -73,7 +73,9 @@ export default async function RootLayout({ children, params }: Props) {
             <FooterWithContacts />
           </Suspense>
           <ContactWidget />
-          {process.env.NODE_ENV === "development" && <FontPicker />}
+          {/* The font switcher is hidden for now (29.10: Inter Tight chosen); to compare fonts again,
+              set NEXT_PUBLIC_FONT_PICKER=1 */}
+          {process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_FONT_PICKER === "1" && <FontPicker />}
         </NextIntlClientProvider>
       </body>
     </html>

@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Fragment } from "react";
 
+import { BackButton } from "@/components/back-button";
 import { Link } from "@/i18n/navigation";
 
 // One compact line above the title of a page ("Home › News › Interesting"), so the content is
@@ -16,8 +17,10 @@ export async function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
     <nav
       aria-label={t("CategoryPage.breadcrumbs")}
-      className="flex items-center gap-1.5 overflow-x-auto pt-6 pb-2.5 text-[11px] max-[820px]:pt-4 leading-snug font-bold tracking-[1px] whitespace-nowrap text-steel uppercase [scrollbar-width:none] motion-safe:animate-fade-up [&::-webkit-scrollbar]:hidden"
+      className="flex items-center gap-1.5 overflow-x-auto pt-5 pb-2 pl-0.5 text-[11px] max-[820px]:pt-4 leading-snug font-bold tracking-[1px] whitespace-nowrap text-steel uppercase [scrollbar-width:none] motion-safe:animate-fade-up [&::-webkit-scrollbar]:hidden"
     >
+      {/* Back to the previous page (larger screens; on phones it is in the header) */}
+      <BackButton small className="mr-1.5 max-[820px]:hidden" />
       {all.map((crumb, index) => {
         const last = index === all.length - 1;
         return (

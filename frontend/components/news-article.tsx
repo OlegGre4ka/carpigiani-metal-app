@@ -83,7 +83,7 @@ export async function NewsArticle({ page, href }: { page: SitePageData; href: st
           </time>
         )}
       </div>
-      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
+      <h1 className="w-fit max-w-full mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
         {page.title}
       </h1>
 

@@ -16,7 +16,8 @@
     "admin": "Admin panel",
     "showEquipment": "Show equipment: {name}",
     "showTopics": "Show news topics",
-    "toHome": "Carpigiani: go to home page"
+    "toHome": "Carpigiani: go to home page",
+    "back": "Back"
   },
   "Catalog": {
     "carpigiani": "Carpigiani equipment",

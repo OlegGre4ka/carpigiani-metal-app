@@ -48,16 +48,16 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
   const email = contacts?.email || defaultEmail;
 
   return (
-    <div className="mx-auto w-full max-w-360 px-20 pb-10 max-[820px]:px-4">
+    <div className="mx-auto w-full max-w-360 px-20 pb-10 max-[820px]:px-4 max-[820px]:pb-24">
       {/* The brand trail line above the footer */}
       <div aria-hidden="true" className="brand-line mb-8 max-[820px]:mb-6" />
       {/* Thin metal rim around the light graphite footer card */}
       <div className="rounded-[41px] bg-[image:var(--navy-panel-rim)] p-px shadow-[0_24px_60px_rgb(0_10_50/0.35)] max-[820px]:rounded-[29px]">
       <footer className="relative isolate overflow-hidden rounded-[40px] bg-[image:var(--grad-footer-graphite)] text-on-navy max-[820px]:rounded-[28px]">
         {/* Low footer (29.10): three columns spread evenly — the company · the address with the
-            socials under it · the phones and the e-mail; "© company · made by AO Studio" under the
-            first column. Tablets and phones: the company on top, the other two side by side. */}
-        <div className="relative z-1 flex items-start justify-between gap-10 px-12 pt-7 pb-7 max-[1100px]:grid max-[1100px]:grid-cols-[1fr_auto] max-[1100px]:gap-x-10 max-[1100px]:gap-y-5 max-[820px]:gap-x-4 max-[820px]:gap-y-4 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-6">
+            socials under it · the phones and the e-mail; "© company · made by AO Studio" is always
+            the last line. Tablets and phones: the company on top, the other two side by side. */}
+        <div className="relative z-1 flex items-start justify-between gap-10 px-12 pt-7 pb-5 max-[1100px]:grid max-[1100px]:grid-cols-[1fr_auto] max-[1100px]:gap-x-10 max-[1100px]:gap-y-5 max-[820px]:gap-x-4 max-[820px]:gap-y-4 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-6">
           {/* The company */}
           <div className="max-w-90 max-[1100px]:col-span-2 max-[1100px]:max-w-none">
             <div className="flex items-center gap-3">
@@ -67,14 +67,6 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
               </div>
             </div>
             <p className="mt-2.5 text-sm leading-normal text-on-navy-soft">{t("about")}</p>
-            {/* Bottom left, in one line under a thin light line: on the right the "Contact us"
-                button always floats over the corner of the footer (29.10) */}
-            <div className="mt-4 border-t border-white/14 pt-3 text-[13px] leading-normal text-on-dark-soft max-[820px]:mt-3 max-[820px]:text-xs">
-              © {contacts ? contacts.company : t("company")} · {t("madeBy")}{" "}
-              <a href="https://aostudio.art" target="_blank" rel="noopener" className={link}>
-                AO Studio
-              </a>
-            </div>
           </div>
 
           {/* The address and the socials under it */}
@@ -123,6 +115,14 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
               {email}
             </a>
           </div>
+        </div>
+        {/* Always the last line of the footer, under a thin light line, on the left (on the right
+            the "Contact us" button floats over the corner) */}
+        <div className="relative z-1 mx-12 border-t border-white/14 pt-3 pb-4 text-[13px] leading-normal text-on-dark-soft max-[820px]:mx-6 max-[820px]:text-xs">
+          © {contacts ? contacts.company : t("company")} · {t("madeBy")}{" "}
+          <a href="https://aostudio.art" target="_blank" rel="noopener" className={link}>
+            AO Studio
+          </a>
         </div>
       </footer>
       </div>

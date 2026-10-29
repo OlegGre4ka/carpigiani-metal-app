@@ -161,8 +161,9 @@
   --glow: rgb(20 100 255 / 0.45);
 
   /* ---------- Шрифти ---------- */
-  --font-text: var(--font-manrope), Arial, sans-serif;
-  --font-title: var(--font-manrope), Arial, sans-serif;
+  /* 29.10: Inter Tight for the whole site (titles and texts) */
+  --font-text: var(--font-inter-tight), Arial, sans-serif;
+  --font-title: var(--font-inter-tight), Arial, sans-serif;
   --title-weight: 800;
   --title-tracking: -0.02em;
 }

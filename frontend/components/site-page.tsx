@@ -89,7 +89,7 @@ export async function SitePage({ page, href, locale }: { page: SitePageData; hre
       {equipment && <EquipmentPageMark name={page.item_title || page.title} />}
       <Breadcrumbs items={crumbs} />
 
-      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
+      <h1 className="w-fit max-w-full mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
         {page.title}
       </h1>
 

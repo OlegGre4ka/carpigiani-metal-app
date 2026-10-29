@@ -16,7 +16,8 @@
     "admin": "Адмінпанель",
     "showEquipment": "Показати обладнання: {name}",
     "showTopics": "Показати теми новин",
-    "toHome": "Carpigiani: на головну"
+    "toHome": "Carpigiani: на головну",
+    "back": "Назад"
   },
   "Catalog": {
     "carpigiani": "Обладнання Carpigiani",

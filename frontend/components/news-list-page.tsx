@@ -37,7 +37,7 @@ export async function NewsListPage({ page, topicHref }: { page: number; topicHre
     <main className="mx-auto w-full max-w-360 flex-1 px-20 pb-18 max-[820px]:px-4 max-[820px]:pb-12">
       <Breadcrumbs items={crumbs} />
       <div className="mb-5.5 flex flex-wrap items-end justify-between gap-x-5 gap-y-3 max-[820px]:mb-4">
-        <h1 className="font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
+        <h1 className="w-fit max-w-full font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
           {title}
         </h1>
         {data.topics.length > 0 && (

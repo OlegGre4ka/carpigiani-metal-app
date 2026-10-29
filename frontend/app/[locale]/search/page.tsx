@@ -33,7 +33,7 @@ async function Head({ params }: Props) {
   return (
     <>
       <Breadcrumbs items={[{ title: t("title") }]} />
-      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark max-[820px]:text-[25px]">{t("title")}</h1>
+      <h1 className="w-fit max-w-full mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark max-[820px]:text-[25px]">{t("title")}</h1>
     </>
   );
 }

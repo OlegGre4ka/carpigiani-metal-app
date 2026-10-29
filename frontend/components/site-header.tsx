@@ -7,6 +7,7 @@ import { ChevronDown, ChevronRight, Menu, Settings, X } from "lucide-react";
 
 import { SiteSearch } from "@/components/site-search";
 import { Link, usePathname } from "@/i18n/navigation";
+import { BackButton } from "@/components/back-button";
 import { routing } from "@/i18n/routing";
 import { BrandMark } from "@/components/brand-logo";
 
@@ -272,6 +273,8 @@ export function SiteHeader({
       <div className="mx-auto flex w-full max-w-360 items-center justify-between gap-3.5 px-20 py-5 max-[1280px]:px-8 max-[820px]:px-4 max-[820px]:py-3">
         {/* The mark and, next to it, the "Manufacturers" button (where the brand pills were) */}
         <div className="flex shrink-0 items-center gap-5 max-[820px]:gap-3">
+          {/* Phones (29.10): a metal "back" button before the mark — the breadcrumbs are long there */}
+          {pathname !== "/" && <BackButton className="hidden max-[820px]:flex" />}
           <Link href="/" aria-label={t("toHome")} className="flex shrink-0 items-center">
             <BrandMark className="h-14 w-auto max-[820px]:h-11" />
           </Link>
