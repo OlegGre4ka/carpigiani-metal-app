@@ -227,6 +227,7 @@ export function BrandsManager() {
         <div>
           <div className="font-bold">{brand.title_uk}</div>
           <div className="text-sm text-ink-soft">EN: {brand.title_en}</div>
+          <EmptyNote show={brand.is_visible && !brand.has_content} />
         </div>
       ),
     },
@@ -305,6 +306,7 @@ export function BrandsManager() {
               <div className="min-w-0">
                 <div className="font-bold">{brand.title_uk}</div>
                 <div className="text-sm text-ink-soft">EN: {brand.title_en}</div>
+                <EmptyNote show={brand.is_visible && !brand.has_content} />
                 <div className="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-ink-soft">
                   <Tag className="m-0! font-semibold">{brand.href}</Tag>
                   {categoriesLabel(brand.categories_count)}
@@ -502,5 +504,15 @@ function BrandForm({
         )}
       </Form>
     </Modal>
+  );
+}
+
+/** The page of the brand is still empty: the site does not show the brand yet (29.10) */
+function EmptyNote({ show }: { show: boolean }) {
+  if (!show) return null;
+  return (
+    <Tag color="orange" className="m-0! mt-1.5! font-semibold whitespace-normal!">
+      Не показується на сайті — сторінка ще порожня
+    </Tag>
   );
 }

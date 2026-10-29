@@ -21,6 +21,8 @@ import { BrandMark } from "@/components/brand-logo";
 export type MenuCategory = {
   href: string;
   title: string;
+  /** false: the page of the category is still empty, the name is plain text (not a link) */
+  link?: boolean;
   groups?: { title: string; items: { title: string; href: string }[] }[];
 };
 
@@ -425,19 +427,34 @@ export function SiteHeader({
  *  go off the screen) */
 function CategoryItem({ category, openLeft = false }: { category: MenuCategory; openLeft?: boolean }) {
   const groups = category.groups ?? [];
+  const linked = category.link !== false;
   if (groups.length === 0) {
-    return (
+    return linked ? (
       <Link href={category.href} className={panelLink}>
         {category.title}
       </Link>
+    ) : (
+      <span className={`${panelLink} ${plainItem}`}>{category.title}</span>
     );
   }
+  const head = (
+    <>
+      {category.title}
+      <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-sky transition-transform group-hover/cat:translate-x-0.5" />
+    </>
+  );
   return (
     <div className="group/cat relative">
-      <Link href={category.href} aria-haspopup="true" className={`${panelLink} flex items-center justify-between gap-2 group-hover/cat:bg-white/10`}>
-        {category.title}
-        <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-sky transition-transform group-hover/cat:translate-x-0.5" />
-      </Link>
+      {linked ? (
+        <Link href={category.href} aria-haspopup="true" className={`${panelLink} flex items-center justify-between gap-2 group-hover/cat:bg-white/10`}>
+          {head}
+        </Link>
+      ) : (
+        // Without a page: still opens its equipment, on hover or with the keyboard (Tab)
+        <span tabIndex={0} aria-haspopup="true" className={`${panelLink} flex cursor-default items-center justify-between gap-2 group-hover/cat:bg-white/10`}>
+          {head}
+        </span>
+      )}
       {/* The padding is a bridge for the mouse between the item and the submenu */}
       <div className={`invisible absolute top-[-14px] z-30 opacity-0 transition-[opacity,visibility,translate] delay-200 duration-200 ${openLeft ? "right-full pr-3 translate-x-2" : "left-full pl-3 -translate-x-2"} group-focus-within/cat:visible group-focus-within/cat:translate-x-0 group-focus-within/cat:opacity-100 group-focus-within/cat:delay-0 group-hover/cat:visible group-hover/cat:translate-x-0 group-hover/cat:opacity-100 group-hover/cat:delay-100`}>
         <div className="max-h-[min(70vh,520px)] w-72 overflow-y-auto overscroll-contain rounded-[22px] border border-white/15 bg-[image:var(--grad-navy-panel)] p-3 text-on-navy shadow-[0_30px_70px_rgb(0_10_40/0.6)]">
@@ -482,7 +499,9 @@ function MobileCategory({
   const [open, setOpen] = useState(false);
   const groups = category.groups ?? [];
   const external = category.href.startsWith("http");
-  const name = external ? (
+  const name = category.link === false ? (
+    <span className={`${nameClass} ${plainItem}`}>{category.title}</span>
+  ) : external ? (
     <a href={category.href} target="_blank" rel="noopener" onClick={onPick} className={nameClass}>
       {category.title}
     </a>
@@ -536,3 +555,6 @@ function MobileCategory({
     </div>
   );
 }
+
+// A category whose page is still empty: its name in the menu, not a link
+const plainItem = "cursor-default hover:bg-transparent! hover:text-inherit!";

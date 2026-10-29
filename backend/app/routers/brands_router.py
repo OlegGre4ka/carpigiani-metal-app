@@ -32,6 +32,7 @@ from app.routers.pages_router import (
     blocks_for_site,
     check_kinds,
     delete_page_images,
+    get_showcases,
     href_owner,
     page_images,
     upload,
@@ -107,8 +108,33 @@ def categories_count(db: DbSession, key: str) -> int:
 
 def to_admin_read(db: DbSession, brand: Brand) -> BrandAdminRead:
     return BrandAdminRead(
-        **to_read(brand).model_dump(), categories_count=categories_count(db, brand.key)
+        **to_read(brand).model_dump(),
+        categories_count=categories_count(db, brand.key),
+        has_content=brand_has_content(db, brand),
     )
+
+
+def brand_has_content(db: DbSession, brand: Brand) -> bool:
+    """Whether the page of the brand shows something besides the title (29.10): a block with
+    something in it, the cards of its visible categories or its equipment. Until then the brand
+    is not in the menus of the site and its address shows "page in progress"."""
+    blocks = blocks_for_site(
+        brand.blocks if brand.blocks is not None else DEFAULT_BLOCKS, "uk", db
+    )
+    for block in blocks:
+        if block["type"] != "categories":
+            return True
+        visible = db.scalar(
+            select(func.count())
+            .select_from(EquipmentCategory)
+            .where(
+                EquipmentCategory.brand == brand.key,
+                EquipmentCategory.is_visible.is_(True),
+            )
+        )
+        if visible:
+            return True
+    return brand.show_equipment and bool(get_showcases(db, "uk", brand.key)["items"])
 
 
 def clean_title(value: str, label: str) -> str:
@@ -178,7 +204,12 @@ def list_visible_brands(db: DbSession):
         .where(Brand.is_visible.is_(True))
         .order_by(Brand.sort_order, Brand.id)
     )
-    return [to_read(brand) for brand in db.scalars(statement)]
+    # A brand whose page is still empty is not in the menus yet
+    return [
+        to_read(brand)
+        for brand in db.scalars(statement)
+        if brand_has_content(db, brand)
+    ]
 
 
 @public_router.get("/page", response_model=BrandPagePublic)
@@ -188,7 +219,8 @@ def get_brand_page(
     """The page of a visible brand by its address (/ifi); 404 for anything else."""
     key = href.strip("/").lower()
     brand = db.scalar(select(Brand).where(Brand.key == key, Brand.is_visible.is_(True)))
-    if brand is None:
+    # An empty page is not shown: the site shows "page in progress" at its address
+    if brand is None or not brand_has_content(db, brand):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Сторінку не знайдено")
     return BrandPagePublic(
         key=brand.key,

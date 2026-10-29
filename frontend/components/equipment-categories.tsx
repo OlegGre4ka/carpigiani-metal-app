@@ -57,6 +57,9 @@ async function CardsGrid({ categories, dark = false }: { categories: EquipmentCa
       {categories.map((category, index) => {
         const title = locale === "en" ? category.title_en : category.title_uk;
         const external = category.href.startsWith("http");
+        // The page of the category shows nothing besides its title yet: a card without a link
+        // (no "More", no arrow, does not lift)
+        const linked = category.has_page !== false;
         const content = (
           <>
             <div className={`relative overflow-hidden rounded-[22px] ${dark ? "bg-[var(--navy-photo)]" : ""}`}>
@@ -68,16 +71,24 @@ async function CardsGrid({ categories, dark = false }: { categories: EquipmentCa
                 sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 420px"
                 className={`block w-full object-cover transition-transform duration-500 ${dark ? "aspect-[4/3] h-auto group-hover:scale-105" : "h-67.5 group-hover:scale-104 max-[820px]:h-52.5"}`}
               />
-              <span className={`absolute right-3.5 bottom-3.5 ${moreButton}`}>{t("more")}</span>
+              {linked && <span className={`absolute right-3.5 bottom-3.5 ${moreButton}`}>{t("more")}</span>}
             </div>
             <div className="flex items-end gap-3">
               <h3 className={`min-w-0 flex-1 px-2 pt-4.5 pb-1.5 font-extrabold ${dark ? "text-[21px] text-white" : "text-xl"}`}>{title}</h3>
-              <PhoneArrow onNavy={dark} />
+              {linked && <PhoneArrow onNavy={dark} />}
             </div>
           </>
         );
         const className = `group block motion-safe:animate-fade-up rounded-[31px] ${dark ? "navy-card p-3.5 pb-5 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)]" : "steel-card p-4.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)]"} ${dark ? "transition duration-300" : cardLift}`;
 
+        if (!linked) {
+          const still = `block motion-safe:animate-fade-up rounded-[31px] ${dark ? "navy-card p-3.5 pb-5" : "steel-card p-4.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)]"}`;
+          return (
+            <div key={category.id} className={still} style={delay(index)}>
+              {content}
+            </div>
+          );
+        }
         return external ? (
           <a key={category.id} href={category.href} target="_blank" rel="noopener" className={className} style={delay(index)}>
             {content}

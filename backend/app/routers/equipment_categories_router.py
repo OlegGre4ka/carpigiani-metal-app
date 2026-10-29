@@ -22,7 +22,12 @@ from sqlalchemy import func, select
 from app.db.session import DbSession
 from app.models import Brand as BrandModel
 from app.models import EquipmentCategory
-from app.routers.pages_router import category_images, delete_page_images, href_owner
+from app.routers.pages_router import (
+    category_has_page,
+    category_images,
+    delete_page_images,
+    href_owner,
+)
 from app.schemas.equipment_category import (
     Brand,
     CategoriesOrder,
@@ -42,7 +47,11 @@ admin_router = APIRouter(
 )
 
 
-def to_read(category: EquipmentCategory) -> EquipmentCategoryRead:
+def to_read(
+    category: EquipmentCategory, db: DbSession | None = None
+) -> EquipmentCategoryRead:
+    """db given: also tells whether its page has something to show (lists of the site and of
+    the admin panel)."""
     return EquipmentCategoryRead(
         id=category.id,
         brand=category.brand,
@@ -52,6 +61,7 @@ def to_read(category: EquipmentCategory) -> EquipmentCategoryRead:
         image_url=image_url(category.image),
         sort_order=category.sort_order,
         is_visible=category.is_visible,
+        has_page=category_has_page(db, category) if db is not None else True,
     )
 
 
@@ -115,7 +125,7 @@ def list_visible_categories(db: DbSession, brand: Brand = "carpigiani"):
         )
         .order_by(EquipmentCategory.sort_order, EquipmentCategory.id)
     )
-    return [to_read(category) for category in db.scalars(statement)]
+    return [to_read(category, db) for category in db.scalars(statement)]
 
 
 # ---------- Admin ----------
@@ -129,7 +139,7 @@ def list_all_categories(db: DbSession, brand: Brand | None = None):
     )
     if brand is not None:
         statement = statement.where(EquipmentCategory.brand == brand)
-    return [to_read(category) for category in db.scalars(statement)]
+    return [to_read(category, db) for category in db.scalars(statement)]
 
 
 @admin_router.post(

@@ -16,6 +16,8 @@ class EquipmentCategoryRead(BaseModel):
     image_url: str
     sort_order: int
     is_visible: bool
+    # Its page shows something besides the title: the card and the menu item lead to it
+    has_page: bool = True
 
 
 class CategoriesOrder(BaseModel):

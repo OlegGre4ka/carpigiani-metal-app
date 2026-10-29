@@ -100,6 +100,8 @@ async function HeaderForVisitor() {
         categories: list.map((c) => ({
           href: c.href,
           title: locale === "en" ? c.title_en : c.title_uk,
+          // An empty page of the category: its name in the menu is plain text
+          link: c.has_page !== false,
           groups: groups.get(c.href) ?? [],
         })),
       };

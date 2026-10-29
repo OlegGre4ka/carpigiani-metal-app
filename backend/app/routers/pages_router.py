@@ -380,6 +380,16 @@ def blocks_for_site(blocks: list[dict], lang: Lang, db: DbSession) -> list[dict]
     return [shown for block in blocks if (shown := block_for_site(block, lang, db))]
 
 
+def category_has_page(db: DbSession, category: EquipmentCategory) -> bool:
+    """Whether the card / menu item of a category leads to its page (29.10): only when the page
+    shows something besides the title — at least one block with something in it. Until then
+    the site shows the category as plain text. A link to another site always leads there."""
+    if category.href.startswith("http"):
+        return True
+    page = find_page(db, category.id)
+    return page is not None and bool(blocks_for_site(page.blocks, "uk", db))
+
+
 def brand_of(db: DbSession, key: str) -> BrandModel | None:
     """The brand of a category if it is shown on the site (a hidden brand hides all its pages)."""
     brand = db.scalar(select(BrandModel).where(BrandModel.key == key))
@@ -512,6 +522,7 @@ def get_equipment_map(
                         {"uk": category.title_uk, "en": category.title_en}, lang
                     ),
                     "href": category.href,
+                    "has_page": category_has_page(db, category),
                     "groups": groups,
                 }
             )

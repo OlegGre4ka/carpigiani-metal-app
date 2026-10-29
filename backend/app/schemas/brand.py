@@ -23,6 +23,9 @@ class BrandRead(BaseModel):
 class BrandAdminRead(BrandRead):
     # How many categories it has: a brand with categories cannot be deleted
     categories_count: int
+    # Its page shows something (a block, a category card, equipment): until then the site
+    # shows the brand nowhere, not even in the menus
+    has_content: bool
 
 
 class BrandsOrder(BaseModel):

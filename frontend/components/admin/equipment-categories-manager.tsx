@@ -39,6 +39,8 @@ type Category = {
   sort_order: number;
   is_visible: boolean;
   brand: string;
+  /** Its page shows something besides the title: the card on the site leads to it */
+  has_page: boolean;
 };
 
 type FormValues = { title_uk: string; title_en: string; href: string; is_visible: boolean; brand: string };
@@ -226,6 +228,7 @@ export function EquipmentCategoriesManager({
         <div>
           <div className="font-bold">{category.title_uk}</div>
           <div className="text-sm text-ink-soft">EN: {category.title_en}</div>
+          <EmptyPageNote show={category.is_visible && !category.has_page} />
         </div>
       ),
     },
@@ -320,6 +323,7 @@ export function EquipmentCategoriesManager({
             <div className="px-1.5 pt-3">
               <div className="font-bold">{category.title_uk}</div>
               <div className="text-sm text-ink-soft">EN: {category.title_en}</div>
+              <EmptyPageNote show={category.is_visible && !category.has_page} />
               <Tag className="m-0! mt-2! font-semibold">{category.href}</Tag>
             </div>
             <div className="mt-3 flex items-center justify-between gap-2 border-t border-ink/8 px-1 pt-3">
@@ -538,5 +542,17 @@ function CategoryForm({
         )}
       </Form>
     </Modal>
+  );
+}
+
+/** The page of the category is still empty: its card on the site does not lead anywhere yet */
+function EmptyPageNote({ show }: { show: boolean }) {
+  if (!show) return null;
+  return (
+    <div>
+      <Tag color="orange" className="m-0! mt-1.5! font-semibold whitespace-normal!">
+        Картка на сайті не клікабельна — сторінка ще порожня
+      </Tag>
+    </div>
   );
 }
