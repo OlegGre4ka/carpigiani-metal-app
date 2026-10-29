@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from app.routers.ai_router import router as ai_router
 from app.routers.auth_router import router as auth_router
 from app.routers.brands_router import admin_router as brands_admin_router
 from app.routers.brands_router import public_router as brands_public_router
@@ -62,6 +63,7 @@ app.include_router(settings_public_router)
 app.include_router(settings_admin_router)
 app.include_router(requests_router)
 app.include_router(search_router)
+app.include_router(ai_router)
 
 # Uploaded photos (categories, equipment, news)
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)

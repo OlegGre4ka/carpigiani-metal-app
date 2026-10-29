@@ -58,6 +58,9 @@ services:
       MAIL_FROM: ${MAIL_FROM:-Carpigiani <noreply@carpigiani.com.ua>}
       # Where requests from the contact form of the site go
       CONTACT_EMAIL: ${CONTACT_EMAIL:-info@carpigiani.com.ua}
+      # AI in the admin panel: a table from a picture (free key: aistudio.google.com)
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-}
       # Uploaded photos are kept in the "uploads" volume
       UPLOADS_DIR: /app/uploads
     volumes:

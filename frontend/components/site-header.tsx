@@ -131,11 +131,18 @@ function BrandsButton({ brands, pathname }: { brands: MenuBrand[]; pathname: str
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
+    // The mouse goes to a menu that opens on hover ("Catalog", "Support"): this one closes, so
+    // two lists are never open over each other (29.10)
+    const onOver = (event: PointerEvent) => {
+      if (event.pointerType === "mouse" && (event.target as Element).closest?.("[data-hover-menu]")) setOpen(false);
+    };
     document.addEventListener("pointerdown", onDown);
     document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerover", onOver);
     return () => {
       document.removeEventListener("pointerdown", onDown);
       document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerover", onOver);
     };
   }, [open]);
 
@@ -291,7 +298,7 @@ export function SiteHeader({
             {t("news")}
           </Link>
 
-          <div className="group relative" onClick={catalogMenu.onClick} onMouseLeave={catalogMenu.onMouseLeave}>
+          <div data-hover-menu className="group relative" onClick={catalogMenu.onClick} onMouseLeave={catalogMenu.onMouseLeave}>
             <button type="button" className={`${navItem(section === "catalog")} flex items-center gap-1`}>
               {t("catalog")}
               <ChevronDown aria-hidden="true" className="size-4" />
@@ -324,7 +331,7 @@ export function SiteHeader({
             </div>
           </div>
 
-          <div className="group relative" onClick={supportMenu.onClick} onMouseLeave={supportMenu.onMouseLeave}>
+          <div data-hover-menu className="group relative" onClick={supportMenu.onClick} onMouseLeave={supportMenu.onMouseLeave}>
             <Link
               href="/support"
               aria-current={pathname === "/support" ? "page" : undefined}

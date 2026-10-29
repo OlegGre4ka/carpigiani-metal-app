@@ -11,10 +11,11 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, rectSortingStrategy, SortableContext, sortableKeyboardCoordinates, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { App, Button, Checkbox, Input, Select } from "antd";
-import { ArrowDown, ArrowUp, FileText, Info, Pencil, Plus, Trash2, Upload, X } from "lucide-react";
+import { Alert, App, Button, Checkbox, Input, Select } from "antd";
+import { ArrowDown, ArrowUp, FileText, Info, Pencil, Plus, Sparkles, Trash2, Upload, X } from "lucide-react";
 import { useRef, useState, type ReactNode } from "react";
 
+import { readError, useAdminCall } from "./admin-fetch";
 import { RichTextEditor } from "./rich-text-editor";
 
 import { Spinner } from "@/components/cone-loader";
@@ -517,8 +518,62 @@ export function FeaturesEditor({ block, lang, onChange }: { block: FeaturesBlock
 const cellInput =
   "w-full min-w-28 border-0 bg-transparent px-3.5 py-3 text-sm font-semibold text-ink outline-none placeholder:text-ink/35 focus:bg-focus-bg focus:shadow-[inset_0_0_0_2px_var(--brand-light)]";
 
+/** "Fill from a picture" (29.10): a screenshot or a photo of a table goes to the server, Google
+ *  Gemini reads it (backend/app/routers/ai_router.py) and the table gets its cells in both
+ *  languages. A picture can also be pasted (Ctrl+V) anywhere in the table form. Nothing is saved
+ *  until "Save page": the admin checks the cells first. */
+function useTableFromPicture(block: TableBlock, onChange: (b: TableBlock) => void) {
+  const { message, modal } = App.useApp();
+  const call = useAdminCall();
+  const [reading, setReading] = useState(false);
+  // The table was filled by AI in this visit: a warning stays above it
+  const [filled, setFilled] = useState(false);
+
+  async function read(file: File) {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      message.error("Потрібна картинка: JPG, PNG або WebP");
+      return;
+    }
+    setReading(true);
+    try {
+      const form = new FormData();
+      form.append("picture", file);
+      const response = await call("/api/admin/ai/table", { method: "POST", body: form });
+      if (!response.ok) {
+        message.error(await readError(response));
+        return;
+      }
+      const table: { header: Text[]; rows: Text[][] } = await response.json();
+      onChange({ ...block, header: table.header, rows: table.rows });
+      setFilled(true);
+      message.success(`Готово: ${table.rows.length} рядків. Перевірте цифри перед збереженням.`);
+    } catch (error) {
+      if (error instanceof Error && error.message !== "logged out") message.error("Не вдалося. Перевірте зв'язок.");
+    } finally {
+      setReading(false);
+    }
+  }
+
+  /** The table already has text: ask before it is replaced */
+  function start(file: File) {
+    const filled = [...block.header, ...block.rows.flat()].some((cell) => cell.uk || cell.en);
+    if (!filled) return void read(file);
+    modal.confirm({
+      title: "Замінити таблицю?",
+      content: "Зараз у таблиці вже є дані. AI заповнить її заново з картинки.",
+      okText: "Замінити",
+      cancelText: "Скасувати",
+      onOk: () => read(file),
+    });
+  }
+
+  return { reading, filled, start };
+}
+
 export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang: Lang; onChange: (b: TableBlock) => void }) {
   const columns = Math.max(block.header.length, 1);
+  const picture = useTableFromPicture(block, onChange);
+  const pictureInput = useRef<HTMLInputElement>(null);
   const hint = (cell: Text) => (lang === "en" && cell.uk ? cell.uk : undefined);
 
   const setHeader = (index: number, value: string) =>
@@ -542,10 +597,49 @@ export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang
     });
 
   return (
-    <>
+    <div
+      onPaste={(event) => {
+        // A picture from the clipboard (a screenshot): fill the table from it; text is pasted as usual
+        const file = Array.from(event.clipboardData.files).find((f) => f.type.startsWith("image/"));
+        if (!file || picture.reading) return;
+        event.preventDefault();
+        picture.start(file);
+      }}
+    >
       <Field label={inLang("Назва таблиці", lang)} className="mt-4 mb-3.5">
         <TextInput value={block.title} lang={lang} onChange={(title) => onChange({ ...block, title })} />
       </Field>
+      {/* AI: the table from a screenshot */}
+      <div className="mb-3 flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-navbar/25 bg-mist/60 px-4 py-3">
+        <button type="button" className={smallButton} disabled={picture.reading} onClick={() => pictureInput.current?.click()}>
+          {picture.reading ? <Spinner /> : <Sparkles size={16} aria-hidden="true" />}
+          {picture.reading ? "AI читає таблицю…" : "Заповнити зі скріна"}
+        </button>
+        <span className="text-[13px] leading-snug text-ink-soft">
+          Завантажте скрін або фото таблиці (або вставте його сюди Ctrl+V) — AI заповнить клітинки українською й англійською.{" "}
+          <b className="text-ink">Таблиця заповнюється за допомогою AI, тому рекомендуємо перевірити всі цифри перед тим, як зберегти.</b>
+        </span>
+        <input
+          ref={pictureInput}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            event.target.value = "";
+            if (file) picture.start(file);
+          }}
+        />
+      </div>
+      {picture.filled && (
+        <Alert
+          type="warning"
+          showIcon
+          className="mb-3!"
+          title="Таблицю заповнив AI"
+          description="AI може помилитися в цифрах, одиницях чи перекладі. Рекомендуємо перевірити всі значення (українською й англійською) перед тим, як зберегти сторінку."
+        />
+      )}
       <div className="my-1.5 overflow-x-auto rounded-2xl border border-ink/18 bg-white">
         <table className="w-full border-collapse">
           <thead>
@@ -616,7 +710,7 @@ export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang
           Клікніть у клітинку й пишіть, як в Excel. Tab переходить далі. Рядки й стовпці спільні для обох мов.
         </span>
       </div>
-    </>
+    </div>
   );
 }
 
