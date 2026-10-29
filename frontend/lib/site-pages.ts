@@ -238,6 +238,19 @@ export const loadContacts = cache(async (lang: string): Promise<SiteContacts | n
   }
 });
 
+/** General settings from the admin panel ("Загальні налаштування"): the fonts of the site */
+export type SiteGeneral = { font_title: string; font_text: string };
+
+export const loadGeneral = cache(async (): Promise<SiteGeneral | null> => {
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/pages/general`, { cache: "no-store" });
+    if (!response.ok) return null;
+    return (await response.json()) as SiteGeneral;
+  } catch {
+    return null;
+  }
+});
+
 /** The page of a brand (/ifi), built in the admin panel: title, line under it (empty: not shown),
  *  blocks ("categories" marks where its category cards go) and whether all its equipment with
  *  filter chips is shown at the bottom. */

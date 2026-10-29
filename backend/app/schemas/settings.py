@@ -53,3 +53,19 @@ DEFAULT_CONTACTS = {
     "lng": 30.6189,
     "requests_email": "info@carpigiani.com.ua",
 }
+
+
+FONT_KEY = r"^[a-z0-9-]{2,40}$"
+
+
+class General(BaseModel):
+    """General settings of the site (29.10): the fonts of the titles and of the texts. The
+    keys are the fonts of the site (frontend/lib/site-fonts.ts); an unknown key is shown as
+    the usual font there."""
+
+    font_title: Annotated[str, Field(pattern=FONT_KEY)]
+    font_text: Annotated[str, Field(pattern=FONT_KEY)]
+
+
+# Until the client saves the general settings
+DEFAULT_GENERAL = {"font_title": "inter-tight", "font_text": "inter-tight"}

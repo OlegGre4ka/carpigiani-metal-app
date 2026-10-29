@@ -7,6 +7,7 @@ import { App, Input, Modal, Select } from "antd";
 import {
   AlignCenter,
   Bold,
+  CodeXml,
   ImagePlus,
   Italic,
   Link2,
@@ -24,6 +25,8 @@ import { useRef, useState, type ReactNode } from "react";
 // A photo in the text: a click on it shows its buttons — on the left / in the middle / on the
 // right (left and right: the text flows around it, as on the old site) and small / medium / large.
 // The look is the same as on the site (.rich in globals.css).
+// "HTML" (29.10, the client asked): the same text as HTML code to correct by hand; back to the
+// usual view with the same button. The site keeps only the tags of the editor (see the hint).
 
 type Align = "left" | "center" | "right";
 type Size = "s" | "m" | "l";
@@ -46,6 +49,13 @@ const TextPhoto = Image.extend({
     };
   },
 });
+
+/** HTML code easy to read: each paragraph, heading, list and list item on its own line */
+const readableHtml = (html: string) =>
+  html
+    .replace(/(<\/(p|h2|h3|li|blockquote)>|<(ul|ol)>|<\/(ul|ol)>)/g, "$1\n")
+    .replace(/<li>/g, "  <li>")
+    .trim();
 
 /** The text without empty lines at its end (the editor adds one after a list or a photo) */
 const withoutEmptyEnd = (html: string) => html.replace(/(<p><\/p>)+$/, "");
@@ -112,15 +122,62 @@ export function RichTextEditor({
     },
   });
 
+  // HTML code instead of the usual view (null: the usual view)
+  const [code, setCode] = useState<string | null>(null);
+
+  function toggleCode() {
+    if (!editor) return;
+    if (code === null) {
+      setCode(readableHtml(editor.isEmpty ? "" : editor.getHTML()));
+      return;
+    }
+    // Back to the usual view: the editor reads the code (what it cannot show is left out, and
+    // the page gets the text as it is now)
+    editor.commands.setContent(code.replace(/>\s*\n\s*</g, "><"), { emitUpdate: true });
+    setCode(null);
+  }
+
   return (
     <div className="overflow-hidden rounded-2xl border border-ink/18 bg-white focus-within:border-brand-light focus-within:shadow-[0_0_0_4px_rgb(var(--brand-light-rgb)/0.2)]">
-      {editor && <Toolbar editor={editor} uploadImage={uploadImage} />}
-      <EditorContent editor={editor} />
+      {editor && <Toolbar editor={editor} uploadImage={uploadImage} codeMode={code !== null} onToggleCode={toggleCode} />}
+      {code === null ? (
+        <EditorContent editor={editor} />
+      ) : (
+        <div className="bg-[#f6f8fc]">
+          <textarea
+            value={code}
+            spellCheck={false}
+            aria-label="HTML-код тексту"
+            onChange={(event) => {
+              setCode(event.target.value);
+              saved.current = withoutEmptyEnd(event.target.value);
+              onChange(event.target.value);
+            }}
+            className="block min-h-64 w-full resize-y bg-transparent px-5 py-4 font-mono text-[13px] leading-[1.65] text-ink outline-none"
+          />
+          <p className="border-t border-ink/10 px-5 py-2.5 text-xs leading-normal text-ink-soft">
+            Сайт залишає тільки оформлення редактора: &lt;p&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;u&gt;, &lt;ul&gt;/&lt;ol&gt;/&lt;li&gt;,
+            &lt;a href&gt;, &lt;img&gt;, &lt;blockquote&gt;, &lt;br&gt;. Скрипти, стилі й інші теги прибираються для безпеки. Натисніть «HTML» ще раз, щоб
+            повернутись до звичайного вигляду.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
 
-function Toolbar({ editor, uploadImage }: { editor: Editor; uploadImage: (file: File) => Promise<string | null> }) {
+function Toolbar({
+  editor,
+  uploadImage,
+  codeMode,
+  onToggleCode,
+}: {
+  editor: Editor;
+  uploadImage: (file: File) => Promise<string | null>;
+  /** The HTML code is shown: the other buttons wait */
+  codeMode: boolean;
+  onToggleCode: () => void;
+}) {
   const { message } = App.useApp();
   const fileInput = useRef<HTMLInputElement>(null);
   const [linkOpen, setLinkOpen] = useState(false);
@@ -176,6 +233,8 @@ function Toolbar({ editor, uploadImage }: { editor: Editor; uploadImage: (file: 
 
   return (
     <div role="toolbar" aria-label="Оформлення тексту" className="flex flex-wrap items-center gap-1 border-b border-ink/12 bg-mist px-2.5 py-2">
+      {/* The usual buttons (hidden while the HTML code is edited) */}
+      <div className={`contents ${codeMode ? "[&>*]:hidden" : ""}`}>
       <Select
         size="small"
         value={state.kind}
@@ -250,6 +309,18 @@ function Toolbar({ editor, uploadImage }: { editor: Editor; uploadImage: (file: 
           ))}
         </>
       )}
+      </div>
+      {/* Right: the HTML code of the text */}
+      <button
+        type="button"
+        title={codeMode ? "Звичайний вигляд" : "Редагувати HTML-код"}
+        aria-pressed={codeMode}
+        className={`${toolButton} ml-auto px-2.5 text-xs font-extrabold`}
+        onClick={onToggleCode}
+      >
+        <CodeXml size={16} />
+        HTML
+      </button>
       <input
         ref={fileInput}
         type="file"

@@ -21,7 +21,7 @@ export function AntdProvider({ children }: { children: React.ReactNode }) {
             colorBorder: c.border,
             colorBgContainer: c.paper,
             borderRadius: 14,
-            fontFamily: "var(--font-manrope), Arial, sans-serif",
+            fontFamily: "var(--font-manrope-admin), Arial, sans-serif",
             fontSize: 15,
             controlHeight: 42,
           },

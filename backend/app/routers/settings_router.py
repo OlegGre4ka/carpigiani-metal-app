@@ -1,6 +1,8 @@
-"""Settings of the site edited in the admin panel: the contacts.
+"""Settings of the site edited in the admin panel: the contacts and the general settings (the
+fonts of the site).
 
-Public: the site gets the contacts in its language (without the email for requests).
+Public: the site gets the contacts in its language (without the email for requests) and the
+fonts.
 Admin (login required): read and save them; find an address on the map (OpenStreetMap search).
 """
 
@@ -17,7 +19,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.db.session import DbSession
 from app.models import SiteSetting
 from app.schemas.page_blocks import Lang, pick
-from app.schemas.settings import DEFAULT_CONTACTS, Contacts
+from app.schemas.settings import (
+    DEFAULT_CONTACTS,
+    DEFAULT_GENERAL,
+    Contacts,
+    General,
+)
 from app.services.auth import get_current_user
 
 public_router = APIRouter(prefix="/api/pages", tags=["settings"])
@@ -83,6 +90,33 @@ def save_contacts(data: Contacts, db: DbSession):
     row.data = data.model_dump(mode="json")
     db.commit()
     return contacts_of(db)
+
+
+def general_of(db: DbSession) -> dict:
+    """The saved general settings, or the usual ones before they were first saved."""
+    row = db.get(SiteSetting, "general")
+    return {**DEFAULT_GENERAL, **(row.data if row else {})}
+
+
+@public_router.get("/general")
+def get_general(db: DbSession) -> dict:
+    return general_of(db)
+
+
+@admin_router.get("/general", response_model=General)
+def read_general(db: DbSession):
+    return general_of(db)
+
+
+@admin_router.put("/general", response_model=General)
+def save_general(data: General, db: DbSession):
+    row = db.get(SiteSetting, "general")
+    if row is None:
+        row = SiteSetting(key="general")
+        db.add(row)
+    row.data = data.model_dump(mode="json")
+    db.commit()
+    return general_of(db)
 
 
 # Address search of OpenStreetMap (Nominatim): free, no key. Its rules: a name of the site in

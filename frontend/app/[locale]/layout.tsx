@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Golos_Text, Inter_Tight, Manrope, Montserrat } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -8,7 +7,8 @@ import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
 import { getCurrentUser } from "@/lib/admin/backend";
 import { loadEquipmentCategories, loadSiteBrands } from "@/lib/equipment-categories";
-import { loadContacts, loadEquipmentMap, loadNewsMenu } from "@/lib/site-pages";
+import { loadContacts, loadEquipmentMap, loadGeneral, loadNewsMenu } from "@/lib/site-pages";
+import { siteFontCss, siteFontVariables } from "@/lib/site-fonts";
 import { ContactsSync } from "@/components/contacts-sync";
 import { SiteFooter } from "@/components/site-footer";
 import { ContactWidget } from "@/components/contact-widget";
@@ -16,21 +16,8 @@ import { FontPicker } from "@/components/font-picker";
 import { SiteSplash } from "@/components/site-splash";
 import "../globals.css";
 
-// Font of the whole site: Manrope (text and headings; see app/theme.css).
-// Keep the "cyrillic" subset: the site is in Ukrainian.
-const fontSans = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin", "cyrillic"],
-  display: "swap",
-});
-
-// TEMPORARY: stricter fonts to compare (the switcher in the corner, only on the local site).
-// When Oleh chooses one, keep only it here and in app/theme.css, and remove the switcher.
-const fontInterTight = Inter_Tight({ variable: "--font-inter-tight", subsets: ["latin", "cyrillic"], display: "swap" });
-const fontMontserrat = Montserrat({ variable: "--font-montserrat", subsets: ["latin", "cyrillic"], display: "swap" });
-const fontGolos = Golos_Text({ variable: "--font-golos", subsets: ["latin", "cyrillic"], display: "swap" });
-const fontChoices = `${fontInterTight.variable} ${fontMontserrat.variable} ${fontGolos.variable}`;
-
+// Fonts of the site: lib/site-fonts.ts (all of them can be switched on; the chosen ones come from
+// the admin panel → "Загальні налаштування", see SiteFonts below).
 
 type Props = {
   children: React.ReactNode;
@@ -54,12 +41,16 @@ export default async function RootLayout({ children, params }: Props) {
   if (!hasLocale(routing.locales, locale)) notFound();
 
   return (
-    <html lang={locale} className={`${fontSans.variable} ${fontChoices} h-full antialiased`}>
+    <html lang={locale} className={`${siteFontVariables} h-full antialiased`}>
       <body className="site-body min-h-full flex flex-col font-sans">
         {/* Without JavaScript blocks that appear on scroll (components/reveal.tsx) are simply shown */}
         <noscript>
           <style>{".reveal,.reveal [data-reveal-kids]>*,.reveal [data-reveal-rows]>*,.reveal [data-reveal-pop]{opacity:1!important;transform:none!important;scale:1!important;clip-path:none!important}"}</style>
         </noscript>
+        {/* The fonts chosen in the admin panel (first, so they come with the first part of the page) */}
+        <Suspense fallback={null}>
+          <SiteFonts />
+        </Suspense>
         <NextIntlClientProvider>
           {/* The splash screen with the logo and its running spark (opening and reloading the site) */}
           <SiteSplash />
@@ -121,4 +112,12 @@ async function FooterWithContacts() {
       {contacts && <ContactsSync phones={contacts.phones} />}
     </>
   );
+}
+
+// The fonts of the titles and of the texts chosen in the admin panel. Not saved yet (or the
+// server is not answering): the usual ones from app/theme.css (Inter Tight).
+async function SiteFonts() {
+  const general = await loadGeneral();
+  if (!general) return null;
+  return <style>{siteFontCss(general.font_title, general.font_text)}</style>;
 }
