@@ -1946,6 +1946,15 @@ button:not(:disabled),
     0 16px 32px rgb(0 10 40 / 0.55);
 }
 
+/* The "back" button of the phone header (components/back-button.tsx): small, so no big outer
+   shadow on hover (it looked like a dark square under it on the navy header) */
+.metal-round.back-btn:hover,
+.metal-round.back-btn:focus-visible {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    inset 0 -4px 8px rgb(0 10 35 / 0.45);
+}
+
 /* "Manufacturers" button next to the logo in the header: a chrome pill with small logo cards
    of the brands fanned like playing cards. A soft blue halo breathes around it so the eye finds it;
    on hover (and while its list is open) the logos fan out. Phones: only the stack of logos. */

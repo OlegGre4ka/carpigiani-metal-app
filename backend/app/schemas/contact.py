@@ -21,6 +21,9 @@ class ContactCreate(BaseModel):
     lang: Literal["uk", "en"] = "uk"
     # Trap for bots: a field people never see. Filled means a bot.
     website: Annotated[str, Field(max_length=200)] = ""
+    # How long the form was open before sending, in milliseconds (set by the site). People
+    # need several seconds; a bot sends at once or posts without the form at all (0).
+    filled_ms: Annotated[int, Field(ge=0)] = 0
 
     @field_validator("name", "message", "subject", "page", "phone", "website")
     @classmethod

@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useRef, useState, type FormEvent, type Ref } from "react";
+import { useEffect, useRef, useState, type FormEvent, type Ref } from "react";
 
 import { Spinner } from "@/components/cone-loader";
 import { contactSchema, type ContactValues } from "@/lib/contact-schema";
@@ -12,7 +12,8 @@ import { usePhones } from "@/lib/contacts-store";
 //   the title is "Get a quote" and the line "Inquiry about: <equipment>" is shown.
 // - variant "popup": inside the "Contact us" window of the floating button (on phones, on
 //   equipment pages it also shows "Inquiry about").
-// Email is required, the rest is optional; no "I am not a robot" (a hidden trap field instead).
+// Email is required, the rest is optional; no "I am not a robot": a hidden trap field and the
+// time the form was open (the server drops what is sent in under 3 seconds).
 // States: error in a field, sending, sent, sending failed (entered data is kept).
 // Look and motion: claude/equipment-page-design.md and equipment-page-animation.md.
 
@@ -47,6 +48,11 @@ export function ContactForm({
   // A new number restarts the "shake" of the email field
   const [shake, setShake] = useState(0);
   const trap = useRef<HTMLInputElement>(null);
+  // When the form was opened (again after each sent request)
+  const openedAt = useRef(0);
+  useEffect(() => {
+    openedAt.current = Date.now();
+  }, []);
 
   const schema = contactSchema({ email: t("emailError"), phone: t("phoneError") });
   const sending = status === "sending";
@@ -91,11 +97,13 @@ export function ContactForm({
           page,
           lang: locale === "en" ? "en" : "uk",
           website: trap.current?.value ?? "",
+          filled_ms: openedAt.current ? Date.now() - openedAt.current : 0,
         }),
       });
       if (response.status === 429) return setStatus("tooMany");
       if (!response.ok) return setStatus("failed");
       setStatus("sent");
+      openedAt.current = Date.now();
       setValues(empty);
       setTried(false);
     } catch {

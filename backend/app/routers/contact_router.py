@@ -4,7 +4,9 @@ Each request is saved in the database first (nothing is lost), then an email goe
 manager: to the "email for requests" of the contacts in the admin panel (before they are first
 saved — CONTACT_EMAIL from .env, by default info@carpigiani.com.ua). Locally all mail lands in
 Mailpit.
-Spam protection without "I am not a robot": a hidden trap field and a limit per address.
+Spam protection without "I am not a robot" (29.10): a hidden trap field, a form sent too
+fast (under MIN_FILL_MS after it opened) and a limit per address. A bot gets the usual
+"ok" and nothing is kept, so it does not learn it was caught.
 """
 
 import logging
@@ -20,6 +22,9 @@ from app.services.rate_limit import check_rate_limit, client_ip
 
 router = APIRouter(prefix="/api/contact", tags=["contact"])
 log = logging.getLogger(__name__)
+
+# Faster than this after the form opened: not a person
+MIN_FILL_MS = 3000
 
 
 def notify(request: ContactRequest, to: str) -> None:
@@ -46,8 +51,12 @@ def notify(request: ContactRequest, to: str) -> None:
 def create_request(
     data: ContactCreate, request: Request, db: DbSession, background: BackgroundTasks
 ):
-    # A bot filled the hidden field: answer as usual, keep nothing
-    if data.website:
+    # A bot: filled the hidden field or sent the form too fast. Answer as usual, keep nothing
+    if data.website or data.filled_ms < MIN_FILL_MS:
+        log.warning(
+            "Contact request dropped as a bot (trap=%s, filled in %s ms, ip %s)",
+            bool(data.website), data.filled_ms, client_ip(request),
+        )  # fmt: skip
         return {"ok": True}
     check_rate_limit(
         f"contact-ip:{client_ip(request)}", limit=5, window_seconds=10 * 60
