@@ -48,13 +48,13 @@ export function SiteMap({ lat, lng, zoom = 16, label = "", onPick, className = "
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: ATTRIBUTION }).addTo(created);
       const icon = L.divIcon({
         className: "",
-        html: '<span class="site-map-pin"><img src="/images/brand-mark.svg" alt="" /></span>',
-        iconSize: [40, 50],
-        // The tip of the cone (bottom middle of the mark) is the point
-        iconAnchor: [20, 49],
+        // The new mark of the site (29.10); the tip of its cone is the point
+        html: '<span class="site-map-pin"><img src="/images/logo-mark.webp" alt="" /></span>',
+        iconSize: [40, 56],
+        iconAnchor: [20, 55],
       });
       const point = L.marker([lat, lng], { icon, draggable: Boolean(pick.current), keyboard: false, title: label }).addTo(created);
-      point.bindTooltip(label, { permanent: true, direction: "right", offset: [14, -26], className: "site-map-label" });
+      point.bindTooltip(label, { permanent: true, direction: "right", offset: [14, -30], className: "site-map-label" });
       if (!label) point.closeTooltip();
       point.on("dragend", () => {
         const at = point.getLatLng();

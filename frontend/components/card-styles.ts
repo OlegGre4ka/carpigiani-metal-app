@@ -12,7 +12,7 @@ export const chip = (active: boolean, onNavy = false) =>
   `shrink-0 rounded-full border px-4.5 py-2.25 text-[13.5px] font-extrabold whitespace-nowrap transition-colors max-[820px]:px-3.5 max-[820px]:py-2 max-[820px]:text-[12.5px] ${
     onNavy
       ? active
-        ? "border-transparent bg-[image:var(--grad-btn)] text-white shadow-[0_8px_22px_rgb(20_100_255/0.4)]"
+        ? "border-transparent bg-[image:var(--metal)] text-ink shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_8px_20px_rgb(0_0_0/0.35)]"
         : "border-white/20 bg-white/5 text-on-navy hover:bg-white/10"
       : active
         ? "chip-active text-white"

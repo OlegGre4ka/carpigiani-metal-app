@@ -177,7 +177,9 @@ function BrandsButton({ brands, pathname }: { brands: MenuBrand[]; pathname: str
 
 const navLink = "rounded-full px-3.5 py-2.5 font-semibold whitespace-nowrap max-[1440px]:px-3 transition-colors";
 /** Main menu item: lit while its page is open */
-const navItem = (active: boolean) => `${navLink} ${active ? "bg-[image:var(--grad-btn)] text-white shadow-[0_8px_22px_rgb(20_100_255/0.4)]" : "text-on-navy hover:bg-white/10 hover:text-white"}`;
+// On the dark header the lit item is metal (29.10: on dark — metal, on light — navbar blue)
+const navItem = (active: boolean) =>
+  `${navLink} ${active ? "bg-[image:var(--metal)] text-ink shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_8px_20px_rgb(0_0_0/0.35)]" : "text-on-navy hover:bg-white/10 hover:text-white"}`;
 /** Item of the phone menu: marked while its page is open */
 const mobileItem = (active: boolean) => (active ? `${panelLink} bg-white/10 text-white` : panelLink);
 const panel =
@@ -197,7 +199,14 @@ function useDropdownClose() {
       (document.activeElement as HTMLElement | null)?.blur();
       setClosed(key);
     },
-    onMouseLeave: () => setClosed((current) => (current === key ? null : current)),
+    // The mouse goes to another item: a focus left inside by a mouse click (on the button of
+    // the menu) must not keep this dropdown open next to the other one (29.10). A focus from
+    // the keyboard (Tab) stays, so keyboard users still use the menu.
+    onMouseLeave: (event: MouseEvent<HTMLElement>) => {
+      const focused = document.activeElement as HTMLElement | null;
+      if (focused && event.currentTarget.contains(focused) && !focused.matches(":focus-visible")) focused.blur();
+      setClosed((current) => (current === key ? null : current));
+    },
     // Submenus inside are hidden too (they could stay "visible" inside a hidden menu)
     hidden: closed === key ? "invisible! opacity-0! [&_*]:invisible!" : "",
   });

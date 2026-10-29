@@ -55,8 +55,8 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
       <div className="rounded-[41px] bg-[image:var(--navy-panel-rim)] p-px shadow-[0_24px_60px_rgb(0_10_50/0.35)] max-[820px]:rounded-[29px]">
       <footer className="relative isolate overflow-hidden rounded-[40px] bg-[image:var(--grad-footer-graphite)] text-on-navy max-[820px]:rounded-[28px]">
         {/* Low footer (29.10): three columns spread evenly — the company · the address with the
-            socials under it · the phones, the e-mail and under a thin line "© company · made by
-            AO Studio". Tablets and phones: the company on top, the other two side by side. */}
+            socials under it · the phones and the e-mail; "© company · made by AO Studio" under the
+            first column. Tablets and phones: the company on top, the other two side by side. */}
         <div className="relative z-1 flex items-start justify-between gap-10 px-12 pt-7 pb-7 max-[1100px]:grid max-[1100px]:grid-cols-[1fr_auto] max-[1100px]:gap-x-10 max-[1100px]:gap-y-5 max-[820px]:gap-x-4 max-[820px]:gap-y-4 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-6">
           {/* The company */}
           <div className="max-w-90 max-[1100px]:col-span-2 max-[1100px]:max-w-none">
@@ -67,6 +67,14 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
               </div>
             </div>
             <p className="mt-2.5 text-sm leading-normal text-on-navy-soft">{t("about")}</p>
+            {/* Bottom left, in one line under a thin light line: on the right the "Contact us"
+                button always floats over the corner of the footer (29.10) */}
+            <div className="mt-4 border-t border-white/14 pt-3 text-[13px] leading-normal text-on-dark-soft max-[820px]:mt-3 max-[820px]:text-xs">
+              © {contacts ? contacts.company : t("company")} · {t("madeBy")}{" "}
+              <a href="https://aostudio.art" target="_blank" rel="noopener" className={link}>
+                AO Studio
+              </a>
+            </div>
           </div>
 
           {/* The address and the socials under it */}
@@ -104,7 +112,7 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
             </div>
           </div>
 
-          {/* The phones, the e-mail and, under a thin light line, the copyright */}
+          {/* The phones and the e-mail */}
           <div className="flex flex-col text-[15px] leading-[1.6] max-[820px]:text-[13px]">
             {phones.map((p) => (
               <a key={p.href} href={p.href} className={`${link} whitespace-nowrap`}>
@@ -114,14 +122,6 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
             <a href={`mailto:${email}`} className={`${link} whitespace-nowrap`}>
               {email}
             </a>
-            <div className="mt-3 border-t border-white/14 pt-2.5 text-[13px] leading-normal text-on-dark-soft max-[820px]:text-xs">
-              © {contacts ? contacts.company : t("company")}
-              <br />
-              {t("madeBy")}{" "}
-              <a href="https://aostudio.art" target="_blank" rel="noopener" className={link}>
-                AO Studio
-              </a>
-            </div>
           </div>
         </div>
       </footer>

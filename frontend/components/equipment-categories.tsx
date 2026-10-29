@@ -44,12 +44,14 @@ export async function EquipmentCategories() {
 export async function CategoryCards({ brand }: { brand: string }) {
   const categories = await loadEquipmentCategories(brand);
   if (categories.length === 0) return null;
-  return <CardsGrid categories={categories} />;
+  // 29.10: deep navy see-through cards, the same as the news cards (the light lines of the
+  // background glow through them); the photo is lower, so the first row fits the first screen
+  return <CardsGrid categories={categories} dark short />;
 }
 
 /** 3 cards in a row (2 on tablets, 1 on phones): photo with "More", name, arrow on phones.
  *  dark: the home page (navy cards), otherwise light glass cards (brand pages, 29.10). */
-async function CardsGrid({ categories, dark = false }: { categories: EquipmentCategory[]; dark?: boolean }) {
+async function CardsGrid({ categories, dark = false, short = false }: { categories: EquipmentCategory[]; dark?: boolean; short?: boolean }) {
   const locale = await getLocale();
   const t = await getTranslations("Equipment");
   return (
@@ -69,7 +71,7 @@ async function CardsGrid({ categories, dark = false }: { categories: EquipmentCa
                 width={1200}
                 height={800}
                 sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 420px"
-                className={`block w-full object-cover transition-transform duration-500 ${dark ? "aspect-[4/3] h-auto group-hover:scale-105" : "h-67.5 group-hover:scale-104 max-[820px]:h-52.5"}`}
+                className={`block w-full object-cover transition-transform duration-500 ${short ? "h-[clamp(190px,30vh,260px)] group-hover:scale-105 max-[820px]:h-52.5" : dark ? "aspect-[4/3] h-auto group-hover:scale-105" : "h-67.5 group-hover:scale-104 max-[820px]:h-52.5"}`}
               />
               {linked && <span className={`absolute right-3.5 bottom-3.5 ${moreButton}`}>{t("more")}</span>}
             </div>

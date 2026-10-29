@@ -34,7 +34,8 @@ const fallback: SiteContacts = {
 function Row({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
     <li className="flex gap-3.5 border-b border-ink/8 py-4 first:pt-1 last:border-b-0 last:pb-1">
-      <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-mist text-brand">
+      {/* Navbar blue icons (as the icons of "What we do" on the home page) */}
+      <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[image:var(--grad-btn)] text-white shadow-[0_8px_18px_rgb(var(--navbar-rgb)/0.3)]">
         {icon}
       </span>
       <div className="min-w-0">

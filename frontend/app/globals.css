@@ -307,9 +307,12 @@
       padding-inline: 90px !important;
     }
   }
+  /* Titles on light pages: navbar blue (29.10); on dark blocks their own classes make them
+     white or metal */
   h1,
   h2 {
-    @apply font-heading text-ink;
+    @apply font-heading;
+    color: var(--navbar);
     font-weight: var(--title-weight);
     letter-spacing: var(--title-tracking);
   }
@@ -1258,8 +1261,9 @@ button:not(:disabled),
 /* Map of the office (components/site-map.tsx). Outside the layers on purpose: the styles of
    the map library are not in a layer, these must win over them. */
 .site-map .leaflet-tile-pane {
-  /* OpenStreetMap a little muted, in the cool colours of the site */
-  filter: saturate(0.6) brightness(1.02) contrast(0.95);
+  /* OpenStreetMap in the colours of the site (29.10): grey made cool icy blue — water, parks
+     and streets stay readable, nothing loud */
+  filter: grayscale(1) sepia(0.32) hue-rotate(175deg) saturate(2.1) brightness(1.03) contrast(0.92);
 }
 .site-map.leaflet-container {
   font-family: var(--font-text);
@@ -1296,7 +1300,7 @@ button:not(:disabled),
 .site-map-pin {
   display: block;
   width: 40px;
-  height: 50px;
+  height: 56px;
   filter: drop-shadow(0 6px 6px rgb(var(--ink-rgb)/0.35));
   animation: pin-drop 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both;
 }
@@ -1321,20 +1325,20 @@ button:not(:disabled),
   border: 0;
   border-radius: 12px;
   padding: 6px 10px;
-  background: var(--ink);
+  background: var(--navbar);
   color: #fff;
   font-weight: 700;
   box-shadow: 0 10px 24px rgb(var(--ink-rgb)/0.25);
 }
 .site-map .leaflet-tooltip-top::before {
-  border-top-color: var(--ink);
+  border-top-color: var(--navbar);
 }
 /* The address next to the cone, all the time */
 .site-map .leaflet-tooltip.site-map-label {
   padding: 5px 11px;
   border-radius: 999px;
   background: rgb(var(--paper-rgb)/0.96);
-  color: var(--ink);
+  color: var(--navbar);
   font-size: 12.5px;
   font-weight: 800;
   white-space: nowrap;
