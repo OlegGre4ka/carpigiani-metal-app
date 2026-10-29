@@ -1540,6 +1540,16 @@ button:not(:disabled),
   .hero-slide.on .hero-btn {
     animation: hero-in 0.9s 0.35s both;
   }
+  /* The group photo rises like the machines of the other slides, keeping its tilt */
+  .hero-slide.on .hero-photo-uni {
+    animation: hero-photo-in 1s 0.2s both;
+  }
+  @keyframes hero-photo-in {
+    from {
+      opacity: 0;
+      transform: translateY(40px) rotate(-8deg) scale(0.94);
+    }
+  }
   .hero-shade {
     position: absolute;
     z-index: 5;
@@ -1612,9 +1622,9 @@ button:not(:disabled),
     }
   }
 
-  /* Medium screens (small laptops, tablets lying down): Sam80 is wide and low, it goes under
-     the text and fills the whole width there */
-  @media (max-width: 1300px) {
+  /* Narrow large screens (tablets lying down): there is no room right of the text for the wide
+     Sam80, it goes under the text and fills the whole width there */
+  @media (max-width: 1000px) {
     .hero-sam80 .hero-copy {
       grid-row: 1;
     }
@@ -1624,7 +1634,7 @@ button:not(:disabled),
       margin-top: 12px;
     }
     .hero-sam80 .hero-prod {
-      width: min(100%, 880px, 70vw);
+      width: min(100%, 880px, 76vw);
     }
   }
   /* Small laptops and tablets lying down: the title wraps into two lines and gets smaller, so
@@ -1732,6 +1742,12 @@ button:not(:disabled),
     .hero-slide.on .hero-prod {
       animation: none;
     }
+    @keyframes hero-photo-in {
+      from {
+        opacity: 0;
+        transform: translateY(30px) rotate(-6deg) scale(0.94);
+      }
+    }
     /* Maestro and Ready: in the middle, in all the room between the button and the bottom.
        Maestro stands above the tray of gelato of the phone picture, not on top of it. */
     .hero-prodbox {
@@ -1749,11 +1765,11 @@ button:not(:disabled),
       flex: none;
       justify-content: center;
       max-height: none;
-      margin: clamp(28px, calc(100svh - 700px), 170px) 0 0;
+      margin: clamp(28px, calc(100svh - 680px), 250px) -10px 0;
     }
     .hero-sam80 .hero-prod {
-      width: calc(100% - 8px);
-      max-width: 480px;
+      width: 100%;
+      max-width: 560px;
       height: auto;
       object-position: center bottom;
     }
@@ -1833,6 +1849,7 @@ button:not(:disabled),
     .hero-slide.on .hero-text h2,
     .hero-slide.on .hero-text p,
     .hero-slide.on .hero-btn,
+    .hero-slide.on .hero-photo-uni,
     .hero-btn-arrow {
       animation: none;
       transition: none;

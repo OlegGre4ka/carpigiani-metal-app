@@ -14,6 +14,7 @@ import { AnimatedBrandMark, SPARK_END } from "@/components/brand-logo";
 // goes away even before the page scripts are loaded.
 export function SiteSplash() {
   // The picture of the mark is the first thing the browser fetches (before the slider photos)
+  preload("/images/logo-mark-nospark.webp", { as: "image", fetchPriority: "high" });
   preload("/images/logo-mark.webp", { as: "image", fetchPriority: "high" });
   const [state, setState] = useState<"shown" | "leaving" | "gone">("shown");
   // After a reload the page starts from the top (with the splash), not where it was scrolled to:
@@ -35,9 +36,8 @@ export function SiteSplash() {
     svg.setCurrentTime(0);
     let leave = 0;
     const start = (late: boolean) => {
-      // the mark rises for 0.9 s (.splash-logo); the spark starts its run 0.75 s after this
-      // moment, or at once when the picture came late (the mark has already risen)
-      svg.setCurrentTime(late ? 0.6 : 0);
+      // the spark starts at once, together with the mark (29.10: no pause before it)
+      svg.setCurrentTime(late ? 0.1 : 0);
       svg.unpauseAnimations();
       leave = window.setTimeout(() => setState("leaving"), (SPARK_END + 0.9) * 1000);
     };

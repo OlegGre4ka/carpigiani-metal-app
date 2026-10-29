@@ -55,11 +55,11 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
       <div className="rounded-[41px] bg-[image:var(--navy-panel-rim)] p-px shadow-[0_24px_60px_rgb(0_10_50/0.35)] max-[820px]:rounded-[29px]">
       <footer className="relative isolate overflow-hidden rounded-[40px] bg-[image:var(--grad-footer-graphite)] text-on-navy max-[820px]:rounded-[28px]">
         {/* Low footer (29.10): three columns spread evenly — the company · the address with the
-            socials under it · the phones and the e-mail. Tablets: the company on top, the other
-            two side by side; phones (under 600px): one under another. */}
-        <div className="relative z-1 flex items-start justify-between gap-10 px-12 pt-7 pb-5 max-[1100px]:grid max-[1100px]:grid-cols-2 max-[1100px]:gap-x-10 max-[1100px]:gap-y-5 max-[600px]:grid-cols-1 max-[820px]:gap-5 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-4">
+            socials under it · the phones, the e-mail and under a thin line "© company · made by
+            AO Studio". Tablets and phones: the company on top, the other two side by side. */}
+        <div className="relative z-1 flex items-start justify-between gap-10 px-12 pt-7 pb-7 max-[1100px]:grid max-[1100px]:grid-cols-[1fr_auto] max-[1100px]:gap-x-10 max-[1100px]:gap-y-5 max-[820px]:gap-x-4 max-[820px]:gap-y-4 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-6">
           {/* The company */}
-          <div className="max-w-90 max-[1100px]:col-span-2 max-[1100px]:max-w-none max-[600px]:col-span-1">
+          <div className="max-w-90 max-[1100px]:col-span-2 max-[1100px]:max-w-none">
             <div className="flex items-center gap-3">
               <BrandMark className="h-12 w-auto shrink-0" />
               <div className="metal-text pb-1 text-[28px] leading-[1.1] font-extrabold tracking-[-0.5px] max-[820px]:text-[24px]">
@@ -70,13 +70,13 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
           </div>
 
           {/* The address and the socials under it */}
-          <div className="text-[15px] leading-[1.6] max-[820px]:text-sm">
+          <div className="min-w-0 text-[15px] leading-[1.6] max-[820px]:text-[13px]">
             <address className="text-on-navy-soft not-italic">
               {contacts ? contacts.street : t("street")}
               <br />
               {contacts ? contacts.city : t("city")}
             </address>
-            <div className="mt-3.5 flex gap-2.5">
+            <div className="mt-3.5 flex gap-2.5 max-[820px]:mt-3 max-[820px]:gap-2">
               {socials.map((s) => (
                 <a
                   key={s.label}
@@ -84,7 +84,7 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+                  className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20 max-[820px]:size-9"
                 >
                   <svg
                     width="18"
@@ -104,24 +104,25 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
             </div>
           </div>
 
-          {/* The phones and the e-mail */}
-          <div className="flex flex-col text-[15px] leading-[1.6] max-[820px]:text-sm">
+          {/* The phones, the e-mail and, under a thin light line, the copyright */}
+          <div className="flex flex-col text-[15px] leading-[1.6] max-[820px]:text-[13px]">
             {phones.map((p) => (
-              <a key={p.href} href={p.href} className={link}>
+              <a key={p.href} href={p.href} className={`${link} whitespace-nowrap`}>
                 {p.label}
               </a>
             ))}
-            <a href={`mailto:${email}`} className={`${link} break-all`}>
+            <a href={`mailto:${email}`} className={`${link} whitespace-nowrap`}>
               {email}
             </a>
+            <div className="mt-3 border-t border-white/14 pt-2.5 text-[13px] leading-normal text-on-dark-soft max-[820px]:text-xs">
+              © {contacts ? contacts.company : t("company")}
+              <br />
+              {t("madeBy")}{" "}
+              <a href="https://aostudio.art" target="_blank" rel="noopener" className={link}>
+                AO Studio
+              </a>
+            </div>
           </div>
-        </div>
-
-        <div className="relative z-1 mx-12 border-t border-white/14 pt-3 pb-4 text-[13px] text-on-dark-soft max-[820px]:mx-6 max-[820px]:max-w-none max-[820px]:pb-4 max-[820px]:text-xs">
-          {t("copyright")} · {t("madeBy")}{" "}
-          <a href="https://aostudio.art" target="_blank" rel="noopener" className={link}>
-            AO Studio
-          </a>
         </div>
       </footer>
       </div>

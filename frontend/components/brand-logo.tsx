@@ -1,11 +1,11 @@
 // The logo of the dealer: the mark (picture public/images/logo-mark.webp). When a vector
 // version is made, it replaces the picture here and everywhere at once.
-export function BrandMark({ className = "", priority = false }: { className?: string; priority?: boolean }) {
+export function BrandMark({ className = "" }: { className?: string }) {
   // The new mark (26.10.2026): a chrome ribbon cloud on a cone, a thin blue thread inside and a
   // blue spark at the tip, all of one piece. A picture with a transparent background (WebP,
   // cut from Oleh's file on navy, 27.10); the size comes from the class (height, width auto).
   // eslint-disable-next-line @next/next/no-img-element -- small logo, same file everywhere
-  return <img src="/images/logo-mark.webp" alt="" aria-hidden="true" width={330} height={462} fetchPriority={priority ? "high" : undefined} className={className} />;
+  return <img src="/images/logo-mark.webp" alt="" aria-hidden="true" width={330} height={462} className={className} />;
 }
 
 /** Mark + CARPIGIANI + OFFICIAL UKRAINE DEALER. size "lg" in the header, "sm" in the footer;
@@ -31,20 +31,21 @@ const sparkPath = [
   "M439.0 452.0 L431.8 451.7 L424.3 453.2 L417.0 456.3 L410.2 460.4 L403.3 464.5 L396.2 468.1 L389.2 471.4 L382.2 474.9 L375.3 478.6 L368.1 481.9 L360.6 484.6 L353.0 487.2 L345.4 489.8 L337.7 491.9 L329.9 493.6 L322.1 495.0 L314.2 496.3 L306.2 497.1 L298.2 497.4 L290.2 497.6 L282.4 497.6 L274.5 497.3 L266.7 496.7 L258.8 495.8 L250.9 494.7 L243.2 493.4 L235.5 491.8 L228.0 489.6 L220.6 487.0 L213.2 484.3 L205.8 481.6 L198.5 478.7 L191.3 475.5 L184.2 472.0 L177.0 468.5 L170.1 464.6 L163.1 460.6 L156.5 456.3 L149.7 452.4 L142.6 449.6 L136.7 450.8 L134.3 455.8 L135.6 463.3 L138.4 470.5 L142.2 477.4 L146.2 484.3 L150.2 491.2 L153.9 498.2 L157.5 505.4 L161.5 512.2 L165.5 519.0 L169.5 525.8 L173.3 532.7 L177.1 539.7 L180.7 546.8 L184.8 553.7 L189.1 560.4 L193.1 567.3 L196.8 574.4 L200.7 581.3 L204.5 588.2 L208.3 595.1 L212.3 602.0 L216.2 608.9 L220.2 615.8 L224.2 622.6 L228.1 629.6 L231.6 636.7 L235.4 643.7 L239.6 650.6 L243.8 657.3 L248.1 664.1 L252.0 671.1 L255.7 678.1 L259.7 684.9 L263.8 691.6 L267.6 698.5 L271.1 705.6 L275.2 712.4 L279.8 718.7 L283.9 725.0 L285.9 730.9",
 ];
 const sparkLen = [403, 1231, 642];
-const sparkBegin = [0.75, 1.20, 2.33];
+const sparkBegin = [0.15, 0.6, 1.73];
 const sparkDur = [0.33, 1.01, 0.52];
-export const SPARK_END = 2.85;
+export const SPARK_END = 2.25;
 
-/** The mark with a blue spark (splash screen): the mark rises, a spark with a short glowing
- *  trail runs along the blue thread inside the metal — the cloud, then the cone — stops in the
- *  tip of the cone, where the spark of the mark always is, flashes brighter for a moment and
- *  stays. Plain SVG animation; the splash screen holds it until the picture of the mark is
+/** The mark with a blue spark (splash screen): the mark appears WITHOUT its spark (a copy of
+ *  the picture with a clean tip of the cone), at once a spark with a short glowing trail runs
+ *  along the blue thread inside the metal — the cloud, then the cone — stops in the tip, flashes
+ *  brighter for a moment and stays: the usual mark with its spark fades in there (29.10). Plain SVG animation; the splash screen holds it until the picture of the mark is
  *  loaded, then starts it (components/site-splash.tsx). People who turned off animations see the
  *  mark as it is. */
 export function AnimatedBrandMark({ className = "" }: { className?: string }) {
   return (
     <span className={`relative inline-block ${className}`}>
-      <BrandMark priority className="block h-full w-auto" />
+      {/* eslint-disable-next-line @next/next/no-img-element -- the same small picture as BrandMark */}
+      <img src="/images/logo-mark-nospark.webp" alt="" aria-hidden="true" width={330} height={462} fetchPriority="high" className="block h-full w-auto" />
       <svg aria-hidden="true" viewBox="0 0 575 805" className="logo-spark absolute inset-0 size-full overflow-visible">
         <defs>
           <radialGradient id="spark-glow">
@@ -75,6 +76,10 @@ export function AnimatedBrandMark({ className = "" }: { className?: string }) {
           </g>
         ))}
         {/* The flash in the tip: brighter for a moment, then the usual spark of the mark */}
+        {/* The usual mark with its spark in the tip: comes in during the flash and stays */}
+        <image href="/images/logo-mark.webp" width="575" height="805" opacity="0">
+          <animate attributeName="opacity" to="1" begin={`${SPARK_END + 0.1}s`} dur="0.5s" fill="freeze" />
+        </image>
         <g transform="translate(286 735)" opacity="0">
           <circle r="80" fill="url(#spark-glow)">
             <animate attributeName="r" values="20;170;70" keyTimes="0;0.35;1" begin={`${SPARK_END}s`} dur="0.8s" fill="freeze" />
@@ -82,7 +87,7 @@ export function AnimatedBrandMark({ className = "" }: { className?: string }) {
           <path d="M-150 0 L150 0 M0 -95 L0 95" stroke="#e8f5ff" strokeWidth="6" strokeLinecap="round" filter="url(#spark-blur)">
             <animate attributeName="opacity" values="0;1;0.35" keyTimes="0;0.3;1" begin={`${SPARK_END}s`} dur="0.8s" fill="freeze" />
           </path>
-          <animate attributeName="opacity" values="0;1;0.7" keyTimes="0;0.25;1" begin={`${SPARK_END}s`} dur="0.8s" fill="freeze" />
+          <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.25;1" begin={`${SPARK_END}s`} dur="1.1s" fill="freeze" />
         </g>
       </svg>
     </span>
