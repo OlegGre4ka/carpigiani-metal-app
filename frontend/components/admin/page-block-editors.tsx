@@ -525,45 +525,99 @@ const cellInput =
 function useTableFromPicture(block: TableBlock, onChange: (b: TableBlock) => void) {
   const { message, modal } = App.useApp();
   const call = useAdminCall();
-  const [reading, setReading] = useState(false);
+  // While AI reads: "1 of 3" (several screenshots of one long table)
+  const [reading, setReading] = useState<string | null>(null);
   // The table was filled by AI in this visit: a warning stays above it
   const [filled, setFilled] = useState(false);
 
-  async function read(file: File) {
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+  /** The screenshots one after another. "replace": the first one gives the header and the rows;
+   *  "add": the rows of all of them go to the end of the table (a long table in several
+   *  screenshots, 29.10). A row that is already in the table (the screenshots overlap) or the
+   *  header seen again on the next screenshot is not added twice. */
+  async function read(files: File[], mode: "replace" | "add") {
+    const pictures = files.filter((file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type));
+    if (!pictures.length) {
       message.error("Потрібна картинка: JPG, PNG або WebP");
       return;
     }
-    setReading(true);
+    let header = mode === "add" ? block.header : null;
+    let rows = mode === "add" ? block.rows : [];
+    const key = (cells: Text[]) => cells.map((cell) => cell.uk.trim().toLowerCase()).join("|");
+    let added = 0;
     try {
-      const form = new FormData();
-      form.append("picture", file);
-      const response = await call("/api/admin/ai/table", { method: "POST", body: form });
-      if (!response.ok) {
-        message.error(await readError(response));
-        return;
+      for (const [index, file] of pictures.entries()) {
+        setReading(pictures.length > 1 ? `${index + 1} з ${pictures.length}` : "");
+        const form = new FormData();
+        form.append("picture", file);
+        const response = await call("/api/admin/ai/table", { method: "POST", body: form });
+        if (!response.ok) {
+          message.error(`${pictures.length > 1 ? `Скрін ${index + 1}: ` : ""}${await readError(response)}`);
+          continue;
+        }
+        const table: { header: Text[]; rows: Text[][] } = await response.json();
+        if (!header) {
+          header = table.header;
+          rows = table.rows;
+          added += table.rows.length;
+          continue;
+        }
+        // The columns of the table stay as they are: extra cells are cut, missing ones are empty
+        const width = header.length;
+        const seen = new Set([key(header), ...rows.map(key)]);
+        for (const cells of table.rows) {
+          const fitted = Array.from({ length: width }, (_, i) => cells[i] ?? emptyText());
+          if (seen.has(key(fitted))) continue;
+          seen.add(key(fitted));
+          rows = [...rows, fitted];
+          added += 1;
+        }
       }
-      const table: { header: Text[]; rows: Text[][] } = await response.json();
-      onChange({ ...block, header: table.header, rows: table.rows });
-      setFilled(true);
-      message.success(`Готово: ${table.rows.length} рядків. Перевірте цифри перед збереженням.`);
+      if (header) {
+        onChange({ ...block, header, rows: rows.slice(0, 80) });
+        setFilled(true);
+        message.success(
+          `${mode === "add" ? `Додано рядків: ${added}` : `Готово: ${rows.length} рядків`}. Перевірте цифри перед збереженням.`,
+        );
+        if (rows.length > 80) message.warning("У таблиці може бути до 80 рядків — решту не додано.");
+      }
     } catch (error) {
       if (error instanceof Error && error.message !== "logged out") message.error("Не вдалося. Перевірте зв'язок.");
     } finally {
-      setReading(false);
+      setReading(null);
     }
   }
 
-  /** The table already has text: ask before it is replaced */
-  function start(file: File) {
-    const filled = [...block.header, ...block.rows.flat()].some((cell) => cell.uk || cell.en);
-    if (!filled) return void read(file);
-    modal.confirm({
-      title: "Замінити таблицю?",
-      content: "Зараз у таблиці вже є дані. AI заповнить її заново з картинки.",
-      okText: "Замінити",
-      cancelText: "Скасувати",
-      onOk: () => read(file),
+  /** The table already has text: add the rows to its end, or fill it again */
+  function start(files: File[]) {
+    if (!files.length) return;
+    const hasData = [...block.header, ...block.rows.flat()].some((cell) => cell.uk || cell.en);
+    if (!hasData) return void read(files, "replace");
+    const dialog = modal.confirm({
+      width: 620,
+      title: "У таблиці вже є дані",
+      content: "Довга таблиця на кількох скрінах? Додайте рядки в кінець. Або заповніть таблицю заново з цього скріна.",
+      footer: (
+        <div className="mt-5 flex flex-wrap justify-end gap-2">
+          <Button onClick={() => dialog.destroy()}>Скасувати</Button>
+          <Button
+            onClick={() => {
+              dialog.destroy();
+              read(files, "replace");
+            }}
+          >
+            Заповнити заново
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              dialog.destroy();
+              read(files, "add");
+            }}
+          >
+            Додати рядки в кінець
+          </Button>
+        </div>
+      ),
     });
   }
 
@@ -601,9 +655,9 @@ export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang
       onPaste={(event) => {
         // A picture from the clipboard (a screenshot): fill the table from it; text is pasted as usual
         const file = Array.from(event.clipboardData.files).find((f) => f.type.startsWith("image/"));
-        if (!file || picture.reading) return;
+        if (!file || picture.reading !== null) return;
         event.preventDefault();
-        picture.start(file);
+        picture.start([file]);
       }}
     >
       <Field label={inLang("Назва таблиці", lang)} className="mt-4 mb-3.5">
@@ -611,23 +665,27 @@ export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang
       </Field>
       {/* AI: the table from a screenshot */}
       <div className="mb-3 flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-navbar/25 bg-mist/60 px-4 py-3">
-        <button type="button" className={smallButton} disabled={picture.reading} onClick={() => pictureInput.current?.click()}>
-          {picture.reading ? <Spinner /> : <Sparkles size={16} aria-hidden="true" />}
-          {picture.reading ? "AI читає таблицю…" : "Заповнити зі скріна"}
+        <button type="button" className={smallButton} disabled={picture.reading !== null} onClick={() => pictureInput.current?.click()}>
+          {picture.reading !== null ? <Spinner /> : <Sparkles size={16} aria-hidden="true" />}
+          {picture.reading !== null ? `AI читає таблицю${picture.reading ? ` (${picture.reading})` : ""}…` : "Заповнити зі скріна"}
         </button>
         <span className="text-[13px] leading-snug text-ink-soft">
-          Завантажте скрін або фото таблиці (або вставте його сюди Ctrl+V) — AI заповнить клітинки українською й англійською.{" "}
+          Завантажте скрін або фото таблиці (або вставте його сюди Ctrl+V) — AI заповнить клітинки українською й англійською. Довга таблиця:
+          можна вибрати кілька скрінів одразу або додавати їх по одному — рядки стануть у кінець.{" "}
           <b className="text-ink">Таблиця заповнюється за допомогою AI, тому рекомендуємо перевірити всі цифри перед тим, як зберегти.</b>
         </span>
         <input
           ref={pictureInput}
           type="file"
           accept="image/jpeg,image/png,image/webp"
+          multiple
           hidden
           onChange={(event) => {
-            const file = event.target.files?.[0];
+            // Several screenshots of one long table: in the order of their names (screenshots
+            // are named by the time they were taken, so top to bottom)
+            const files = Array.from(event.target.files ?? []).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
             event.target.value = "";
-            if (file) picture.start(file);
+            picture.start(files);
           }}
         />
       </div>
