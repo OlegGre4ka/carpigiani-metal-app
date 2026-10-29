@@ -13,6 +13,7 @@ import { ContactsSync } from "@/components/contacts-sync";
 import { SiteFooter } from "@/components/site-footer";
 import { ContactWidget } from "@/components/contact-widget";
 import { FontPicker } from "@/components/font-picker";
+import { SiteSplash } from "@/components/site-splash";
 import "../globals.css";
 
 // Font of the whole site: Manrope (text and headings; see app/theme.css).
@@ -60,8 +61,8 @@ export default async function RootLayout({ children, params }: Props) {
           <style>{".reveal,.reveal [data-reveal-kids]>*,.reveal [data-reveal-rows]>*,.reveal [data-reveal-pop]{opacity:1!important;transform:none!important;scale:1!important;clip-path:none!important}"}</style>
         </noscript>
         <NextIntlClientProvider>
-          {/* The splash screen with the logo (components/site-splash.tsx) is switched off until the
-              client's new logo and its animation are ready */}
+          {/* The splash screen with the logo and its running spark (opening and reloading the site) */}
+          <SiteSplash />
           {/* The page is ready at once without the admin item; it is added only for a logged-in admin */}
           <Suspense fallback={<SiteHeader />}>
             <HeaderForVisitor />

@@ -13,9 +13,11 @@ type Options = {
   count: number;
   /** false: photos change only by arrows, dots and swipe */
   autoplay?: boolean;
+  /** Time between the switches (4 seconds if not given) */
+  interval?: number;
 };
 
-export function useSlider({ count, autoplay = true }: Options) {
+export function useSlider({ count, autoplay = true, interval = AUTOPLAY_MS }: Options) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchX = useRef<number | null>(null);
@@ -24,15 +26,15 @@ export function useSlider({ count, autoplay = true }: Options) {
   const next = useCallback(() => go(active + 1), [go, active]);
   const prev = useCallback(() => go(active - 1), [go, active]);
 
-  // Auto-scroll every 4 seconds. Stops while the mouse is over the slider and for people who
+  // Auto-scroll every 4 seconds (or every `interval`). Stops while the mouse is over the slider and for people who
   // turned off animations in their system settings. Any manual switch restarts the 4 seconds.
   const running = autoplay && count > 1 && !paused;
   useEffect(() => {
     if (!running) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setTimeout(() => go(active + 1), AUTOPLAY_MS);
+    const timer = window.setTimeout(() => go(active + 1), interval);
     return () => window.clearTimeout(timer);
-  }, [active, running, go]);
+  }, [active, running, go, interval]);
 
   // Put on the block that holds the slides: pause under the mouse and for keyboard users (Tab),
   // swipe left/right with a finger. A mouse click on a dot keeps autoplay going.

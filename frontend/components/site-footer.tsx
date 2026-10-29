@@ -54,64 +54,66 @@ export function SiteFooter({ contacts }: { contacts?: SiteContacts | null }) {
       {/* Thin metal rim around the light graphite footer card */}
       <div className="rounded-[41px] bg-[image:var(--navy-panel-rim)] p-px shadow-[0_24px_60px_rgb(0_10_50/0.35)] max-[820px]:rounded-[29px]">
       <footer className="relative isolate overflow-hidden rounded-[40px] bg-[image:var(--grad-footer-graphite)] text-on-navy max-[820px]:rounded-[28px]">
-        {/* Low footer (27.10): brand · contacts · socials on the right */}
-        <div className="relative z-1 grid grid-cols-[1fr_1.6fr_auto] items-center gap-10 px-12 pt-7 pb-5 max-[1100px]:grid-cols-[1fr_auto] max-[1100px]:gap-y-5 max-[820px]:grid-cols-1 max-[820px]:gap-5 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-4">
-          {/* Brand */}
-          <div>
+        {/* Low footer (29.10): three columns spread evenly — the company · the address with the
+            socials under it · the phones and the e-mail. Tablets: the company on top, the other
+            two side by side; phones (under 600px): one under another. */}
+        <div className="relative z-1 flex items-start justify-between gap-10 px-12 pt-7 pb-5 max-[1100px]:grid max-[1100px]:grid-cols-2 max-[1100px]:gap-x-10 max-[1100px]:gap-y-5 max-[600px]:grid-cols-1 max-[820px]:gap-5 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-4">
+          {/* The company */}
+          <div className="max-w-90 max-[1100px]:col-span-2 max-[1100px]:max-w-none max-[600px]:col-span-1">
             <div className="flex items-center gap-3">
-              <BrandMark className="h-12 w-auto" />
-              <div className="metal-text pb-1 text-[30px] leading-none font-extrabold tracking-[-0.5px]">Carpigiani</div>
+              <BrandMark className="h-12 w-auto shrink-0" />
+              <div className="metal-text pb-1 text-[28px] leading-[1.1] font-extrabold tracking-[-0.5px] max-[820px]:text-[24px]">
+                {contacts ? contacts.company : t("company")}
+              </div>
             </div>
             <p className="mt-2.5 text-sm leading-normal text-on-navy-soft">{t("about")}</p>
           </div>
 
-          {/* Contacts (address and phones side by side, so the footer stays low) */}
-          <div className="grid grid-cols-2 gap-6 text-[15px] leading-[1.6] max-[1100px]:order-last max-[1100px]:col-span-2 max-[820px]:col-span-1 max-[820px]:grid-cols-1 max-[820px]:gap-2.5 max-[820px]:text-sm">
-            <address className="text-on-navy-soft not-italic min-[1101px]:whitespace-nowrap">
-              {contacts ? contacts.company : t("company")}
-              <br />
+          {/* The address and the socials under it */}
+          <div className="text-[15px] leading-[1.6] max-[820px]:text-sm">
+            <address className="text-on-navy-soft not-italic">
               {contacts ? contacts.street : t("street")}
               <br />
               {contacts ? contacts.city : t("city")}
             </address>
-            <div className="flex flex-col">
-              {phones.map((p) => (
-                <a key={p.href} href={p.href} className={link}>
-                  {p.label}
+            <div className="mt-3.5 flex gap-2.5">
+              {socials.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+                >
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    {s.icon}
+                  </svg>
                 </a>
               ))}
-              <a href={`mailto:${email}`} className={`${link} break-all`}>
-                {email}
-              </a>
             </div>
           </div>
 
-          {/* Socials on the right */}
-          <div className="flex gap-2.5 max-[820px]:order-last">
-            {socials.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={s.label}
-                className="flex size-10 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  {s.icon}
-                </svg>
+          {/* The phones and the e-mail */}
+          <div className="flex flex-col text-[15px] leading-[1.6] max-[820px]:text-sm">
+            {phones.map((p) => (
+              <a key={p.href} href={p.href} className={link}>
+                {p.label}
               </a>
             ))}
+            <a href={`mailto:${email}`} className={`${link} break-all`}>
+              {email}
+            </a>
           </div>
         </div>
 

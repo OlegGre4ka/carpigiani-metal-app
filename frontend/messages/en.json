@@ -212,7 +212,10 @@
     "allInTopic": "All in the topic ({count}) →",
     "back": "Back to news",
     "newer": "Newer news",
-    "older": "Older news"
+    "older": "Older news",
+    "prev": "Previous news",
+    "next": "Next news",
+    "goTo": "Show news from no. {n}"
   },
   "ContactsPage": {
     "phones": "Phones",

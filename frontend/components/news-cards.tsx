@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore, type ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
@@ -7,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Reveal } from "@/components/reveal";
 import { Link } from "@/i18n/navigation";
 import { BrandMark } from "@/components/brand-logo";
+import { Chevron, useSlider } from "@/components/slider-controls";
 import { newsDate } from "@/lib/news-date";
 import { toneClass } from "@/lib/news-tones";
 import type { NewsCard, NewsTopicLink } from "@/lib/site-pages";
@@ -111,11 +113,70 @@ export function FeaturedNews({ item }: { item: NewsCard }) {
   );
 }
 
+/** One compact card: the photo, the topic and the date, the title, two lines of the text and
+ *  "Read more". Phones: a compact row with a square photo (in the grid of /news), or the same
+ *  card as on large screens (slider: tall). onNavy: on the navy home page. */
+function NewsCompactCard({ item, onNavy, tall = false }: { item: NewsCard; onNavy: boolean; tall?: boolean }) {
+  const t = useTranslations("News");
+  // Phones in the grid of /news: a compact row; in the slider the card stays tall
+  const phoneRow = tall ? "" : "max-[820px]:flex-row max-[820px]:gap-3.5 max-[820px]:rounded-[22px] max-[820px]:p-2.5";
+  return (
+    <article
+      className={`group relative flex h-full flex-col rounded-[28px] p-3.5 transition duration-350 hover:-translate-y-1.25 ${phoneRow} ${
+        onNavy
+          ? `navy-card pb-6 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)] ${tall ? "" : "max-[820px]:pb-2.5"}`
+          : "border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] shadow-[0_12px_32px_rgb(var(--shadow-rgb)/0.08)] hover:shadow-[0_22px_46px_rgb(var(--shadow-rgb)/0.15)]"
+      }`}
+    >
+      <div
+        className={`relative overflow-hidden rounded-[20px] ${onNavy ? "aspect-[4/3] bg-[var(--navy-photo)]" : "aspect-[16/10] bg-mist"} ${
+          tall ? "" : "max-[820px]:aspect-square max-[820px]:w-28 max-[820px]:flex-none max-[820px]:rounded-2xl"
+        }`}
+      >
+        {item.image ? (
+          <Image
+            src={item.image}
+            alt=""
+            fill
+            sizes={tall ? "(max-width: 820px) 86vw, (max-width: 1100px) 50vw, 420px" : "(max-width: 820px) 112px, (max-width: 1100px) 50vw, 420px"}
+            className="object-cover transition-transform duration-700 group-hover:scale-106"
+          />
+        ) : (
+          <NoPhoto />
+        )}
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <NewsMeta topic={item.topic} date={item.date} onNavy={onNavy} className={`mx-1.5 mt-3.5 mb-2 ${tall ? "" : "max-[820px]:mx-0 max-[820px]:mt-0.5 max-[820px]:mb-1.5"}`} />
+        <h3 className={`mx-1.5 mb-1.5 line-clamp-2 text-[19px] leading-[1.3] font-extrabold ${onNavy ? "text-white" : "text-ink"} ${tall ? "max-[820px]:text-[17px]" : "max-[820px]:mx-0 max-[820px]:mb-0 max-[820px]:text-base"}`}>
+          <Link href={item.href} className={`${stretched} after:rounded-[28px] ${tall ? "" : "max-[820px]:after:rounded-[22px]"}`}>
+            {item.title}
+          </Link>
+        </h3>
+        {item.summary && (
+          <p
+            className={`mx-1.5 mb-3 line-clamp-2 leading-normal ${onNavy ? "text-[15px] text-on-dark-soft" : "text-sm text-ink-soft"} ${
+              tall ? "max-[820px]:text-sm" : "max-[820px]:mx-0 max-[820px]:mt-1 max-[820px]:mb-0 max-[820px]:text-[13px]"
+            }`}
+          >
+            {item.summary}
+          </p>
+        )}
+        <span
+          aria-hidden="true"
+          className={`mx-1.5 mt-auto mb-1 inline-flex items-center gap-1.5 font-extrabold ${tall ? "" : "max-[820px]:hidden"} ${onNavy ? "text-[14.5px] text-sky" : "text-sm text-brand"}`}
+        >
+          {t("readMore")}
+          <ArrowRight size={16} strokeWidth={2.6} className="transition-transform duration-300 group-hover:translate-x-1" />
+        </span>
+      </div>
+    </article>
+  );
+}
+
 /** Grid of compact cards, three in a row (two on tablets); on phones one compact row each.
  *  featured: the newest news takes two columns of the first row (the whole row on tablets).
  *  onNavy: on the navy home page (mockup): blue cards with a thin metal rim. */
 export function NewsGrid({ items, featured, onNavy = false }: { items: NewsCard[]; featured?: NewsCard; onNavy?: boolean }) {
-  const t = useTranslations("News");
   return (
     <ul className="grid grid-cols-3 gap-6 max-[1100px]:grid-cols-2 max-[820px]:grid-cols-1 max-[820px]:gap-3.5">
       {featured && (
@@ -127,47 +188,102 @@ export function NewsGrid({ items, featured, onNavy = false }: { items: NewsCard[
         <li key={item.id} className="min-w-0">
           {/* The cards of a row open one after another */}
           <Reveal delay={((index + (featured ? 2 : 0)) % 3) * 90} radius={28} className="h-full">
-            <article
-              className={`group relative flex h-full flex-col rounded-[28px] p-3.5 transition duration-350 hover:-translate-y-1.25 max-[820px]:flex-row ${
-                onNavy
-                  ? "navy-card pb-6 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)] max-[820px]:pb-2.5"
-                  : "border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] shadow-[0_12px_32px_rgb(var(--shadow-rgb)/0.08)] hover:shadow-[0_22px_46px_rgb(var(--shadow-rgb)/0.15)]"
-              } max-[820px]:gap-3.5 max-[820px]:rounded-[22px] max-[820px]:p-2.5`}
-            >
-              <div className={`relative overflow-hidden rounded-[20px] max-[820px]:aspect-square ${onNavy ? "aspect-[4/3] bg-[var(--navy-photo)]" : "aspect-[16/10] bg-mist"} max-[820px]:w-28 max-[820px]:flex-none max-[820px]:rounded-2xl`}>
-                {item.image ? (
-                  <Image
-                    src={item.image}
-                    alt=""
-                    fill
-                    sizes="(max-width: 820px) 112px, (max-width: 1100px) 50vw, 420px"
-                    className="object-cover transition-transform duration-700 group-hover:scale-106"
-                  />
-                ) : (
-                  <NoPhoto />
-                )}
-              </div>
-              <div className="flex min-w-0 flex-1 flex-col">
-                <NewsMeta topic={item.topic} date={item.date} onNavy={onNavy} className="mx-1.5 mt-3.5 mb-2 max-[820px]:mx-0 max-[820px]:mt-0.5 max-[820px]:mb-1.5" />
-                <h3 className={`mx-1.5 mb-1.5 line-clamp-2 text-[19px] leading-[1.3] font-extrabold max-[820px]:mx-0 ${onNavy ? "text-white" : "text-ink"} max-[820px]:mb-0 max-[820px]:text-base`}>
-                  <Link href={item.href} className={`${stretched} after:rounded-[28px] max-[820px]:after:rounded-[22px]`}>
-                    {item.title}
-                  </Link>
-                </h3>
-                {item.summary && (
-                  <p className={`mx-1.5 mb-3 line-clamp-2 leading-normal max-[820px]:mx-0 ${onNavy ? "text-[15px] text-on-dark-soft" : "text-sm text-ink-soft"} max-[820px]:mt-1 max-[820px]:mb-0 max-[820px]:text-[13px]`}>
-                    {item.summary}
-                  </p>
-                )}
-                <span aria-hidden="true" className={`mx-1.5 mt-auto mb-1 inline-flex items-center gap-1.5 font-extrabold max-[820px]:hidden ${onNavy ? "text-[14.5px] text-sky" : "text-sm text-brand"}`}>
-                  {t("readMore")}
-                  <ArrowRight size={16} strokeWidth={2.6} className="transition-transform duration-300 group-hover:translate-x-1" />
-                </span>
-              </div>
-            </article>
+            <NewsCompactCard item={item} onNavy={onNavy} />
           </Reveal>
         </li>
       ))}
     </ul>
   );
 }
+
+/** How many cards the slider shows at once: 3 on large screens, 2 on tablets, 1 on phones
+ *  (with a bit of the next card peeking out). The server draws 3. */
+function useCardsPerView() {
+  return useSyncExternalStore(
+    (onChange) => {
+      const queries = [window.matchMedia("(max-width: 820px)"), window.matchMedia("(max-width: 1100px)")];
+      queries.forEach((q) => q.addEventListener("change", onChange));
+      return () => queries.forEach((q) => q.removeEventListener("change", onChange));
+    },
+    () => (window.matchMedia("(max-width: 820px)").matches ? 1 : window.matchMedia("(max-width: 1100px)").matches ? 2 : 3),
+    () => 3,
+  );
+}
+
+const NEWS_INTERVAL = 5000;
+
+/** News on the home page (as on the old site): a strip of cards that moves one news to the left
+ *  every 5 seconds; round arrows next to "All news" move it by hand, a finger swipes it on
+ *  phones. Stops under the mouse. After the last news it goes back to the first one. */
+export function NewsSlider({ items, allNews }: { items: NewsCard[]; allNews: ReactNode }) {
+  const t = useTranslations("News");
+  const perView = useCardsPerView();
+  // Positions of the strip: the first card of the view can be any card up to the last full view
+  const positions = Math.max(1, items.length - perView + 1);
+  const { active, go, next, prev, handlers } = useSlider({ count: positions, interval: NEWS_INTERVAL });
+  // After a resize the position may be past the end
+  const pos = Math.min(active, positions - 1);
+  const moving = positions > 1;
+
+  return (
+    <div {...handlers}>
+      <div className="mb-8.5 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 max-[820px]:mb-5">
+        <div>
+          <h2 className="font-heading text-[54px] leading-[1.05] font-extrabold tracking-[-1.5px] text-white motion-safe:animate-fade-up max-[820px]:text-[34px]">
+            <span className="metal-text">{t("title")}</span>
+          </h2>
+          <span aria-hidden="true" className="title-line left" />
+        </div>
+        <div className="flex items-center gap-5 pb-1">
+          {moving && (
+            <div className="flex gap-3 max-[820px]:hidden">
+              <button type="button" onClick={prev} aria-label={t("prev")} className={newsArrow}>
+                <Chevron dir="left" />
+              </button>
+              <button type="button" onClick={next} aria-label={t("next")} className={newsArrow}>
+                <Chevron dir="right" />
+              </button>
+            </div>
+          )}
+          {allNews}
+        </div>
+      </div>
+      {/* The strip; room around it, so the lift and the shadow of a card are not cut off */}
+      <div
+        className="-mx-4 -my-5 overflow-hidden px-4 py-5 [--gap:24px] max-[820px]:[--gap:14px]"
+        style={{ ["--cardw" as string]: perView === 1 ? "86%" : `calc((100% - ${perView - 1} * var(--gap)) / ${perView})` }}
+      >
+        <ul
+          aria-live="polite"
+          className="flex gap-[var(--gap)] transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+          style={{ transform: `translateX(calc(${-pos} * (var(--cardw) + var(--gap))))` }}
+        >
+          {items.map((item, index) => {
+            const shown = index >= pos && index < pos + perView;
+            return (
+              <li key={item.id} aria-hidden={!shown} inert={!shown} className="min-w-0 flex-none basis-[var(--cardw)]">
+                <Reveal delay={(index % 3) * 90} radius={28} className="h-full">
+                  <NewsCompactCard item={item} onNavy tall />
+                </Reveal>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      {/* Phones: small dots under the strip show where it is */}
+      {moving && (
+        <div className="mt-5 hidden justify-center gap-1 max-[820px]:flex">
+          {Array.from({ length: positions }, (_, i) => (
+            <button key={i} type="button" onClick={() => go(i)} aria-label={t("goTo", { n: i + 1 })} aria-current={i === pos} className="flex size-6 items-center justify-center">
+              <i className={`block h-2 rounded-full transition-[width] ${i === pos ? "w-6 bg-[image:var(--metal)]" : "w-2 bg-white/40"}`} />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Round metal arrows of the news strip: the same as the arrows of the sliders (.metal-round)
+const newsArrow =
+  "metal-round group/arrow flex size-12 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-ink shadow-[inset_0_-4px_8px_rgb(var(--ink-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-110 hover:text-white";
