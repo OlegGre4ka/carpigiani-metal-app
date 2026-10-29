@@ -69,17 +69,21 @@ function isCutout(img: HTMLImageElement) {
 function Card({ item, onNavy, pop }: { item: EquipmentCard; onNavy: boolean; pop: boolean }) {
   const t = useTranslations("Equipment");
   // A machine cut out on a transparent background: on hover it comes forward, out of the card
-  const [cutout, setCutout] = useState(false);
+  // The server says it (cutout); the photo itself is also checked in the browser as a fallback
+  const [seen, setSeen] = useState(false);
+  const cutout = pop && (Boolean(item.cutout) || seen);
+  // On plain white the white of the photo melts into the light card (and around it)
+  const onWhite = item.cutout === "white";
   const photo = useRef<HTMLImageElement>(null);
   // The photo may be loaded before the page comes alive (then "load" is not heard): check it then
   useEffect(() => {
     const img = photo.current;
-    if (!pop || !img) return;
-    const check = () => setCutout(isCutout(img));
+    if (!pop || item.cutout || !img) return;
+    const check = () => setSeen(isCutout(img));
     if (img.complete && img.naturalWidth) check();
     else img.addEventListener("load", check, { once: true });
     return () => img.removeEventListener("load", check);
-  }, [pop, item.image]);
+  }, [pop, item.cutout, item.image]);
   const box = `flex h-full w-full flex-col rounded-[30px] text-left max-[820px]:rounded-[22px] max-[820px]:p-2.5 ${
     onNavy ? "navy-card p-3 pb-5" : "steel-card p-4 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)]"
   }`;
@@ -88,7 +92,7 @@ function Card({ item, onNavy, pop }: { item: EquipmentCard; onNavy: boolean; pop
     <>
       <span
         className={`relative flex aspect-[4/3] w-full items-center justify-center rounded-[20px] ${
-          cutout ? "eq-pop bg-[radial-gradient(ellipse_at_50%_100%,#e3ecf8,#ffffff_70%)]" : "overflow-hidden bg-white"
+          cutout && !onWhite ? "eq-pop bg-[radial-gradient(ellipse_at_50%_100%,#e3ecf8,#ffffff_70%)]" : "overflow-hidden bg-white"
         }`}
       >
         {cutout && <span aria-hidden="true" className="eq-pop-floor" />}
@@ -100,7 +104,7 @@ function Card({ item, onNavy, pop }: { item: EquipmentCard; onNavy: boolean; pop
             height={450}
             sizes="(max-width: 1100px) 50vw, 300px"
             ref={photo}
-            className={`relative max-h-[92%] w-auto max-w-[88%] object-contain ${cutout ? "eq-pop-img" : "transition-transform duration-400 group-hover:scale-105"}`}
+            className={`relative max-h-[92%] w-auto max-w-[88%] object-contain ${cutout ? `eq-pop-img ${onWhite ? "eq-on-white" : ""}` : "transition-transform duration-400 group-hover:scale-105"}`}
           />
         )}
         {item.href && <span className={`absolute right-3 bottom-3 z-3 ${moreButton}`}>{t("view")}</span>}
@@ -115,7 +119,8 @@ function Card({ item, onNavy, pop }: { item: EquipmentCard; onNavy: boolean; pop
   );
 
   // The page of the equipment is not made yet: the card is not a link
-  if (!item.href) return <div className={box}>{inner}</div>;
+  // (group: the machine still comes out of the card on hover)
+  if (!item.href) return <div className={`group ${box}`}>{inner}</div>;
   return (
     <Link href={item.href} className={`group ${box} ${cardLift}`}>
       {inner}

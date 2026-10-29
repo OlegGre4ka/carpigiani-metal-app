@@ -61,7 +61,13 @@ from app.schemas.pages import (
 )
 from app.services.auth import get_current_user
 from app.services.files import save_pdf
-from app.services.images import UPLOADS_URL, delete_image, image_url, save_image
+from app.services.images import (
+    UPLOADS_URL,
+    cutout_kind,
+    delete_image,
+    image_url,
+    save_image,
+)
 
 public_router = APIRouter(prefix="/api/pages", tags=["pages"])
 admin_router = APIRouter(
@@ -284,6 +290,9 @@ def subcategory_for_site(block: dict, lang: Lang, db: DbSession) -> dict | None:
             "label": label,
             "text": pick(item["text"], lang),
             "href": item.get("href", "") if item["id"] in with_page else "",
+            # The machine stands on a transparent or plain white background: on the site it
+            # comes out of its card ("clear" / "white"; "" — a photo with its own background)
+            "cutout": cutout_kind(item.get("image")),
         }
         for item in subcategory.items
         if item.get("visible", True)

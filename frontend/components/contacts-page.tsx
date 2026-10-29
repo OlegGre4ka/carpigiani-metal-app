@@ -55,7 +55,7 @@ export async function ContactsPage() {
   const link = "font-extrabold text-brand transition-colors hover:text-ink";
 
   const card = (
-    <div className="rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] px-5.5 pt-5 pb-5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.09)]">
+    <div className="h-full rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] px-5.5 pt-5 pb-5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.09)]">
       <ul data-reveal-kids>
         <Row icon={<Phone size={18} strokeWidth={2.2} />} title={t("phones")}>
           {contacts.phones.map((phone) => (
@@ -115,41 +115,32 @@ export async function ContactsPage() {
       {/* The floating "Contact us" button hides on large screens: the form is on the page */}
       <EquipmentPageMark name="" />
       <Breadcrumbs items={[{ title: tNav("contacts") }]} />
-      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] text-navbar motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
+      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
         {tNav("contacts")}
       </h1>
 
-      <div className="grid grid-cols-[minmax(0,1fr)_380px] gap-10 max-[1100px]:grid-cols-[minmax(0,1fr)_330px] max-[1100px]:gap-7 max-[820px]:grid-cols-1 max-[820px]:gap-5.5">
-        {/* Phones: the contacts first, the map under them */}
-        <div className="hidden max-[820px]:block">
-          <Reveal delay={100} radius={30}>
-            {card}
-          </Reveal>
-        </div>
-        <Reveal delay={120} radius={36} className="min-w-0">
-          {/* 29.10: the map is as high as the first screen allows (not as the whole right column),
-              so the marker in its middle is on the first screen */}
-          <section aria-label={t("map")}>
+      {/* 29.10: one row, no empty space — the contacts on the left, the map in the middle, the
+          form on the right; the map is as high as the row. Tablets: the map on top, the
+          contacts and the form side by side under it. Phones: one under another. */}
+      <div className="grid grid-cols-[330px_minmax(0,1fr)_360px] items-stretch gap-6 max-[1280px]:grid-cols-[300px_minmax(0,1fr)_330px] max-[1100px]:grid-cols-2 max-[820px]:grid-cols-1 max-[820px]:gap-5">
+        <Reveal delay={100} radius={30} className="min-w-0 max-[1100px]:order-2 max-[820px]:order-1">
+          {card}
+        </Reveal>
+        <Reveal delay={150} radius={36} className="min-w-0 max-[1100px]:order-1 max-[1100px]:col-span-2 max-[820px]:order-2 max-[820px]:col-span-1">
+          <section aria-label={t("map")} className="h-full">
             <SiteMap
               lat={contacts.lat}
               lng={contacts.lng}
               label={contacts.street || address}
-              className="h-[clamp(420px,calc(100svh-260px),640px)] rounded-[36px] shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.15)] max-[820px]:h-80 max-[820px]:min-h-0 max-[820px]:rounded-[26px]"
+              className="h-full min-h-115 rounded-[36px] shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.2)] max-[1100px]:h-100 max-[1100px]:min-h-0 max-[820px]:h-80 max-[820px]:rounded-[26px]"
             />
           </section>
         </Reveal>
-        <aside className="flex min-w-0 flex-col gap-6 max-[820px]:gap-5.5">
-          <div className="max-[820px]:hidden">
-            <Reveal delay={150} radius={30} className="reveal-side">
-              {card}
-            </Reveal>
+        <Reveal delay={200} radius={30} className="min-w-0 max-[1100px]:order-3">
+          <div className="h-full rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.96)] px-5 pt-5.5 pb-4.5 shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.16)]">
+            <ContactForm variant="page" heading="contact" page="/contacts" />
           </div>
-          <Reveal delay={300} radius={30}>
-            <div className="rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.96)] px-5 pt-5.5 pb-4.5 shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.16)]">
-              <ContactForm variant="page" heading="contact" page="/contacts" />
-            </div>
-          </Reveal>
-        </aside>
+        </Reveal>
       </div>
     </main>
   );

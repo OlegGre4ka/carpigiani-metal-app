@@ -20,8 +20,8 @@ export function BrandPage({ page }: { page: BrandPageData }) {
       <div className="mx-auto w-full max-w-360 px-20 pt-7 max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:pt-5">
         {/* Head of the page (29.10): large screens — the logo of the brand on a white tile LEFT of
             the title, in one row (low head, so the category cards are on the first screen);
-            phones — a smaller logo above the title. Title in still dark metal, trail line, the
-            line under the title. */}
+            phones — a smaller logo above the title. Title in dark metal with the slow shine (as
+            "What we do" on the home page), trail line, the line under the title. */}
         <header className="flex flex-col items-center text-center">
           <div className="flex items-center justify-center gap-6 max-[820px]:flex-col max-[820px]:gap-3">
             {page.logo_url && (
@@ -31,7 +31,7 @@ export function BrandPage({ page }: { page: BrandPageData }) {
               </div>
             )}
             <h1 className="pb-1 text-left font-heading text-[44px] leading-[1.08] font-extrabold tracking-[-0.02em] motion-safe:animate-fade-up max-[820px]:text-center max-[820px]:text-[30px]">
-              <span className="metal-text-calm">{page.title}</span>
+              <span className="metal-text-dark">{page.title}</span>
             </h1>
           </div>
           <span aria-hidden="true" className="title-line mt-3!" />

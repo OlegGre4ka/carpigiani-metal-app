@@ -24,7 +24,17 @@ export type VideoBlock = { id: string; type: "video"; caption: string; video_id:
 /** Equipment card of a subcategory.
  *  label: the name of the category, shown above the name.
  *  href: the page of the equipment; empty while that page is not made (the card is not a link) */
-export type EquipmentCard = { id: string; image: string | null; title: string; label: string; text: string; href: string };
+export type EquipmentCard = {
+  id: string;
+  image: string | null;
+  title: string;
+  label: string;
+  text: string;
+  href: string;
+  /** How the machine stands on its photo (the server checks the file): "clear" — cut out on a
+   *  transparent background, "white" — on plain white, "" — a photo with its own background */
+  cutout?: "clear" | "white" | "";
+};
 /** A subcategory on the category page: its title (empty when hidden) and its equipment */
 export type SubcategoryBlock = { id: string; type: "subcategory"; title: string; items: EquipmentCard[] };
 

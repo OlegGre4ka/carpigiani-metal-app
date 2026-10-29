@@ -35,10 +35,10 @@ import { loadEquipmentMap } from "@/lib/site-pages";
 // blocks never reach this page. Texts are already in the language of the site.
 
 const blockTitle =
-  "mb-4.5 font-heading text-[36px] leading-[1.05] font-extrabold tracking-[-0.02em] text-navbar max-[820px]:text-[28px]";
+  "mb-4.5 font-heading text-[36px] leading-[1.05] font-extrabold tracking-[-0.02em] metal-text-dark max-[820px]:text-[28px]";
 
 const equipmentTitle =
-  "mb-3.5 font-heading text-[31px] leading-[1.05] font-extrabold tracking-[-0.02em] text-navbar max-[820px]:text-[25px]";
+  "mb-3.5 font-heading text-[31px] leading-[1.05] font-extrabold tracking-[-0.02em] metal-text-dark max-[820px]:text-[25px]";
 
 // Blocks appear when scrolled to (components/reveal.tsx); the first ones on the screen one by one
 const delay = (index: number) => (index < 3 ? 120 + index * 90 : 0);
@@ -89,7 +89,7 @@ export async function SitePage({ page, href, locale }: { page: SitePageData; hre
       {equipment && <EquipmentPageMark name={page.item_title || page.title} />}
       <Breadcrumbs items={crumbs} />
 
-      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] text-navbar motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
+      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
         {page.title}
       </h1>
 
@@ -283,7 +283,7 @@ async function Catalogs({ block }: { block: CatalogsBlock }) {
 
   return (
     <section className="rounded-[36px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.92)] px-9 py-7.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[820px]:rounded-[28px] max-[820px]:px-5 max-[820px]:py-6">
-      <h2 className="mb-4.5 font-heading tracking-[-0.02em] text-[26px] leading-[1.05] font-extrabold text-navbar max-[820px]:text-[23px]">{te("catalogs")}</h2>
+      <h2 className="mb-4.5 font-heading tracking-[-0.02em] text-[26px] leading-[1.05] font-extrabold metal-text-dark max-[820px]:text-[23px]">{te("catalogs")}</h2>
       <ul data-reveal-kids className="grid grid-cols-2 gap-4 max-[820px]:grid-cols-1">
         {block.items.map((file) => (
           <li key={file.url} className="min-w-0">

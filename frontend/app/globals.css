@@ -667,15 +667,6 @@ button:not(:disabled),
    shines (the gradient moves, 6 s). Without motion the metal simply stands still. */
 @layer components {
   /* Dark metal for titles on light bands */
-  /* Titles of brand pages: the same dark metal, standing still (no shine moving through it) */
-  .metal-text-calm {
-    background-image: linear-gradient(135deg, #0a1a3a 0%, #2c3d5c 25%, #6f7f98 45%, #16264a 65%, #44567a 85%, #0a1a3a 100%);
-    background-size: 160% 100%;
-    background-position: 30% 50%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
   .metal-text-dark {
     background-image: linear-gradient(135deg, #0a1a3a 0%, #2c3d5c 25%, #6f7f98 45%, #16264a 65%, #44567a 85%, #0a1a3a 100%);
     background-size: 220% 100%;
@@ -1264,13 +1255,13 @@ button:not(:disabled),
 /* Map of the office (components/site-map.tsx). Outside the layers on purpose: the styles of
    the map library are not in a layer, these must win over them. */
 .site-map .leaflet-tile-pane {
-  /* OpenStreetMap in the colours of the site (29.10): grey made cool icy blue — water, parks
-     and streets stay readable, nothing loud */
-  filter: grayscale(1) sepia(0.32) hue-rotate(175deg) saturate(2.1) brightness(1.03) contrast(0.92);
+  /* OpenStreetMap in the colours of the site (29.10): deep navy, close to the navbar blue, so
+     the silver mark and the white address stand out; streets and water stay readable */
+  filter: invert(1) grayscale(1) sepia(1) hue-rotate(185deg) saturate(3.2) brightness(0.8) contrast(1.05);
 }
 .site-map.leaflet-container {
   font-family: var(--font-text);
-  background: var(--mist);
+  background: var(--navbar);
 }
 .site-map .leaflet-control-zoom {
   border: 0;
@@ -2078,6 +2069,19 @@ button:not(:disabled),
 .group:focus-visible .eq-pop-img {
   transform: translateY(-16%) scale(1.16);
   filter: drop-shadow(0 26px 22px rgb(var(--shadow-rgb) / 0.32));
+}
+/* A machine on plain white: the white of the photo would show as a square above the card, so
+   it comes forward (bigger) but stays inside the photo; no drop shadow (it would draw the
+   square) — only the shadow on the floor. Full effect: upload a cut-out PNG. */
+.eq-pop-img.eq-on-white,
+.group:hover .eq-pop-img.eq-on-white,
+.group:focus-visible .eq-pop-img.eq-on-white {
+  mix-blend-mode: multiply;
+  filter: none;
+}
+.group:hover .eq-pop-img.eq-on-white,
+.group:focus-visible .eq-pop-img.eq-on-white {
+  transform: translateY(-3%) scale(1.09);
 }
 .eq-pop-floor {
   position: absolute;

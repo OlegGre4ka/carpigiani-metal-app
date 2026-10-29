@@ -68,3 +68,45 @@ def delete_image(relative: str | None) -> None:
 
 def image_url(relative: str) -> str:
     return f"{UPLOADS_URL}/{relative}"
+
+
+_cutouts: dict[tuple[str, float], str] = {}
+
+
+def cutout_kind(url: str | None) -> str:
+    """How an uploaded photo of a machine stands (29.10), so the site can let the machine come
+    out of its card: "clear" — cut out on a transparent background; "white" — on a plain white
+    background (the white melts into the light card); "" — a photo with its own background.
+    Remembered per file (and its change time), so each file is opened once."""
+    if not url or not url.startswith(f"{UPLOADS_URL}/"):
+        return ""
+    path = UPLOADS_DIR / url.removeprefix(f"{UPLOADS_URL}/")
+    try:
+        key = (str(path), path.stat().st_mtime)
+    except OSError:
+        return ""
+    if key not in _cutouts:
+        try:
+            with Image.open(path) as image:
+                small = image.convert("RGBA").resize((48, 48))
+            px = small.load()
+            pixels = [px[x, y] for y in range(48) for x in range(48)]
+            clear = sum(1 for p in pixels if p[3] < 24)
+            # the four corners of the picture are all but white (the machine itself may touch
+            # the edges in the middle)
+            edge = [
+                px[x, y]
+                for cx, cy in ((0, 0), (42, 0), (0, 42), (42, 42))
+                for y in range(cy, cy + 6)
+                for x in range(cx, cx + 6)
+            ]
+            white = sum(1 for r, g, b, a in edge if a > 200 and min(r, g, b) > 236)
+            if clear / len(pixels) > 0.02:
+                _cutouts[key] = "clear"
+            elif white / len(edge) > 0.9:
+                _cutouts[key] = "white"
+            else:
+                _cutouts[key] = ""
+        except OSError, UnidentifiedImageError:
+            _cutouts[key] = ""
+    return _cutouts[key]
