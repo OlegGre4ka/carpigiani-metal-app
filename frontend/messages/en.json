@@ -224,5 +224,24 @@
     "map": "Map: how to find us",
     "copy": "Copy",
     "copied": "Copied"
+  },
+  "Search": {
+    "title": "Search",
+    "open": "Search the site",
+    "close": "Close search",
+    "placeholder": "What are you looking for? E.g. Maestro or showcase",
+    "hint": "Start typing the name of a machine, a showcase or a news topic",
+    "nothing": "Nothing found for “{q}”",
+    "nothingHint": "Try another word — or call us, we will help",
+    "all": "All results ({count})",
+    "filter": "Filter results",
+    "everything": "All",
+    "groups": {
+      "equipment": "Equipment",
+      "showcases": "Showcases",
+      "categories": "Categories",
+      "brands": "Manufacturers",
+      "news": "News"
+    }
   }
 }

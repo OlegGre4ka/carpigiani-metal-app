@@ -21,6 +21,7 @@ from app.routers.news_router import public_router as news_public_router
 from app.routers.pages_router import admin_router as pages_admin_router
 from app.routers.pages_router import public_router as pages_public_router
 from app.routers.requests_router import router as requests_router
+from app.routers.search_router import router as search_router
 from app.routers.settings_router import admin_router as settings_admin_router
 from app.routers.settings_router import public_router as settings_public_router
 from app.services.images import UPLOADS_DIR, UPLOADS_URL
@@ -60,6 +61,7 @@ app.include_router(contact_router)
 app.include_router(settings_public_router)
 app.include_router(settings_admin_router)
 app.include_router(requests_router)
+app.include_router(search_router)
 
 # Uploaded photos (categories, equipment, news)
 UPLOADS_DIR.mkdir(parents=True, exist_ok=True)

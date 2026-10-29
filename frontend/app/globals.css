@@ -2133,3 +2133,25 @@ button:not(:disabled),
     transition: none;
   }
 }
+
+/* Search over the site (components/site-search.tsx): the lit words and the panel coming down */
+.search-mark {
+  border-radius: 4px;
+  padding: 0 2px;
+  background: rgb(var(--navbar-rgb) / 0.12);
+  color: inherit;
+}
+.search-panel {
+  animation: search-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes search-in {
+  from {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .search-panel {
+    animation: none;
+  }
+}

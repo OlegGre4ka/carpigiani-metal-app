@@ -5,7 +5,6 @@
 export const comingSoonPages: Record<string, string> = {
   // Slider
   maestro: "Slider.maestro.title",
-  "ifi-lunette": "Slider.lunette.title",
   "carpigiani-gelato-university": "Slider.university.title",
   ready: "Slider.ready.title",
 

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from
 import { useLocale, useTranslations } from "next-intl";
 import { ChevronDown, ChevronRight, Menu, Settings, X } from "lucide-react";
 
+import { SiteSearch } from "@/components/site-search";
 import { Link, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { BrandMark } from "@/components/brand-logo";
@@ -343,11 +344,13 @@ export function SiteHeader({
           <Link href="/contacts" aria-current={section === "contacts" ? "page" : undefined} className={navItem(section === "contacts")}>
             {t("contacts")}
           </Link>
+          {/* Search over the site; the "/" key opens it too */}
+          <SiteSearch shortcut className="ml-1" />
           {isAdmin && (
             <NextLink
               href={ADMIN_HREF}
               aria-label={t("admin")}
-              className="group/admin relative ml-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-brand"
+              className="group/admin relative ml-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
             >
               {/* Only the icon: the full menu must stay in one line; the name shows on hover */}
               <Settings aria-hidden="true" className="size-4.5" />
@@ -364,8 +367,9 @@ export function SiteHeader({
           </div>
         </nav>
 
-        {/* Burger (phone) */}
-        <div className="relative hidden max-[1240px]:block">
+        {/* Burger (phone) and the search next to it */}
+        <div className="relative hidden items-center gap-2 max-[1240px]:flex">
+          <SiteSearch className="size-11.5" />
           <button
             type="button"
             aria-label={t("menu")}

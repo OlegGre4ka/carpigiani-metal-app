@@ -133,6 +133,9 @@ def equipment_pages(db: DbSession, subcategory_id: int) -> list[EquipmentPage]:
 def href_owner(db: DbSession, href: str) -> str | None:
     """Who already uses this address: "категорія «…»" / "обладнання «…»" /
     "тема новин «…»" / "новина «…»", or None."""
+    # Pages of the site itself (the search results)
+    if href.rstrip("/") == "/search":
+        return "сторінка пошуку сайту"
     category = db.scalar(
         select(EquipmentCategory).where(EquipmentCategory.href == href)
     )

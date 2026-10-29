@@ -66,6 +66,7 @@ RESERVED = {
     "images",
     "news",
     "contacts",
+    "search",
     "support",
     "fofkas-adminpanel",
     "en",
