@@ -117,7 +117,7 @@ export function SectionMap({
                             style={delay}
                             className={`map-item relative my-px block rounded-xl py-1.5 text-[14.5px] transition-colors ${
                               here
-                                ? "map-current bg-ink pr-3 pl-6.5 font-extrabold text-white before:absolute before:top-1/2 before:left-2.75 before:-mt-0.75 before:size-1.5 before:rounded-full before:bg-brand-pale"
+                                ? "map-current bg-navbar pr-3 pl-6.5 font-extrabold text-white before:absolute before:top-1/2 before:left-2.75 before:-mt-0.75 before:size-1.5 before:rounded-full before:bg-brand-pale"
                                 : "px-3 font-semibold text-body hover:bg-[rgb(var(--mist-rgb)/0.6)] hover:text-ink"
                             }`}
                           >

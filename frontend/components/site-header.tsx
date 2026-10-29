@@ -353,7 +353,7 @@ export function SiteHeader({
               <Settings aria-hidden="true" className="size-4.5" />
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute top-full right-0 z-30 mt-2 rounded-full bg-ink px-3 py-1.5 text-xs font-bold whitespace-nowrap text-white opacity-0 shadow-[0_10px_24px_rgb(var(--ink-rgb)/0.25)] transition-opacity group-hover/admin:opacity-100 group-focus-visible/admin:opacity-100"
+                className="pointer-events-none absolute top-full right-0 z-30 mt-2 rounded-full bg-navbar px-3 py-1.5 text-xs font-bold whitespace-nowrap text-white opacity-0 shadow-[0_10px_24px_rgb(var(--ink-rgb)/0.25)] transition-opacity group-hover/admin:opacity-100 group-focus-visible/admin:opacity-100"
               >
                 {t("admin")}
               </span>

@@ -63,6 +63,7 @@ from app.services.auth import get_current_user
 from app.services.files import save_pdf
 from app.services.images import (
     UPLOADS_URL,
+    cut_out_white,
     cutout_kind,
     delete_image,
     image_url,
@@ -267,6 +268,14 @@ def has_cells(cells: list[dict]) -> bool:
     return any(pick(cell, "uk").strip() for cell in cells)
 
 
+def shown_image(url: str | None) -> str | None:
+    """The photo of a machine for the cards of the site: a photo on plain white is shown cut out
+    (its white made see-through), so the machine can come out of its card."""
+    if url and cutout_kind(url) == "white":
+        return cut_out_white(url) or url
+    return url
+
+
 def subcategory_for_site(block: dict, lang: Lang, db: DbSession) -> dict | None:
     """The chosen subcategory with its visible equipment, or None if there is nothing to show."""
     chosen = block.get("subcategory_id")
@@ -285,14 +294,14 @@ def subcategory_for_site(block: dict, lang: Lang, db: DbSession) -> dict | None:
     items = [
         {
             "id": item["id"],
-            "image": item.get("image"),
+            "image": shown_image(item.get("image")),
             "title": pick(item["title"], lang),
             "label": label,
             "text": pick(item["text"], lang),
             "href": item.get("href", "") if item["id"] in with_page else "",
-            # The machine stands on a transparent or plain white background: on the site it
-            # comes out of its card ("clear" / "white"; "" — a photo with its own background)
-            "cutout": cutout_kind(item.get("image")),
+            # The machine stands on a transparent background (or on plain white, cut out by the
+            # server): on the site it comes out of its card
+            "cutout": cutout_kind(shown_image(item.get("image"))),
         }
         for item in subcategory.items
         if item.get("visible", True)

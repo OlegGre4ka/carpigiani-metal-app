@@ -48,7 +48,7 @@ export function CopyButton({ text, label }: { text: string; label: string }) {
       {/* "Copied" next to the button */}
       <span
         role="status"
-        className={`pointer-events-none absolute left-full ml-2 rounded-full bg-ink px-2.5 py-1 text-[11.5px] font-bold whitespace-nowrap text-white transition-opacity duration-200 ${
+        className={`pointer-events-none absolute left-full ml-2 rounded-full bg-navbar px-2.5 py-1 text-[11.5px] font-bold whitespace-nowrap text-white transition-opacity duration-200 ${
           copied ? "opacity-100" : "opacity-0"
         }`}
       >

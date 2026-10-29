@@ -84,7 +84,8 @@ function Card({ item, onNavy, pop }: { item: EquipmentCard; onNavy: boolean; pop
     else img.addEventListener("load", check, { once: true });
     return () => img.removeEventListener("load", check);
   }, [pop, item.cutout, item.image]);
-  const box = `flex h-full w-full flex-col rounded-[30px] text-left max-[820px]:rounded-[22px] max-[820px]:p-2.5 ${
+  // relative hover:z-10: the machine that comes out passes over the neighbouring cards
+  const box = `relative flex h-full w-full flex-col rounded-[30px] hover:z-10 text-left max-[820px]:rounded-[22px] max-[820px]:p-2.5 ${
     onNavy ? "navy-card p-3 pb-5" : "steel-card p-4 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)]"
   }`;
 
