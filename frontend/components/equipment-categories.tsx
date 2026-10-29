@@ -44,9 +44,14 @@ export async function EquipmentCategories() {
 export async function CategoryCards({ brand }: { brand: string }) {
   const categories = await loadEquipmentCategories(brand);
   if (categories.length === 0) return null;
-  // 29.10: deep navy see-through cards, the same as the news cards (the light lines of the
-  // background glow through them); the photo is lower, so the first row fits the first screen
-  return <CardsGrid categories={categories} dark short />;
+  // 29.10: the same see-through navy cards as the news, on a full-width navy band with lines
+  // (as the news on the home page), so the band glows through their glass; the photo is lower,
+  // so the first row fits the first screen
+  return (
+    <div className="band-blue mx-[calc(50%-50vw)] px-[max(16px,calc(50vw-640px))] py-10 max-[820px]:py-6">
+      <CardsGrid categories={categories} dark short />
+    </div>
+  );
 }
 
 /** 3 cards in a row (2 on tablets, 1 on phones): photo with "More", name, arrow on phones.
@@ -81,10 +86,10 @@ async function CardsGrid({ categories, dark = false, short = false }: { categori
             </div>
           </>
         );
-        const className = `group block motion-safe:animate-fade-up rounded-[31px] ${dark ? "navy-card p-3.5 pb-5 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)]" : "glass-card p-4.5"} ${dark ? "transition duration-300" : cardLift}`;
+        const className = `group block motion-safe:animate-fade-up rounded-[31px] ${dark ? `navy-card p-3.5 pb-5 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)]` : "glass-card p-4.5"} ${dark ? "transition duration-300" : cardLift}`;
 
         if (!linked) {
-          const still = `block motion-safe:animate-fade-up rounded-[31px] ${dark ? "navy-card p-3.5 pb-5" : "glass-card p-4.5"}`;
+          const still = `block motion-safe:animate-fade-up rounded-[31px] ${dark ? `navy-card p-3.5 pb-5` : "glass-card p-4.5"}`;
           return (
             <div key={category.id} className={still} style={delay(index)}>
               {content}

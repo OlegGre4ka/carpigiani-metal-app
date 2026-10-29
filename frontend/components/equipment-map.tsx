@@ -48,7 +48,7 @@ export function EquipmentMap({
       )}
       <div className={`flex items-center gap-3 ${logo ? "justify-center" : ""}`}>
         {!logo && <BrandMark className="h-10 w-auto" />}
-        <b className="font-heading tracking-[-0.02em] text-xl leading-none font-extrabold text-ink">{name}</b>
+        <b className="font-heading tracking-[-0.02em] text-xl leading-none font-extrabold text-navbar">{name}</b>
       </div>
     </>
   );

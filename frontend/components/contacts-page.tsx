@@ -115,7 +115,7 @@ export async function ContactsPage() {
       {/* The floating "Contact us" button hides on large screens: the form is on the page */}
       <EquipmentPageMark name="" />
       <Breadcrumbs items={[{ title: tNav("contacts") }]} />
-      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
+      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] text-navbar motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
         {tNav("contacts")}
       </h1>
 
@@ -127,12 +127,14 @@ export async function ContactsPage() {
           </Reveal>
         </div>
         <Reveal delay={120} radius={36} className="min-w-0">
-          <section aria-label={t("map")} className="h-full">
+          {/* 29.10: the map is as high as the first screen allows (not as the whole right column),
+              so the marker in its middle is on the first screen */}
+          <section aria-label={t("map")}>
             <SiteMap
               lat={contacts.lat}
               lng={contacts.lng}
               label={contacts.street || address}
-              className="h-full min-h-150 rounded-[36px] shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.15)] max-[820px]:h-80 max-[820px]:min-h-0 max-[820px]:rounded-[26px]"
+              className="h-[clamp(420px,calc(100svh-260px),640px)] rounded-[36px] shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.15)] max-[820px]:h-80 max-[820px]:min-h-0 max-[820px]:rounded-[26px]"
             />
           </section>
         </Reveal>

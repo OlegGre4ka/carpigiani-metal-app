@@ -31,7 +31,6 @@ const supportItems = [
   { key: "gelatoCrystal", href: "/gelato-crystal" },
   { key: "project", href: "/project" },
   { key: "service", href: "/service" },
-  { key: "sitemap", href: "/sitemap" },
 ] as const;
 
 /** A brand for the menus: title already in the page language */

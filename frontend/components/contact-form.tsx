@@ -135,7 +135,7 @@ export function ContactForm({
             <path className="cf-draw" d="M4 12.5l5 5L20 6.5" />
           </svg>
         </div>
-        <h3 className="mb-2 font-heading tracking-[-0.02em] text-[23px] leading-none font-extrabold text-ink">{t("thanksTitle")}</h3>
+        <h3 className="mb-2 font-heading tracking-[-0.02em] text-[23px] leading-none font-extrabold text-navbar">{t("thanksTitle")}</h3>
         <p className="mb-3.5 text-sm leading-normal text-ink-soft">{t("thanksText")}</p>
         {inquiry}
         {phones}
@@ -151,7 +151,7 @@ export function ContactForm({
 
   return (
     <form onSubmit={submit} noValidate className="text-ink">
-      <h3 className={`mb-1 font-heading tracking-[-0.02em] text-[23px] leading-[1.02] font-extrabold text-ink ${variant === "popup" ? "pr-10" : ""}`}>{title}</h3>
+      <h3 className={`mb-1 font-heading tracking-[-0.02em] text-[23px] leading-[1.02] font-extrabold text-navbar ${variant === "popup" ? "pr-10" : ""}`}>{title}</h3>
       <p className="mb-2.5 text-[13px] leading-[1.45] text-ink-soft">{t("text")}</p>
       {inquiry}
 

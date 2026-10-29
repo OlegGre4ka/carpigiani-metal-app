@@ -55,7 +55,7 @@ export default async function RootLayout({ children, params }: Props) {
 
   return (
     <html lang={locale} className={`${fontSans.variable} ${fontChoices} h-full antialiased`}>
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="site-body min-h-full flex flex-col font-sans">
         {/* Without JavaScript blocks that appear on scroll (components/reveal.tsx) are simply shown */}
         <noscript>
           <style>{".reveal,.reveal [data-reveal-kids]>*,.reveal [data-reveal-rows]>*,.reveal [data-reveal-pop]{opacity:1!important;transform:none!important;scale:1!important;clip-path:none!important}"}</style>

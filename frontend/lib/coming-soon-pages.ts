@@ -11,7 +11,6 @@ export const comingSoonPages: Record<string, string> = {
 
   // Main menu
   support: "Nav.support",
-  sitemap: "SupportMenu.sitemap",
   "gelato-crystal": "SupportMenu.gelatoCrystal",
   project: "SupportMenu.project",
   service: "SupportMenu.service",

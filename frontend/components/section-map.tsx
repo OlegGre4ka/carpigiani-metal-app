@@ -43,7 +43,7 @@ export function SectionMap({
     <nav aria-label={title}>
       {header !== null && (
         <div className="mb-1.5 border-b border-ink/10 px-1.5 pb-3">
-          {header ?? <b className="block px-1 font-heading tracking-[-0.02em] text-xl leading-none font-extrabold text-ink">{title}</b>}
+          {header ?? <b className="block px-1 font-heading tracking-[-0.02em] text-xl leading-none font-extrabold text-navbar">{title}</b>}
         </div>
       )}
       {topLink && (

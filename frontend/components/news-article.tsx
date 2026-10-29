@@ -34,7 +34,7 @@ function NewsText({ block, lead }: { block: TextBlock; lead: boolean }) {
   return (
     <section className="max-w-195">
       {block.title && (
-        <h2 className="mb-3.5 font-heading tracking-[-0.02em] text-[28px] leading-[1.1] font-extrabold text-ink max-[820px]:text-[23px]">{block.title}</h2>
+        <h2 className="mb-3.5 font-heading tracking-[-0.02em] text-[28px] leading-[1.1] font-extrabold text-navbar max-[820px]:text-[23px]">{block.title}</h2>
       )}
       <div
         data-reveal-kids
@@ -83,7 +83,7 @@ export async function NewsArticle({ page, href }: { page: SitePageData; href: st
           </time>
         )}
       </div>
-      <h1 className="mb-5.5 font-heading text-[31px] leading-[1.08] font-extrabold tracking-[-0.02em] text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
+      <h1 className="mb-5.5 font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] text-navbar motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
         {page.title}
       </h1>
 

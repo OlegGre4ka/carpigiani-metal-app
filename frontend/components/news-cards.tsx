@@ -91,7 +91,7 @@ export function FeaturedNews({ item }: { item: NewsCard }) {
         </div>
         <div className="flex min-w-0 flex-col justify-center gap-3 px-8 py-8 max-[820px]:px-5 max-[820px]:pt-5 max-[820px]:pb-6">
           <NewsMeta topic={item.topic} date={item.date} />
-          <h2 className="line-clamp-3 font-heading tracking-[-0.02em] text-[26px] leading-[1.06] font-extrabold text-ink max-[820px]:text-[23px]">
+          <h2 className="line-clamp-3 font-heading tracking-[-0.02em] text-[26px] leading-[1.06] font-extrabold text-navbar max-[820px]:text-[23px]">
             <Link href={item.href} className={`${stretched} after:rounded-[36px] max-[820px]:after:rounded-[28px]`}>
               {item.title}
             </Link>

@@ -25,7 +25,7 @@ export async function ComingSoon({ title }: { title: string }) {
         <p className="relative mt-6 text-xs font-extrabold tracking-[2.5px] text-steel uppercase motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
           {t("eyebrow")}
         </p>
-        <h1 className="relative mt-3 font-heading tracking-[-0.02em] text-[46px] leading-[1.02] font-extrabold text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[820px]:text-[31px]">
+        <h1 className="relative mt-3 font-heading tracking-[-0.02em] text-[46px] leading-[1.02] font-extrabold text-navbar motion-safe:animate-fade-up motion-safe:[animation-delay:160ms] max-[820px]:text-[31px]">
           {title}
         </h1>
         <p className="relative mx-auto mt-4 max-w-[46ch] text-lg leading-relaxed text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:240ms] max-[820px]:text-base">

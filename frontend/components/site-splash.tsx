@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { preload } from "react-dom";
 
-import { AnimatedBrandMark, SPARK_END } from "@/components/brand-logo";
+import { AnimatedBrandMark } from "@/components/brand-logo";
 
 // Splash screen of the site: when the site is opened or reloaded, the brand mark and the name
 // rise on a dark screen with a blue glow, a blue spark runs along the thread of the mark and
@@ -25,31 +25,9 @@ export function SiteSplash() {
     window.scrollTo(0, 0);
   }, []);
 
-  // The spark starts only when the picture of the mark is on the screen (it may come a moment
-  // after the page), and the screen goes away when the spark has flashed in the tip of the cone
-  const box = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const svg = box.current?.querySelector<SVGSVGElement>(".logo-spark");
-    const img = box.current?.querySelector("img");
-    if (!svg || !img) return;
-    svg.pauseAnimations();
-    svg.setCurrentTime(0);
-    let leave = 0;
-    const start = (late: boolean) => {
-      // the spark starts at once, together with the mark (29.10: no pause before it)
-      svg.setCurrentTime(late ? 0.1 : 0);
-      svg.unpauseAnimations();
-      leave = window.setTimeout(() => setState("leaving"), (SPARK_END + 0.9) * 1000);
-    };
-    const onLoad = () => start(true);
-    if (img.complete) start(false);
-    else img.addEventListener("load", onLoad, { once: true });
-    return () => {
-      img.removeEventListener("load", onLoad);
-      clearTimeout(leave);
-    };
-  }, []);
-
+  // The spark runs by itself from the very first moment the splash is on the screen (plain SVG
+  // animation, it does not wait for the scripts of the page: 29.10, no pause before it); the
+  // screen fades away by CSS when the spark has flashed in the tip (.site-splash in globals.css)
   // Safety net: even if the styles of the site did not load, the screen goes away by itself
   useEffect(() => {
     const timer = setTimeout(() => setState("gone"), 7000);
@@ -59,7 +37,6 @@ export function SiteSplash() {
 
   return (
     <div
-      ref={box}
       aria-hidden="true"
       onClick={() => setState("leaving")}
       onAnimationEnd={(event) => {
@@ -70,9 +47,8 @@ export function SiteSplash() {
       }`}
     >
       <div className="splash-logo flex flex-col items-center text-white">
-        <AnimatedBrandMark className="h-[min(38vh,260px)] drop-shadow-[0_20px_50px_rgb(20_110_255/0.45)]" />
-        <b className="mt-6 text-[clamp(22px,4vw,34px)] font-extrabold tracking-[0.3em]">CARPIGIANI</b>
-        <small className="mt-2 text-[11px] font-bold tracking-[0.35em] text-on-dark-soft">OFFICIAL UKRAINE DEALER</small>
+        {/* Only the mark (29.10): the client sells several brands, no brand name here */}
+        <AnimatedBrandMark className="h-[min(42vh,300px)] drop-shadow-[0_20px_50px_rgb(20_110_255/0.45)]" />
       </div>
     </div>
   );
