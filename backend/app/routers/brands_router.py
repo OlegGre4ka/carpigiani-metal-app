@@ -232,6 +232,7 @@ def get_brand_page(
             lang,
         ),
         subtitle=pick({"uk": brand.subtitle_uk, "en": brand.subtitle_en}, lang).strip(),
+        logo_url=logo_url(brand),
         blocks=blocks_for_site(
             brand.blocks if brand.blocks is not None else DEFAULT_BLOCKS, lang, db
         ),

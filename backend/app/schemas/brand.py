@@ -81,5 +81,7 @@ class BrandPagePublic(BaseModel):
     key: str
     title: str
     subtitle: str
+    # Its logo for the head of the page (null: none)
+    logo_url: str | None = None
     blocks: list[dict]
     show_equipment: bool

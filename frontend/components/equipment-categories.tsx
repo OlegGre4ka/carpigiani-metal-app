@@ -48,7 +48,7 @@ export async function CategoryCards({ brand }: { brand: string }) {
 }
 
 /** 3 cards in a row (2 on tablets, 1 on phones): photo with "More", name, arrow on phones.
- *  dark: the home page (navy cards), otherwise light steel cards. */
+ *  dark: the home page (navy cards), otherwise light glass cards (brand pages, 29.10). */
 async function CardsGrid({ categories, dark = false }: { categories: EquipmentCategory[]; dark?: boolean }) {
   const locale = await getLocale();
   const t = await getTranslations("Equipment");
@@ -79,10 +79,10 @@ async function CardsGrid({ categories, dark = false }: { categories: EquipmentCa
             </div>
           </>
         );
-        const className = `group block motion-safe:animate-fade-up rounded-[31px] ${dark ? "navy-card p-3.5 pb-5 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)]" : "steel-card p-4.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)]"} ${dark ? "transition duration-300" : cardLift}`;
+        const className = `group block motion-safe:animate-fade-up rounded-[31px] ${dark ? "navy-card p-3.5 pb-5 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)]" : "glass-card p-4.5"} ${dark ? "transition duration-300" : cardLift}`;
 
         if (!linked) {
-          const still = `block motion-safe:animate-fade-up rounded-[31px] ${dark ? "navy-card p-3.5 pb-5" : "steel-card p-4.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)]"}`;
+          const still = `block motion-safe:animate-fade-up rounded-[31px] ${dark ? "navy-card p-3.5 pb-5" : "glass-card p-4.5"}`;
           return (
             <div key={category.id} className={still} style={delay(index)}>
               {content}

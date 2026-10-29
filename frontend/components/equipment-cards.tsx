@@ -19,7 +19,12 @@ import type { EquipmentCard } from "@/lib/site-pages";
 export function PhoneArrow({ onNavy = false }: { onNavy?: boolean }) {
   return (
     <span aria-hidden="true" className={phoneArrow}>
-      <span className={`flex size-8 items-center justify-center rounded-full ${onNavy ? "bg-white/12 text-sky" : "bg-tag text-brand"}`}>
+      {/* On the navy cards: a small metal button, like the buttons of the slider */}
+      <span
+        className={`flex size-8 items-center justify-center rounded-full ${
+          onNavy ? "bg-[image:var(--metal)] text-ink shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_6px_14px_rgb(0_0_0/0.35)]" : "bg-tag text-brand"
+        }`}
+      >
         <ChevronsRight className="size-4.5 motion-safe:animate-nudge" />
       </span>
     </span>

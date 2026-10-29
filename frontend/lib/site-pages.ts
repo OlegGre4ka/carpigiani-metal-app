@@ -235,6 +235,8 @@ export type BrandPageData = {
   key: string;
   title: string;
   subtitle: string;
+  /** The logo of the brand for the head of the page */
+  logo_url: string | null;
   blocks: PageBlock[];
   show_equipment: boolean;
 };

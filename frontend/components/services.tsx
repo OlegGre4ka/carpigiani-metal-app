@@ -74,12 +74,15 @@ export function Services() {
             <div
               key={s.key}
               style={{ animationDelay: `${index * 110}ms` }}
-              className="steel-card rounded-[31px] text-left [--card-fill:var(--light-card)] p-8.5 shadow-[0_18px_44px_rgb(0_10_50/0.45)] transition duration-300 motion-safe:animate-fade-up hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)] max-[820px]:p-6.5"
+              className="steel-card rounded-[31px] text-left [--card-fill:var(--light-card)] p-8.5 shadow-[0_18px_44px_rgb(0_10_50/0.45)] transition duration-300 motion-safe:animate-fade-up hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)] max-[820px]:p-5.5"
             >
-              <div className="mb-6 flex size-15.5 items-center justify-center rounded-[20px] bg-[image:var(--grad-btn)] text-white shadow-[0_12px_30px_rgb(20_100_255/0.4)]">
-                {s.icon}
+              {/* The icon and the title in one row (29.10: no empty space next to the icon) */}
+              <div className="mb-4 flex items-center gap-4.5 max-[820px]:mb-3 max-[820px]:gap-3.5">
+                <div className="flex size-15.5 shrink-0 items-center justify-center rounded-[20px] bg-[image:var(--grad-btn)] text-white shadow-[0_12px_30px_rgb(20_100_255/0.4)] max-[820px]:size-13 max-[820px]:rounded-[17px]">
+                  {s.icon}
+                </div>
+                <h3 className="text-2xl leading-tight font-extrabold tracking-[-0.01em] text-ink max-[820px]:text-xl">{t(`${s.key}.title`)}</h3>
               </div>
-              <h3 className="mb-2.5 text-2xl font-extrabold tracking-[-0.01em] text-ink max-[820px]:text-xl">{t(`${s.key}.title`)}</h3>
               <p className="text-base leading-[1.6] text-ink-soft">{t(`${s.key}.text`)}</p>
             </div>
           ))}

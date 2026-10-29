@@ -283,6 +283,16 @@
   body:has(.home-navy:not([style*="display: none"]))::before {
     background: var(--grad-navy-page);
   }
+  /* Pages of brands and categories (29.10, client's picture): light blue with soft lines,
+     fixed to the screen behind the page; a tall picture on phones */
+  body:has(.page-waves:not([style*="display: none"]))::before {
+    background: #e6f0fa url("/images/page-light.webp") center / cover no-repeat;
+  }
+  @media (max-width: 820px) {
+    body:has(.page-waves:not([style*="display: none"]))::before {
+      background-image: url("/images/page-light-phone.webp");
+    }
+  }
   /* The header lies over the slider and lets its photo show through (stronger than the
      "relative" and "bg-navy" classes of the header itself) */
   body:has(.home-navy:not([style*="display: none"])) .site-header {
@@ -590,6 +600,16 @@ button:not(:disabled),
       linear-gradient(180deg, var(--dark-card), var(--dark-card-2)) padding-box,
       var(--steel-border-dark) border-box;
   }
+  /* Card on the light pages with lines (brand pages, 29.10): light frosted glass with a thin
+     steel rim; the lines of the background glow softly through it */
+  .glass-card {
+    border: 1px solid transparent;
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.5)) padding-box,
+      var(--steel-border) border-box;
+    backdrop-filter: blur(14px) saturate(1.15);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 18px 44px rgb(var(--shadow-rgb) / 0.12);
+  }
   /* Card on the navy background (home page): blue inside, thin metal-to-blue rim, deep shadow */
   /* Card on the navy home bands: frosted glass with a thin light rim (approved prototype) */
   /* 29.10: deeper glass, so the light lines of the blue band only glow softly through it and
@@ -641,6 +661,15 @@ button:not(:disabled),
    shines (the gradient moves, 6 s). Without motion the metal simply stands still. */
 @layer components {
   /* Dark metal for titles on light bands */
+  /* Titles of brand pages: the same dark metal, standing still (no shine moving through it) */
+  .metal-text-calm {
+    background-image: linear-gradient(135deg, #0a1a3a 0%, #2c3d5c 25%, #6f7f98 45%, #16264a 65%, #44567a 85%, #0a1a3a 100%);
+    background-size: 160% 100%;
+    background-position: 30% 50%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
   .metal-text-dark {
     background-image: linear-gradient(135deg, #0a1a3a 0%, #2c3d5c 25%, #6f7f98 45%, #16264a 65%, #44567a 85%, #0a1a3a 100%);
     background-size: 220% 100%;
@@ -1078,9 +1107,31 @@ button:not(:disabled),
 .btn-shine:disabled::after {
   display: none;
 }
+/* The same light glare for metal buttons that stay metal on hover and must keep their own
+   place and their waves outside them ("Contact us", "More" on the cards). Not on the round
+   arrows and "Up": they turn navy on hover (.metal-round), a glare is not for them.
+   The glare is drawn inside the round shape itself, nothing is cut off (29.10) */
+.metal-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(110deg, transparent 38%, rgb(255 255 255 / 0.55) 50%, transparent 62%) no-repeat;
+  background-size: 260% 100%;
+  background-position: 130% 0;
+  transition: background-position 0.7s;
+}
+.metal-shine:hover::after,
+.metal-shine:focus-visible::after,
+.group:hover .metal-shine::after {
+  background-position: -30% 0;
+}
 @media (prefers-reduced-motion: reduce) {
   .btn-shine::after,
-  .ant-btn::after {
+  .ant-btn::after,
+  .metal-shine::after {
     transition: none;
   }
 }

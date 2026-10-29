@@ -135,7 +135,7 @@ export function ContactWidget() {
         onClick={() => (open ? close() : show())}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        className={`contact-fab fixed right-7 bottom-7 z-60 flex h-15 items-center gap-2.5 rounded-full bg-[image:var(--metal)] pr-6.5 pl-5 text-[15px] font-extrabold text-[#05070b] shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_14px_30px_rgb(0_0_0/0.45)] transition hover:-translate-y-0.5 hover:brightness-108 motion-reduce:animate-none max-[820px]:right-4 max-[820px]:bottom-4 max-[820px]:h-13.5 max-[820px]:pr-5 max-[820px]:pl-4 ${
+        className={`contact-fab metal-shine fixed right-7 bottom-7 z-60 flex h-15 items-center gap-2.5 rounded-full bg-[image:var(--metal)] pr-6.5 pl-5 text-[15px] font-extrabold text-[#05070b] shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_14px_30px_rgb(0_0_0/0.45)] transition hover:-translate-y-0.5 hover:brightness-108 motion-reduce:animate-none max-[820px]:right-4 max-[820px]:bottom-4 max-[820px]:h-13.5 max-[820px]:pr-5 max-[820px]:pl-4 ${
           open ? "max-[820px]:hidden" : "animate-fab-pulse"
         }`}
       >

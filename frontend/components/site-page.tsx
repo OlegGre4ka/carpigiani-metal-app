@@ -82,7 +82,8 @@ export async function SitePage({ page, href, locale }: { page: SitePageData; hre
   ];
 
   return (
-    <main className="mx-auto w-full max-w-360 flex-1 px-20 pb-18 max-[820px]:px-4 max-[820px]:pb-12">
+    // Category pages: the light background with soft lines behind the whole page (globals.css)
+    <main className={`mx-auto w-full max-w-360 flex-1 px-20 pb-18 max-[820px]:px-4 max-[820px]:pb-12 ${page.kind === "category" ? "page-waves" : ""}`}>
       {/* Marks an equipment page: the floating "Contact us" button hides on large screens and its
           form on phones says which equipment the request is about (components/contact-widget.tsx) */}
       {equipment && <EquipmentPageMark name={page.item_title || page.title} />}

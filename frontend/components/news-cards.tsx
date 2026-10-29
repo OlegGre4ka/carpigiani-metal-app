@@ -286,4 +286,4 @@ export function NewsSlider({ items, allNews }: { items: NewsCard[]; allNews: Rea
 
 // Round metal arrows of the news strip: the same as the arrows of the sliders (.metal-round)
 const newsArrow =
-  "metal-round group/arrow flex size-12 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-ink shadow-[inset_0_-4px_8px_rgb(var(--ink-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-110 hover:text-white";
+  "metal-round group/arrow relative flex size-12 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-ink shadow-[inset_0_-4px_8px_rgb(var(--ink-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-110 hover:text-white";

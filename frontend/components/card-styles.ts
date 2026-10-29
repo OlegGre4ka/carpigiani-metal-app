@@ -4,7 +4,7 @@ export const cardLift = "transition duration-300 hover:-translate-y-1.5 hover:sh
 /** Button on the photo of a card (metal, as in the mockup): floats up on hover; on touch screens
  *  it is always visible. Phones hide it (a double arrow at the bottom of the card instead). */
 export const moreButton =
-  "rounded-full bg-[image:var(--metal)] px-5.5 py-2.75 text-sm font-extrabold text-ink shadow-[0_12px_28px_rgb(0_10_50/0.45)] transition-all duration-300 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100 max-[820px]:hidden";
+  "metal-shine rounded-full bg-[image:var(--metal)] px-5.5 py-2.75 text-sm font-extrabold text-ink shadow-[0_12px_28px_rgb(0_10_50/0.45)] transition-all duration-300 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 [@media(hover:none)]:translate-y-0 [@media(hover:none)]:opacity-100 max-[820px]:hidden";
 
 /** Chip of a filter (showcases by category, news by topic): dark while chosen.
  *  onNavy: on the navy home page (mockup): blue while chosen, see-through otherwise. */
