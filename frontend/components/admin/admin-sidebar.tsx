@@ -88,7 +88,7 @@ function NavList({
             <li key={item.href}>
               <div
                 className={`flex items-center rounded-2xl transition-colors ${
-                  exact ? "bg-ink text-white" : active ? "bg-white text-ink" : "text-ink hover:bg-white"
+                  exact ? "bg-navbar text-white" : active ? "bg-white text-ink" : "text-ink hover:bg-white"
                 }`}
               >
                 {item.groupOnly ? (
@@ -148,7 +148,7 @@ function NavList({
                           aria-current={childExact ? "page" : undefined}
                           className={`block rounded-xl px-3 py-2.5 text-[14px] font-semibold transition-colors ${
                             childExact
-                              ? "bg-ink text-white"
+                              ? "bg-navbar text-white"
                               : childOpen
                                 ? "bg-white text-ink"
                                 : "text-ink-soft hover:bg-white hover:text-ink"
@@ -170,7 +170,7 @@ function NavList({
                                     onClick={onNavigate}
                                     aria-current={here ? "page" : undefined}
                                     className={`block rounded-xl px-3 py-2 text-[13px] font-semibold transition-colors ${
-                                      inside ? "bg-ink text-white" : "text-ink-soft hover:bg-white hover:text-ink"
+                                      inside ? "bg-navbar text-white" : "text-ink-soft hover:bg-white hover:text-ink"
                                     }`}
                                   >
                                     {grandchild.title}

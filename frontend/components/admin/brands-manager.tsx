@@ -179,10 +179,10 @@ export function BrandsManager() {
     />
   );
 
-  // Its section with the categories
+  // Its section in the admin panel: the page of the brand and its categories
   const categoriesButton = (brand: AdminBrand, className?: string) => (
     <Button icon={<FolderOpen size={16} />} className={className} onClick={() => router.push(brandBase(brand.key))}>
-      Категорії
+      Сторінка бренду
     </Button>
   );
 

@@ -606,6 +606,19 @@ button:not(:disabled),
       linear-gradient(180deg, var(--dark-card), var(--dark-card-2)) padding-box,
       var(--steel-border-dark) border-box;
   }
+  /* Category card of brand pages (29.10): the navy picture with light lines of the home page
+     as the background of the card itself, a thin light rim */
+  .lines-card {
+    border: 1px solid rgb(190 215 255 / 0.35);
+    background: #04153a url("/images/band-blue.webp") 30% 40% / 260% auto no-repeat;
+    box-shadow: 0 18px 44px rgb(var(--shadow-rgb) / 0.3);
+  }
+  .lines-card:nth-child(3n + 2) {
+    background-position: 55% 55%;
+  }
+  .lines-card:nth-child(3n) {
+    background-position: 85% 35%;
+  }
   /* Card on the light pages with lines (brand pages, 29.10): light frosted glass with a thin
      steel rim; the lines of the background glow softly through it */
   .glass-card {

@@ -15,8 +15,7 @@ const delay = (index: number) => (index < 3 ? 120 + index * 90 : 0);
 
 export function BrandPage({ page }: { page: BrandPageData }) {
   return (
-    // overflow-x-clip: the full-width navy band of the cards never makes the page scroll sideways
-    <main className="flex-1 overflow-x-clip pb-16 max-[820px]:pb-10">
+    <main className="flex-1 pb-16 max-[820px]:pb-10">
       <div className="mx-auto w-full max-w-360 px-20 pt-7 max-[1100px]:px-10 max-[820px]:px-4 max-[820px]:pt-5">
         {/* Head of the page (29.10): large screens — the logo of the brand on a white tile LEFT of
             the title, in one row (low head, so the category cards are on the first screen);

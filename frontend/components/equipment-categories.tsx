@@ -44,14 +44,10 @@ export async function EquipmentCategories() {
 export async function CategoryCards({ brand }: { brand: string }) {
   const categories = await loadEquipmentCategories(brand);
   if (categories.length === 0) return null;
-  // 29.10: the same see-through navy cards as the news, on a full-width navy band with lines
-  // (as the news on the home page), so the band glows through their glass; the photo is lower,
-  // so the first row fits the first screen
-  return (
-    <div className="band-blue mx-[calc(50%-50vw)] px-[max(16px,calc(50vw-640px))] py-10 max-[820px]:py-6">
-      <CardsGrid categories={categories} dark short />
-    </div>
-  );
+  // 29.10 (Oleh's idea): each card has the navy picture with light lines as its own
+  // background and the title in metal, like the buttons of the slider; the photo is lower, so
+  // the first row fits the first screen
+  return <CardsGrid categories={categories} dark short />;
 }
 
 /** 3 cards in a row (2 on tablets, 1 on phones): photo with "More", name, arrow on phones.
@@ -81,15 +77,17 @@ async function CardsGrid({ categories, dark = false, short = false }: { categori
               {linked && <span className={`absolute right-3.5 bottom-3.5 ${moreButton}`}>{t("more")}</span>}
             </div>
             <div className="flex items-end gap-3">
-              <h3 className={`min-w-0 flex-1 px-2 pt-4.5 pb-1.5 font-extrabold ${dark ? "text-[21px] text-white" : "text-xl"}`}>{title}</h3>
+              <h3 className={`min-w-0 flex-1 px-2 pt-4.5 pb-1.5 font-extrabold ${dark ? "text-[21px] text-white" : "text-xl"}`}>
+                {short ? <span className="metal-text">{title}</span> : title}
+              </h3>
               {linked && <PhoneArrow onNavy={dark} />}
             </div>
           </>
         );
-        const className = `group block motion-safe:animate-fade-up rounded-[31px] ${dark ? `navy-card p-3.5 pb-5 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)]` : "glass-card p-4.5"} ${dark ? "transition duration-300" : cardLift}`;
+        const className = `group block motion-safe:animate-fade-up rounded-[31px] ${dark ? `${short ? "lines-card" : "navy-card"} p-3.5 pb-5 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)]` : "glass-card p-4.5"} ${dark ? "transition duration-300" : cardLift}`;
 
         if (!linked) {
-          const still = `block motion-safe:animate-fade-up rounded-[31px] ${dark ? `navy-card p-3.5 pb-5` : "glass-card p-4.5"}`;
+          const still = `block motion-safe:animate-fade-up rounded-[31px] ${dark ? `${short ? "lines-card" : "navy-card"} p-3.5 pb-5` : "glass-card p-4.5"}`;
           return (
             <div key={category.id} className={still} style={delay(index)}>
               {content}

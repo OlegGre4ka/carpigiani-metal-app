@@ -32,7 +32,7 @@ export function UserBadge({ email }: { email: string }) {
         aria-label={`Ви увійшли як ${email}. Меню профілю`}
         aria-expanded={open}
         className={`flex size-10 cursor-pointer items-center justify-center rounded-full text-sm font-extrabold uppercase transition-colors ${
-          open ? "bg-ink text-white" : "bg-mist text-brand hover:bg-mist-strong"
+          open ? "bg-navbar text-white" : "bg-mist text-brand hover:bg-mist-strong"
         }`}
       >
         {email[0]}
