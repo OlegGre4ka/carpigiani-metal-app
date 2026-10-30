@@ -44,15 +44,15 @@ export async function EquipmentCategories() {
 export async function CategoryCards({ brand }: { brand: string }) {
   const categories = await loadEquipmentCategories(brand);
   if (categories.length === 0) return null;
-  return <VitrinaGrid categories={categories} firstScreen />;
+  return <VitrinaGrid categories={categories} />;
 }
 
 /** The category cards of the site — the same everywhere (the home page and the brand pages,
  *  30.10): "showcase" cards, 3 in a row (2 on tablets, 1 on phones). */
-async function VitrinaGrid({ categories, firstScreen = false }: { categories: EquipmentCategory[]; firstScreen?: boolean }) {
+async function VitrinaGrid({ categories }: { categories: EquipmentCategory[] }) {
   const locale = await getLocale();
   return (
-    <div className={`${firstScreen ? "vitrina-first" : ""} grid grid-cols-3 gap-x-6.5 gap-y-7 max-[1100px]:grid-cols-2 max-[820px]:gap-4 max-[640px]:grid-cols-1`}>
+    <div className="grid grid-cols-3 gap-x-6.5 gap-y-7 max-[1100px]:grid-cols-2 max-[820px]:gap-4 max-[640px]:grid-cols-1">
       {categories.map((category, index) => (
         <VitrinaCard key={category.id} category={category} title={locale === "en" ? category.title_en : category.title_uk} index={index} />
       ))}

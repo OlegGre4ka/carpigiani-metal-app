@@ -627,8 +627,9 @@ button:not(:disabled),
     position: relative;
     display: block;
     aspect-ratio: 4 / 5;
-    /* The whole card fits the height of the screen of any device (under the header) */
-    max-height: max(360px, calc(100svh - 150px));
+    /* The same size everywhere (home page and brand pages): the first row with the header and
+       the title of the block above it fits the first screen of any device (30.10) */
+    max-height: max(300px, calc(100svh - 320px));
     width: 100%;
     overflow: hidden;
     border-radius: 31px;
@@ -636,11 +637,6 @@ button:not(:disabled),
     border: 1px solid rgb(var(--navbar-rgb) / 0.08);
     box-shadow: 0 18px 44px rgb(var(--shadow-rgb) / 0.16);
     transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.45s;
-  }
-  /* Brand pages: the first row with the header and the title above it fits the first screen
-     (30.10, Oleh's laptop) */
-  .vitrina-first .vitrina {
-    max-height: max(300px, calc(100svh - 320px));
   }
   .vitrina-photo {
     transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
