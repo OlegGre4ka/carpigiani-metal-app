@@ -13,7 +13,9 @@ import { AdminMark } from "@/components/brand-logo";
 // Admin panel frame: top bar with logo, sections on the left, content on the right.
 export default function PanelLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-dvh bg-page text-ink">
+    // overflow-x-clip (30.10): a too wide block (a long table, a long link) never widens the page,
+    // the header and its buttons always stay on the screen
+    <div className="min-h-dvh overflow-x-clip bg-page text-ink">
       <header className="sticky top-0 z-10 border-b border-ink/10 bg-[rgb(var(--paper-rgb)/0.9)] backdrop-blur-md">
         <div className="mx-auto flex max-w-360 items-center justify-between gap-4 px-8 py-3.5 max-[900px]:px-4 max-[600px]:py-2.5">
           <div className="flex min-w-0 items-center gap-3 max-[400px]:gap-2">
@@ -55,7 +57,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-360 grid-cols-[280px_1fr] gap-8 px-8 py-8 max-[900px]:grid-cols-1 max-[900px]:gap-4 max-[900px]:px-4 max-[900px]:py-4">
+      <div className="mx-auto grid max-w-360 grid-cols-[280px_minmax(0,1fr)] gap-8 px-8 py-8 max-[900px]:grid-cols-1 max-[900px]:gap-4 max-[900px]:px-4 max-[900px]:py-4">
         <aside className="sticky top-24 self-start rounded-[28px] steel-card p-3 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[900px]:hidden">
           <Suspense fallback={<AdminSidebarFallback />}>
             <Sidebar />
