@@ -18,6 +18,9 @@ class EquipmentCategoryRead(BaseModel):
     is_visible: bool
     # Its page shows something besides the title: the card and the menu item lead to it
     has_page: bool = True
+    # "clear" / "white": a product on a transparent or white background, shown whole on the
+    # cards of the brand pages; "": a photo with its own background, fills the card (30.10)
+    photo_kind: str = ""
 
 
 class CategoriesOrder(BaseModel):

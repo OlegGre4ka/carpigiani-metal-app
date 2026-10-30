@@ -103,6 +103,9 @@ export const adminSections: AdminSection[] = [
     href: "/fofkas-adminpanel/settings",
     title: "Загальні налаштування",
     text: "Шрифти заголовків і тексту всього сайту",
+    // 30.10: each kind of settings is its own sub-item (more will come)
+    groupOnly: true,
+    children: [{ href: "/fofkas-adminpanel/settings/fonts", title: "Шрифти" }],
     icon: (
       <>
         <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />

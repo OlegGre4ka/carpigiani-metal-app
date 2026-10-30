@@ -1,6 +1,7 @@
-import { GeneralSettingsForm } from "@/components/admin/general-settings-form";
+import { redirect } from "next/navigation";
 
-// General settings of the site: the fonts of the titles and of the texts
+// "Загальні налаштування" has no page of its own: its sub-items are in the menu (30.10).
+// The card on the admin home page and old links lead to the first one.
 export default function GeneralSettingsPage() {
-  return <GeneralSettingsForm />;
+  redirect("/fofkas-adminpanel/settings/fonts");
 }

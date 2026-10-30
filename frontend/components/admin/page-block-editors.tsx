@@ -665,13 +665,25 @@ export function TableEditor({ block, lang, onChange }: { block: TableBlock; lang
       </Field>
       {/* AI: the table from a screenshot */}
       <div className="mb-3 flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-navbar/25 bg-mist/60 px-4 py-3">
-        <button type="button" className={smallButton} disabled={picture.reading !== null} onClick={() => pictureInput.current?.click()}>
+        {/* While AI reads: a navy button with a white spinning ring, so the work is clearly seen
+            (30.10: the pale disabled look hid it) */}
+        <button
+          type="button"
+          aria-busy={picture.reading !== null}
+          className={
+            picture.reading !== null
+              ? "inline-flex cursor-progress items-center gap-2 rounded-full border border-navbar bg-navbar px-4 py-2.5 text-sm font-extrabold text-white shadow-[0_8px_20px_rgb(var(--navbar-rgb)/0.3)]"
+              : smallButton
+          }
+          onClick={() => picture.reading === null && pictureInput.current?.click()}
+        >
           {picture.reading !== null ? <Spinner /> : <Sparkles size={16} aria-hidden="true" />}
           {picture.reading !== null ? `AI читає таблицю${picture.reading ? ` (${picture.reading})` : ""}…` : "Заповнити зі скріна"}
         </button>
         <span className="text-[13px] leading-snug text-ink-soft">
-          Завантажте скрін або фото таблиці (або вставте його сюди Ctrl+V) — AI заповнить клітинки українською й англійською. Довга таблиця:
-          можна вибрати кілька скрінів одразу або додавати їх по одному — рядки стануть у кінець.{" "}
+          Завантажте скрін або фото таблиці (або вставте його сюди Ctrl+V) — AI заповнить клітинки українською й англійською. Таблиця не
+          влазить в один скрін? Зменште сторінку клавішами <b className="text-ink">Ctrl −</b> (так, щоб цифри ще читались) і заскрінте її
+          повністю. Або зробіть кілька скрінів: виберіть їх одразу чи додавайте по одному — рядки стануть у кінець.{" "}
           <b className="text-ink">Таблиця заповнюється за допомогою AI, тому рекомендуємо перевірити всі цифри перед тим, як зберегти.</b>
         </span>
         <input

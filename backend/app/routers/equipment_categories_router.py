@@ -35,7 +35,7 @@ from app.schemas.equipment_category import (
     EquipmentCategoryRead,
 )
 from app.services.auth import get_current_user
-from app.services.images import delete_image, image_url, save_image
+from app.services.images import cutout_kind, delete_image, image_url, save_image
 
 public_router = APIRouter(
     prefix="/api/equipment-categories", tags=["equipment categories"]
@@ -50,8 +50,8 @@ admin_router = APIRouter(
 def to_read(
     category: EquipmentCategory, db: DbSession | None = None
 ) -> EquipmentCategoryRead:
-    """db given: also tells whether its page has something to show (lists of the site and of
-    the admin panel)."""
+    """db given: also tells whether its page has something to show. Every answer of the admin
+    panel passes it (30.10: a new or edited category showed no "page is empty" note)."""
     return EquipmentCategoryRead(
         id=category.id,
         brand=category.brand,
@@ -62,6 +62,7 @@ def to_read(
         sort_order=category.sort_order,
         is_visible=category.is_visible,
         has_page=category_has_page(db, category) if db is not None else True,
+        photo_kind=cutout_kind(image_url(category.image)),
     )
 
 
@@ -176,7 +177,7 @@ def create_category(
     db.add(category)
     db.commit()
     db.refresh(category)
-    return to_read(category)
+    return to_read(category, db)
 
 
 @admin_router.patch("/{category_id}", response_model=EquipmentCategoryRead)
@@ -220,7 +221,7 @@ def update_category(
     db.commit()
     db.refresh(category)
     delete_image(old_image)
-    return to_read(category)
+    return to_read(category, db)
 
 
 @admin_router.patch("/{category_id}/visibility", response_model=EquipmentCategoryRead)
@@ -229,7 +230,7 @@ def set_visibility(category_id: int, data: CategoryVisibility, db: DbSession):
     category.is_visible = data.is_visible
     db.commit()
     db.refresh(category)
-    return to_read(category)
+    return to_read(category, db)
 
 
 @admin_router.put("/order", response_model=list[EquipmentCategoryRead])

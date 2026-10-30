@@ -172,7 +172,7 @@ async function RequestsSummary() {
 /* ---------- 3. Content of the site ---------- */
 
 /** Sections that are not content to fill in */
-const NOT_CONTENT = ["/fofkas-adminpanel/requests", "/fofkas-adminpanel/contacts"];
+const NOT_CONTENT = ["/fofkas-adminpanel/requests", "/fofkas-adminpanel/contacts", "/fofkas-adminpanel/settings"];
 
 /** "1 категорія", "3 категорії", "5 категорій" */
 function categories(n: number) {

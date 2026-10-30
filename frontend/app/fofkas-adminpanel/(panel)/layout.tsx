@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { AdminMobileMenu, AdminSidebar, AdminSidebarFallback } from "@/components/admin/admin-sidebar";
+import { AdminSearch } from "@/components/admin/admin-search";
 import { AntdProvider } from "@/components/admin/antd-provider";
 import { UserBadge } from "@/components/admin/user-badge";
 import { getAdminBrands, getCurrentUser, getMenuCategories, getMenuTopics } from "@/lib/admin/backend";
@@ -35,6 +36,8 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
           </div>
 
           <div className="flex shrink-0 items-center gap-3 text-sm max-[600px]:gap-2">
+            {/* Search over the whole admin panel (30.10) */}
+            <AdminSearch />
             <SiteButton />
             <Suspense fallback={null}>
               <UserInfo />

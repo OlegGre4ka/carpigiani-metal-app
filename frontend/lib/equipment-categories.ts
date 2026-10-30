@@ -12,6 +12,8 @@ export type EquipmentCategory = {
   /** Its page shows something besides the title: the card and the menu item lead to it.
    *  false: shown as plain text (29.10) */
   has_page?: boolean;
+  /** "clear" / "white": a product on a transparent or white background (shown whole); "": a photo */
+  photo_kind?: string;
 };
 
 /** Whose categories: the key of the brand ("carpigiani", "ifi", "isa" or a brand added in the admin panel) */

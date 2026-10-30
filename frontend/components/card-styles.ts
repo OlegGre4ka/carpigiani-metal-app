@@ -26,4 +26,5 @@ export const phoneArrow = "mt-auto hidden self-end pt-1 max-[820px]:flex";
 /** Arrow buttons: the same "ice cream scoop" as the slider arrows and the "up" button
  *  (pages of news). aria-disabled makes it pale. */
 export const scoopArrow =
-  "flex size-13 shrink-0 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--grad-round)] text-brand shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 aria-disabled:cursor-default aria-disabled:opacity-35 [&:not([aria-disabled])]:hover:scale-110 [&:not([aria-disabled])]:hover:border-white [&:not([aria-disabled])]:hover:bg-[image:var(--grad-btn)] [&:not([aria-disabled])]:hover:text-white max-[820px]:size-11";
+  // 30.10: metal like the arrows of the sliders and the "Up" button (.metal-round: navy on hover)
+  "metal-round flex size-13 shrink-0 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-ink shadow-[inset_0_-4px_8px_rgb(var(--ink-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 aria-disabled:pointer-events-none aria-disabled:cursor-default aria-disabled:opacity-35 [&:not([aria-disabled])]:hover:scale-110 [&:not([aria-disabled])]:hover:text-white max-[820px]:size-11";

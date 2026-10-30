@@ -14,13 +14,13 @@ import type { GalleryBlock } from "@/lib/site-pages";
 
 const columns = { 3: "grid-cols-3", 4: "grid-cols-4", 6: "grid-cols-6" } as const;
 
-/** The "zoom" button on a photo: a cream "ice cream scoop" like the arrows of the sliders,
- *  caramel when the photo is hovered */
+/** The "zoom" button on a photo: metal like the arrows of the sliders (30.10), navy when the
+ *  photo is hovered */
 export function Magnifier() {
   return (
     <span
       aria-hidden="true"
-      className="absolute right-3.5 bottom-3.5 flex size-11 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--grad-round)] text-brand shadow-[inset_0_-3px_6px_rgb(var(--brand-rgb)/0.18),0_8px_18px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 group-hover:scale-110 group-hover:border-white group-hover:bg-[image:var(--grad-btn)] group-hover:text-white group-hover:shadow-[0_12px_24px_rgb(var(--brand-rgb)/0.4)] max-[820px]:hidden"
+      className="absolute right-3.5 bottom-3.5 flex size-11 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-ink shadow-[inset_0_-3px_6px_rgb(var(--ink-rgb)/0.18),0_8px_18px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 group-hover:scale-110 group-hover:border-white group-hover:bg-[image:var(--grad-btn)] group-hover:text-white group-hover:shadow-[0_12px_24px_rgb(var(--brand-rgb)/0.4)] max-[820px]:hidden"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" className="size-5">
         <circle cx="11" cy="11" r="6.5" />

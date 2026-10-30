@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { cardLift, moreButton } from "@/components/card-styles";
@@ -44,10 +45,72 @@ export async function EquipmentCategories() {
 export async function CategoryCards({ brand }: { brand: string }) {
   const categories = await loadEquipmentCategories(brand);
   if (categories.length === 0) return null;
-  // 29.10 (Oleh's idea): each card has the navy picture with light lines as its own
-  // background and the title in metal, like the buttons of the slider; the photo is lower, so
-  // the first row fits the first screen
-  return <CardsGrid categories={categories} dark short />;
+  // 30.10: "showcase" cards (VitrinaCard)
+  const locale = await getLocale();
+  return (
+    <div className="grid grid-cols-3 gap-x-6.5 gap-y-7 max-[1100px]:grid-cols-2 max-[820px]:gap-4 max-[640px]:grid-cols-1">
+      {categories.map((category, index) => (
+        <VitrinaCard key={category.id} category={category} title={locale === "en" ? category.title_en : category.title_uk} index={index} />
+      ))}
+    </div>
+  );
+}
+
+/** A category card of a brand page as a tall showcase (30.10, Oleh: the photos were cut and an
+ *  inner frame looked poor). The card is white from edge to edge, the product photo (on white)
+ *  is shown whole and its white melts into the card. At the bottom a navy band with light lines
+ *  and a soft wave on top, like the curve of the logo, with the metal title: the product seems to
+ *  stand on a showcase shelf. On hover the shelf rises a little, the product lifts and its shadow
+ *  shows, the arrow appears. A photo with its own background fills the card above the shelf.
+ *  An empty page: the card does not react. Looks: globals.css (.vitrina). */
+function VitrinaCard({ category, title, index }: { category: EquipmentCategory; title: string; index: number }) {
+  const linked = category.has_page !== false;
+  // A product on white / transparent (or not known yet): whole; a photo with its own background: fills
+  const whole = category.photo_kind !== "";
+  const content = (
+    <>
+      <div className="absolute inset-x-0 top-0 bottom-[24%]">
+        <Image
+          src={category.image_url}
+          alt=""
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 420px"
+          className={`vitrina-photo ${whole ? "object-contain px-[9%] pt-[9%] pb-[13%]" : "object-cover"}`}
+        />
+        {whole && <span aria-hidden="true" className="vitrina-shadow" />}
+      </div>
+      <div className="vitrina-band">
+        <div className="flex w-full items-end gap-3 px-6 pb-5.5 max-[820px]:px-5 max-[820px]:pb-4.5">
+          <h3 className="min-w-0 flex-1 text-[21px] leading-tight font-extrabold max-[820px]:text-[19px]">
+            <span className="metal-text">{title}</span>
+          </h3>
+          {linked && (
+            <span aria-hidden="true" className="vitrina-arrow">
+              <ArrowRight className="size-4.5" strokeWidth={2.4} />
+            </span>
+          )}
+        </div>
+      </div>
+    </>
+  );
+  const className = `vitrina ${linked ? "is-linked" : ""} group motion-safe:animate-fade-up`;
+  const style = delay(index);
+  if (!linked) {
+    return (
+      <div className={className} style={style}>
+        {content}
+      </div>
+    );
+  }
+  return category.href.startsWith("http") ? (
+    <a href={category.href} target="_blank" rel="noopener" className={className} style={style}>
+      {content}
+    </a>
+  ) : (
+    <Link href={category.href} className={className} style={style}>
+      {content}
+    </Link>
+  );
 }
 
 /** 3 cards in a row (2 on tablets, 1 on phones): photo with "More", name, arrow on phones.

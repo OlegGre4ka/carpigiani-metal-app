@@ -81,8 +81,9 @@ export function GeneralSettingsForm() {
     <div className="pb-4">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
         <div>
+          <p className="mb-1 text-[11px] font-extrabold tracking-[1.5px] text-steel uppercase">Загальні налаштування</p>
           <h1 className="font-heading tracking-[-0.02em] text-[33px] leading-tight font-extrabold text-ink motion-safe:animate-fade-up max-[600px]:text-[26px]">
-            Загальні налаштування
+            Шрифти
           </h1>
           <p className="mt-1.5 max-w-[62ch] text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
             Шрифти всього сайту. Оберіть — приклад праворуч зміниться одразу, а сайт — після «Зберегти».
