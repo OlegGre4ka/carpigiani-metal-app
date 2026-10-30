@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useAdminCall } from "./admin-fetch";
-import { BrandMark } from "@/components/brand-logo";
+import { AdminMark } from "@/components/brand-logo";
 import { Lit } from "@/components/site-search";
 
 // Search in the admin panel (30.10, Oleh): the same as the search of the site
@@ -49,8 +49,10 @@ export function AdminSearch() {
   // "/" or Ctrl+K opens the search (not while typing somewhere)
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      const typing = (event.target as HTMLElement).closest("input, textarea, [contenteditable=true]");
-      if ((event.key === "/" && !typing) || (event.key.toLowerCase() === "k" && (event.ctrlKey || event.metaKey))) {
+      // The browser's autofill sends key events without a key (30.10: it broke here)
+      const key = typeof event.key === "string" ? event.key.toLowerCase() : "";
+      const typing = event.target instanceof Element && event.target.closest("input, textarea, [contenteditable=true]");
+      if ((key === "/" && !typing) || (key === "k" && (event.ctrlKey || event.metaKey))) {
         event.preventDefault();
         setOpen(true);
       }
@@ -186,7 +188,7 @@ export function AdminSearch() {
                             {item.image ? (
                               <Image src={item.image} alt="" fill sizes="48px" className={item.group === "news" ? "object-cover" : "object-contain p-1"} />
                             ) : (
-                              <BrandMark className="h-[60%] w-auto opacity-50" />
+                              <AdminMark className="h-[60%] w-auto opacity-50" />
                             )}
                           </span>
                           <span className="min-w-0 flex-1">

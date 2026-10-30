@@ -4,7 +4,6 @@ import { ArrowRight } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { cardLift, moreButton } from "@/components/card-styles";
-import { PhoneArrow } from "@/components/equipment-cards";
 import { Link } from "@/i18n/navigation";
 import { loadEquipmentCategories, type EquipmentCategory } from "@/lib/equipment-categories";
 
@@ -34,7 +33,7 @@ export async function EquipmentCategories() {
         <p className="mx-auto mt-3.5 mb-13 max-w-[60ch] text-center text-lg leading-[1.55] text-on-dark-soft motion-safe:animate-fade-up motion-safe:[animation-delay:100ms] max-[820px]:mb-8 max-[820px]:text-base">
           {t("text")}
         </p>
-        <CardsGrid categories={categories} dark />
+        <VitrinaGrid categories={categories} />
       </div>
     </section>
   );
@@ -45,7 +44,12 @@ export async function EquipmentCategories() {
 export async function CategoryCards({ brand }: { brand: string }) {
   const categories = await loadEquipmentCategories(brand);
   if (categories.length === 0) return null;
-  // 30.10: "showcase" cards (VitrinaCard)
+  return <VitrinaGrid categories={categories} />;
+}
+
+/** The category cards of the site — the same everywhere (the home page and the brand pages,
+ *  30.10): "showcase" cards, 3 in a row (2 on tablets, 1 on phones). */
+async function VitrinaGrid({ categories }: { categories: EquipmentCategory[] }) {
   const locale = await getLocale();
   return (
     <div className="grid grid-cols-3 gap-x-6.5 gap-y-7 max-[1100px]:grid-cols-2 max-[820px]:gap-4 max-[640px]:grid-cols-1">
@@ -110,63 +114,5 @@ function VitrinaCard({ category, title, index }: { category: EquipmentCategory; 
     <Link href={category.href} className={className} style={style}>
       {content}
     </Link>
-  );
-}
-
-/** 3 cards in a row (2 on tablets, 1 on phones): photo with "More", name, arrow on phones.
- *  dark: the home page (navy cards), otherwise light glass cards (brand pages, 29.10). */
-async function CardsGrid({ categories, dark = false, short = false }: { categories: EquipmentCategory[]; dark?: boolean; short?: boolean }) {
-  const locale = await getLocale();
-  const t = await getTranslations("Equipment");
-  return (
-    <div className={`grid grid-cols-3 max-[1100px]:grid-cols-2 max-[640px]:grid-cols-1 max-[820px]:gap-4 ${dark ? "gap-x-6.5 gap-y-7" : "gap-7"}`}>
-      {categories.map((category, index) => {
-        const title = locale === "en" ? category.title_en : category.title_uk;
-        const external = category.href.startsWith("http");
-        // The page of the category shows nothing besides its title yet: a card without a link
-        // (no "More", no arrow, does not lift)
-        const linked = category.has_page !== false;
-        const content = (
-          <>
-            <div className={`relative overflow-hidden rounded-[22px] ${dark ? "bg-[var(--navy-photo)]" : ""}`}>
-              <Image
-                src={category.image_url}
-                alt=""
-                width={1200}
-                height={800}
-                sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 420px"
-                className={`block w-full object-cover transition-transform duration-500 ${short ? "h-[clamp(190px,30vh,260px)] group-hover:scale-105 max-[820px]:h-52.5" : dark ? "aspect-[4/3] h-auto group-hover:scale-105" : "h-67.5 group-hover:scale-104 max-[820px]:h-52.5"}`}
-              />
-              {linked && <span className={`absolute right-3.5 bottom-3.5 ${moreButton}`}>{t("more")}</span>}
-            </div>
-            <div className="flex items-end gap-3">
-              <h3 className={`min-w-0 flex-1 px-2 pt-4.5 pb-1.5 font-extrabold ${dark ? "text-[21px] text-white" : "text-xl"}`}>
-                {short ? <span className="metal-text">{title}</span> : title}
-              </h3>
-              {linked && <PhoneArrow onNavy={dark} />}
-            </div>
-          </>
-        );
-        const className = `group block motion-safe:animate-fade-up rounded-[31px] ${dark ? `${short ? "lines-card" : "navy-card"} p-3.5 pb-5 hover:-translate-y-1.5 hover:shadow-[0_28px_60px_rgb(0_10_50/0.6)]` : "glass-card p-4.5"} ${dark ? "transition duration-300" : cardLift}`;
-
-        if (!linked) {
-          const still = `block motion-safe:animate-fade-up rounded-[31px] ${dark ? `${short ? "lines-card" : "navy-card"} p-3.5 pb-5` : "glass-card p-4.5"}`;
-          return (
-            <div key={category.id} className={still} style={delay(index)}>
-              {content}
-            </div>
-          );
-        }
-        return external ? (
-          <a key={category.id} href={category.href} target="_blank" rel="noopener" className={className} style={delay(index)}>
-            {content}
-          </a>
-        ) : (
-          <Link key={category.id} href={category.href} className={className} style={delay(index)}>
-            {content}
-          </Link>
-        );
-      })}
-    </div>
   );
 }

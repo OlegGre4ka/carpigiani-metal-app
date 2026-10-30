@@ -119,8 +119,8 @@ export function SiteSearch({ shortcut = false, className = "" }: { shortcut?: bo
   useEffect(() => {
     if (!shortcut) return;
     const onKey = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement;
-      if (event.key === "/" && !open && !target.closest("input, textarea, [contenteditable=true]")) {
+      const typing = event.target instanceof Element && event.target.closest("input, textarea, [contenteditable=true]");
+      if (event.key === "/" && !open && !typing) {
         event.preventDefault();
         setOpen(true);
       }

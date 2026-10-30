@@ -8,7 +8,7 @@ import { AntdProvider } from "@/components/admin/antd-provider";
 import { UserBadge } from "@/components/admin/user-badge";
 import { getAdminBrands, getCurrentUser, getMenuCategories, getMenuTopics } from "@/lib/admin/backend";
 import { AdminLoader } from "@/components/cone-loader";
-import { BrandMark } from "@/components/brand-logo";
+import { AdminMark } from "@/components/brand-logo";
 
 // Admin panel frame: top bar with logo, sections on the left, content on the right.
 export default function PanelLayout({ children }: { children: React.ReactNode }) {
@@ -23,7 +23,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
             </Suspense>
             <Link href="/fofkas-adminpanel" className="flex items-center gap-3 max-[600px]:gap-2">
               {/* Admin panel logo: the brand mark */}
-              <BrandMark className="h-12 w-auto max-[600px]:h-10" />
+              <AdminMark className="h-12 w-auto max-[600px]:h-10" />
               <span className="leading-none">
                 <span className="block text-lg font-extrabold tracking-[3px] max-[600px]:text-base max-[400px]:text-[15px] max-[400px]:tracking-[2px]">
                   CARPIGIANI

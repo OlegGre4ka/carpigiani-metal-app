@@ -627,6 +627,9 @@ button:not(:disabled),
     position: relative;
     display: block;
     aspect-ratio: 4 / 5;
+    /* The whole card fits the height of the screen of any device (under the header) */
+    max-height: max(360px, calc(100svh - 150px));
+    width: 100%;
     overflow: hidden;
     border-radius: 31px;
     background: #fff;
@@ -655,7 +658,10 @@ button:not(:disabled),
     height: 30%;
     display: flex;
     align-items: flex-end;
-    background: #04153a url("/images/band-blue.webp") 20% 55% / 180% auto no-repeat;
+    /* A dark veil under the title, so the light lines never shine through the text */
+    background:
+      linear-gradient(to top, rgb(4 21 58 / 0.92) 0%, rgb(4 21 58 / 0.75) 38%, rgb(4 21 58 / 0) 75%),
+      #04153a url("/images/band-blue.webp") 20% 55% / 180% auto no-repeat;
     /* The wave on top of the shelf (like the curve of the logo); the rest of the band is solid */
     -webkit-mask:
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 40' preserveAspectRatio='none'%3E%3Cpath d='M0 26C70 6 150 0 230 14S350 38 400 12V40H0Z'/%3E%3C/svg%3E") top / 100% 40px no-repeat,
@@ -666,10 +672,10 @@ button:not(:disabled),
     transition: height 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
   .vitrina:nth-child(3n + 2) .vitrina-band {
-    background-position: 55% 50%;
+    background-position: 0 0, 55% 50%;
   }
   .vitrina:nth-child(3n) .vitrina-band {
-    background-position: 90% 45%;
+    background-position: 0 0, 90% 45%;
   }
   .vitrina-arrow {
     display: flex;

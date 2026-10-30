@@ -3,7 +3,7 @@
 import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 
-import { BrandMark } from "@/components/brand-logo";
+import { AdminMark } from "@/components/brand-logo";
 
 // Building blocks of the login forms, styled as in the approved design.
 
@@ -12,7 +12,7 @@ export function AuthCard({ children, mark = true }: { children: ReactNode; mark?
     <div className="w-full max-w-115 rounded-[36px] border border-white/70 bg-[rgb(var(--paper-rgb)/0.82)] px-10 pt-10 pb-8.5 shadow-[0_30px_70px_rgb(var(--shadow-rgb)/0.2)] backdrop-blur-[14px] max-[820px]:max-w-none max-[820px]:rounded-[30px] max-[820px]:px-5.5 max-[820px]:pt-7 max-[820px]:pb-6">
       {mark && (
         <div className="mb-5.5 flex items-center gap-3.5">
-          <BrandMark className="h-14 w-auto" />
+          <AdminMark className="h-14 w-auto" />
           <div className="text-xs font-extrabold tracking-[2px] text-steel uppercase">Адмін-панель</div>
         </div>
       )}

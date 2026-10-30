@@ -93,3 +93,10 @@ export function AnimatedBrandMark({ className = "" }: { className?: string }) {
     </span>
   );
 }
+
+/** The mark of the admin panel (30.10, Oleh): the mark in a gear, on a transparent background,
+ *  so the admin panel is told from the site at a glance (tab icon, login, top bar). */
+export function AdminMark({ className = "" }: { className?: string }) {
+  // eslint-disable-next-line @next/next/no-img-element -- small logo, same file everywhere
+  return <img src="/images/admin-mark.webp" alt="" aria-hidden="true" width={418} height={440} className={className} />;
+}
