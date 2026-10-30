@@ -280,9 +280,10 @@
       radial-gradient(50% 50% at 0% 100%, rgb(var(--brand-rgb) / 0.05) 0%, transparent 70%);
   }
   /* Home page: the screen behind the header and the slider is navy (mockup «Головна (синя тема)») */
-  /* Only while the home page is on the screen: after going to another page Next.js keeps the
-     home page hidden in the page (style="display: none"), it must not colour other pages */
-  body:has(.home-navy:not([style*="display: none"]))::before {
+  /* Only while the home page is on the screen: it marks <html data-home> itself
+     (components/home-flag.tsx); before the page starts running, the home page found in the
+     page decides (30.10: the old check missed the hidden home page after switching language) */
+  :is(html:not([data-ready]) body:has(.home-navy), html[data-home] body)::before {
     background: var(--grad-navy-page);
   }
   /* All pages of the site except the home page (29.10, client's picture): light blue with soft
@@ -298,14 +299,14 @@
   }
   /* The header lies over the slider and lets its photo show through (stronger than the
      "relative" and "bg-navy" classes of the header itself) */
-  body:has(.home-navy:not([style*="display: none"])) .site-header {
+  :is(html:not([data-ready]) body:has(.home-navy), html[data-home] body) .site-header {
     position: absolute !important;
     inset: 0 0 auto;
     background: transparent !important;
   }
   /* Home page: the logo in line with the text of the slider (90px), the menu as far from the right */
   @media (min-width: 821px) {
-    body:has(.home-navy:not([style*="display: none"])) .site-header > div:first-child {
+    :is(html:not([data-ready]) body:has(.home-navy), html[data-home] body) .site-header > div:first-child {
       max-width: none !important;
       padding-inline: 90px !important;
     }

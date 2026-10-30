@@ -1,3 +1,4 @@
+import { HomeFlag } from "@/components/home-flag";
 import { Suspense } from "react";
 
 import { BrandShowcases } from "@/components/brand-showcases";
@@ -11,6 +12,7 @@ import { Services } from "@/components/services";
 export default function HomePage() {
   return (
     <main className="home-navy flex-1 pb-10 max-[820px]:pb-8">
+      <HomeFlag />
       {/* Header and slider stand on the navy background (globals.css: body:has(.home-navy)) */}
       <HeroSlider />
       {/* Bands change from block to block with a clean edge (27.10: no soft fades):
