@@ -94,9 +94,9 @@ export function AnimatedBrandMark({ className = "" }: { className?: string }) {
   );
 }
 
-/** The mark of the admin panel (30.10, Oleh): the mark in a gear, on a transparent background,
- *  so the admin panel is told from the site at a glance (tab icon, login, top bar). */
+/** The mark of the admin panel (tab icon, login, top bar, search). For now the same mark as the
+ *  site (30.10, Oleh: the mark in a gear comes later, as a clean PNG — then only the file here
+ *  changes, public/images/admin-mark.webp is kept for it). */
 export function AdminMark({ className = "" }: { className?: string }) {
-  // eslint-disable-next-line @next/next/no-img-element -- small logo, same file everywhere
-  return <img src="/images/admin-mark.webp" alt="" aria-hidden="true" width={418} height={440} className={className} />;
+  return <BrandMark className={className} />;
 }
