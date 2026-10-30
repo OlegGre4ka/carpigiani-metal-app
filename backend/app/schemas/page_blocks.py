@@ -61,12 +61,21 @@ def clean_link(value: str) -> str:
 
 ALLOWED_TAGS = {
     "p", "br", "h2", "h3", "strong", "b", "em", "i", "u", "s",
-    "ul", "ol", "li", "a", "img", "blockquote",
+    "ul", "ol", "li", "a", "img", "blockquote", "span",
+}  # fmt: skip
+# Inline styles from the "HTML" view of the editor (30.10, the client: bigger text, another
+# colour): only these CSS properties are kept, anything else (url(), positions...) is removed
+STYLED = ("p", "h2", "h3", "span", "strong", "b", "em", "i", "u", "li", "ul", "ol",
+          "blockquote", "a")  # fmt: skip
+STYLE_PROPERTIES = {
+    "color", "background-color", "font-size", "font-weight", "font-style",
+    "text-align", "text-decoration", "line-height", "letter-spacing", "text-transform",
 }  # fmt: skip
 # A photo in the text can stand on the left / in the middle / on the right (the text flows
 # around it on the left and right) and be small / medium / large (the editor's photo buttons)
 ALLOWED_ATTRIBUTES = {
-    "a": {"href", "target"},
+    **{tag: {"style"} for tag in STYLED},
+    "a": {"href", "target", "style"},
     "img": {"src", "alt", "data-align", "data-size"},
 }
 PHOTO_CHOICES = {
@@ -105,6 +114,7 @@ def clean_html(value: str) -> str:
         url_schemes={"http", "https", "mailto", "tel"},
         link_rel="noopener",
         attribute_filter=keep_attribute,
+        filter_style_properties=STYLE_PROPERTIES,
     )
     html = LINK_TAG.sub(same_tab_for_site_links, html)
     # An editor that was cleared leaves an empty paragraph

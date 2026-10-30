@@ -1,9 +1,10 @@
 "use client";
 
+import { Extension, Mark } from "@tiptap/core";
 import Image from "@tiptap/extension-image";
 import { EditorContent, useEditor, useEditorState, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { App, Input, Modal, Select } from "antd";
+import { App, Input, Modal, Select, Tooltip } from "antd";
 import {
   AlignCenter,
   Bold,
@@ -49,6 +50,56 @@ const TextPhoto = Image.extend({
     };
   },
 });
+
+/** Inline styles written in the "HTML" view (30.10: the client changes the size or the colour of
+ *  a text) stay when going back to the usual view: paragraphs, headings, lists and quotes keep
+ *  their style="...", and a styled piece of text is a <span style="...">. The server keeps only
+ *  safe properties (backend/app/schemas/page_blocks.py → STYLE_PROPERTIES). */
+const styleAttribute = {
+  style: {
+    default: null,
+    parseHTML: (element: HTMLElement) => element.getAttribute("style"),
+    renderHTML: (attributes: { style?: string | null }) => (attributes.style ? { style: attributes.style } : {}),
+  },
+};
+const BlockStyles = Extension.create({
+  name: "blockStyles",
+  addGlobalAttributes() {
+    return [{ types: ["paragraph", "heading", "bulletList", "orderedList", "listItem", "blockquote"], attributes: styleAttribute }];
+  },
+});
+const StyledText = Mark.create({
+  name: "styledText",
+  addAttributes() {
+    return styleAttribute;
+  },
+  parseHTML() {
+    return [{ tag: "span[style]" }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ["span", HTMLAttributes, 0];
+  },
+});
+
+/** What can be changed in the "HTML" view (the tooltip of its button) */
+const htmlHelp = (
+  <div className="py-1 text-[13px] leading-snug">
+    <p className="mb-1.5 font-extrabold">Що можна змінити в HTML</p>
+    <ul className="mb-1.5 list-disc pl-4">
+      <li>розмір тексту — font-size: 20px</li>
+      <li>колір — color: #0a1b42</li>
+      <li>фон тексту — background-color: #fff3c4</li>
+      <li>жирність, курсив — font-weight: 700; font-style: italic</li>
+      <li>вирівнювання — text-align: center</li>
+      <li>міжрядковий інтервал — line-height: 1.8</li>
+      <li>відстань між літерами, великі літери, підкреслення</li>
+    </ul>
+    <p className="mb-1">
+      Приклад: &lt;span style=&quot;font-size:22px;color:#0a1b42&quot;&gt;текст&lt;/span&gt;
+    </p>
+    <p className="opacity-80">Скрипти й інше небезпечне сайт прибирає сам.</p>
+  </div>
+);
 
 /** HTML code easy to read: each paragraph, heading, list and list item on its own line */
 const readableHtml = (html: string) =>
@@ -103,6 +154,8 @@ export function RichTextEditor({
         link: { openOnClick: false, autolink: true, defaultProtocol: "https" },
       }),
       TextPhoto,
+      BlockStyles,
+      StyledText,
     ],
     content: value,
     editorProps: {
@@ -156,9 +209,10 @@ export function RichTextEditor({
             className="block min-h-64 w-full resize-y bg-transparent px-5 py-4 font-mono text-[13px] leading-[1.65] text-ink outline-none"
           />
           <p className="border-t border-ink/10 px-5 py-2.5 text-xs leading-normal text-ink-soft">
-            Сайт залишає тільки оформлення редактора: &lt;p&gt;, &lt;h2&gt;, &lt;h3&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;u&gt;, &lt;ul&gt;/&lt;ol&gt;/&lt;li&gt;,
-            &lt;a href&gt;, &lt;img&gt;, &lt;blockquote&gt;, &lt;br&gt;. Скрипти, стилі й інші теги прибираються для безпеки. Натисніть «HTML» ще раз, щоб
-            повернутись до звичайного вигляду.
+            Можна змінювати вигляд тексту через style=&quot;…&quot;: розмір (font-size), колір (color), фон (background-color), жирність
+            (font-weight), курсив, вирівнювання (text-align), міжрядковий інтервал (line-height), відстань між літерами. Наприклад:{" "}
+            <code className="rounded bg-white px-1">&lt;span style=&quot;font-size:22px;color:#0a1b42&quot;&gt;текст&lt;/span&gt;</code>. Скрипти й
+            інші небезпечні речі сайт прибирає. Натисніть «HTML» ще раз, щоб повернутись до звичайного вигляду.
           </p>
         </div>
       )}
@@ -310,17 +364,19 @@ function Toolbar({
         </>
       )}
       </div>
-      {/* Right: the HTML code of the text */}
-      <button
-        type="button"
-        title={codeMode ? "Звичайний вигляд" : "Редагувати HTML-код"}
-        aria-pressed={codeMode}
-        className={`${toolButton} ml-auto px-2.5 text-xs font-extrabold`}
-        onClick={onToggleCode}
-      >
-        <CodeXml size={16} />
-        HTML
-      </button>
+      {/* Right: the HTML code of the text, with a tooltip of what can be changed there (30.10) */}
+      <Tooltip title={codeMode ? "Повернутись до звичайного вигляду" : htmlHelp} color="#0a1b42" placement="bottomRight" styles={{ root: { maxWidth: 380 } }}>
+        <button
+          type="button"
+          aria-pressed={codeMode}
+          aria-label={codeMode ? "Звичайний вигляд" : "Редагувати HTML-код"}
+          className={`${toolButton} ml-auto px-2.5 text-xs font-extrabold`}
+          onClick={onToggleCode}
+        >
+          <CodeXml size={16} />
+          HTML
+        </button>
+      </Tooltip>
       <input
         ref={fileInput}
         type="file"
