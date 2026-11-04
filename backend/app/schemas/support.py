@@ -5,12 +5,11 @@ from typing import Annotated
 from pydantic import BaseModel, Field, field_validator
 
 from app.schemas.news import need_href
-from app.schemas.page_blocks import Text200, Text600, check_image
-from app.schemas.pages import PageSave
+from app.schemas.page_blocks import Text200, Text600
 
 
 class SupportCreate(BaseModel):
-    """A new page: the rest is filled in the builder."""
+    """A new page: the rest is filled on its page in the admin panel."""
 
     title_uk: Annotated[str, Field(max_length=200)]
     href: Annotated[str, Field(max_length=300)]
@@ -36,23 +35,35 @@ class SupportListItem(BaseModel):
     href: str
     is_visible: bool
     topic_title: str
+    # The article shown open on the page (empty: the newest of the topic)
+    main_title: str
 
 
-class SupportSave(PageSave):
-    """The page as it is saved from the builder: title, blocks and its settings."""
+class SupportSettings(BaseModel):
+    """A page as it is saved: its name in the menu, address, topic, the article shown open,
+    the "contact us" card and whether it is on the site."""
 
+    title_uk: Annotated[str, Field(max_length=200)]
+    title_en: Annotated[str, Field(max_length=200)] = ""
     href: Annotated[str, Field(max_length=300)]
     topic_id: int | None = None
+    main_news_id: int | None = None
     is_visible: bool = True
     contact_title: Text200 = Text200()
     contact_text: Text600 = Text600()
-    # The main photo at the top of the page
-    image: str | None = None
 
-    @field_validator("image")
+    @field_validator("title_uk")
     @classmethod
-    def _check_image(cls, value: str | None) -> str | None:
-        return check_image(value) if value else None
+    def _need_title(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Вкажіть назву сторінки українською")
+        return value
+
+    @field_validator("title_en")
+    @classmethod
+    def _trim(cls, value: str) -> str:
+        return value.strip()
 
     @field_validator("href")
     @classmethod
@@ -60,12 +71,10 @@ class SupportSave(PageSave):
         return need_href(value)
 
 
-class SupportPageAdmin(SupportSave):
+class SupportAdmin(SupportSettings):
     id: int
     topic_title: str
     topic_href: str
-    # Always True: a page exists only once created (the builder shares its form with others)
-    saved: bool = True
 
 
 class SupportOrder(BaseModel):

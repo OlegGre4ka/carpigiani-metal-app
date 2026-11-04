@@ -2,73 +2,95 @@
 
 import { Input, Select, Switch } from "antd";
 
-import { Field, Hint, PhotoEditor, TextInput, type Lang, type Text, type Uploader } from "./page-block-editors";
+import { Field, Hint, TextInput, type Lang, type Text } from "./page-block-editors";
 import type { Topic } from "./news-topics";
 
-// Settings of a page of the "Support" menu, at the top of its builder (4.11): its address, the
-// topic of news shown on it (the articles at the bottom and in the menu on the right) and the
-// "contact us" card on the right (its title and text above the contact form).
+// Settings of a page of the "Support" menu (4.11): its name in the menu, address, topic of news,
+// the article of the topic shown open on the page, the "contact us" card and visibility.
 
 /** The list of support pages in the admin panel */
 export const SUPPORT_PATH = "/fofkas-adminpanel/support";
 
 export type SupportMeta = {
+  title_uk: string;
+  title_en: string;
   href: string;
   topic_id: number | null;
+  main_news_id: number | null;
   is_visible: boolean;
   contact_title: Text;
   contact_text: Text;
-  /** The main photo at the top of the page */
-  image: string | null;
 };
+
+/** An article of the topic to choose from */
+export type ArticleOption = { id: number; title_uk: string; published_on: string; is_visible: boolean };
+
+const shortDate = (date: string) => date.split("-").reverse().join(".");
 
 export function SupportFields({
   meta,
   lang,
   topics,
-  upload,
+  articles,
   onChange,
 }: {
   meta: SupportMeta;
   lang: Lang;
   topics: Topic[];
-  upload: Uploader;
+  articles: ArticleOption[];
   onChange: (meta: SupportMeta) => void;
 }) {
   const set = (next: Partial<SupportMeta>) => onChange({ ...meta, ...next });
+  const titleKey = lang === "uk" ? "title_uk" : "title_en";
 
   return (
     <div className="flex flex-col gap-4.5">
-      <div className="grid grid-cols-[1fr_1.3fr] gap-4 max-[800px]:grid-cols-1">
-        <Field label="Адреса сторінки">
-          <Input value={meta.href} maxLength={300} placeholder="/carpigiani-gelato-university" onChange={(e) => set({ href: e.target.value })} />
+      <div className="grid grid-cols-[1.3fr_1fr] gap-4 max-[800px]:grid-cols-1">
+        <Field label={`Назва в меню «Підтримка» (${lang === "uk" ? "UA" : "EN"})`}>
+          <Input
+            value={meta[titleKey]}
+            maxLength={200}
+            placeholder={lang === "en" && meta.title_uk ? meta.title_uk : undefined}
+            onChange={(e) => set({ [titleKey]: e.target.value })}
+          />
         </Field>
-        <Field label="Тема новин на сторінці">
+        <Field label="Адреса сторінки">
+          <Input value={meta.href} maxLength={300} placeholder="/technologies" onChange={(e) => set({ href: e.target.value })} />
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-[1fr_1.3fr] gap-4 max-[800px]:grid-cols-1">
+        <Field label="Тема новин">
           <Select
             value={meta.topic_id ?? undefined}
             allowClear
-            placeholder="Без статей"
+            placeholder="Оберіть тему"
             className="w-full"
-            onChange={(value) => set({ topic_id: value ?? null })}
+            // Another topic: the open article is chosen again from its articles
+            onChange={(value) => set({ topic_id: value ?? null, main_news_id: null })}
             options={topics.map((topic) => ({ value: topic.id, label: topic.title_uk }))}
+          />
+        </Field>
+        <Field label="Відкрита стаття на сторінці">
+          <Select
+            value={meta.main_news_id ?? undefined}
+            allowClear
+            showSearch={{ optionFilterProp: "label" }}
+            disabled={!meta.topic_id}
+            placeholder={meta.topic_id ? "Найновіша стаття теми" : "Спочатку оберіть тему"}
+            className="w-full"
+            onChange={(value) => set({ main_news_id: value ?? null })}
+            options={articles.map((article) => ({
+              value: article.id,
+              label: `${article.title_uk} · ${shortDate(article.published_on)}${article.is_visible ? "" : " (схована)"}`,
+            }))}
           />
         </Field>
       </div>
       <Hint>
-        Статті цієї теми з «Новин» показуються внизу сторінки й у меню праворуч. Нову статтю можна додати прямо тут, у
-        блоці «Статті теми» внизу, — вона з&apos;явиться і в «Новинах».
+        На сторінці — обрана стаття, відкрита для читання. Решта статей теми йдуть під нею картками й у меню праворуч.
+        Не обрали — відкрита найновіша. Статті ті самі, що в «Новинах»: додати нову можна внизу, у списку статей теми.
       </Hint>
-
-      {/* The same "Main photo" as on news pages */}
-      <div>
-        <span className="block text-[13px] font-extrabold text-ink-soft">Головне фото</span>
-        <PhotoEditor
-          block={{ id: "main", type: "photo", visible: true, image: meta.image }}
-          onChange={(block) => set({ image: block.image })}
-          upload={upload}
-          hint="Вгорі сторінки, над блоками. Найкраще горизонтальне, від 1200 px завширшки: сайт сам стисне фото."
-        />
-      </div>
 
       <div className="rounded-2xl bg-mist/60 px-4 py-3.5">
         <p className="mb-2.5 text-sm font-extrabold text-ink">Картка «Зв&apos;язатися з нами» праворуч</p>

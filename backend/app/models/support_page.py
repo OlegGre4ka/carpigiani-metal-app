@@ -27,6 +27,11 @@ class SupportPage(Base):
     topic_id: Mapped[int | None] = mapped_column(
         ForeignKey("news_topics.id", ondelete="SET NULL"), nullable=True
     )
+    # The article of the topic shown open on the page (4.11); none or deleted: the newest one
+    main_news_id: Mapped[int | None] = mapped_column(
+        ForeignKey("news.id", ondelete="SET NULL"), nullable=True
+    )
+    # Not used since 4.11 (the page shows an article of its topic); kept with what was saved
     blocks: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
     # The main photo at the top of the page (like the main photo of a news item)
     image: Mapped[str | None] = mapped_column(String(300), nullable=True)

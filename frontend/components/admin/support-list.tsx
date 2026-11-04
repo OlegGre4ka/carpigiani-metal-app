@@ -10,7 +10,7 @@ import { SUPPORT_PATH } from "./support-fields";
 
 // The pages of the "Support" menu of the site (4.11): Carpigiani Gelato University, Technologies
 // and any other. Their order here is the order of the menu; a hidden page is not in the menu.
-// "Сторінка" opens its builder (blocks, topic of news, the "contact us" card).
+// "Сторінка" opens its settings: the topic of news, the article shown open, the "contact us" card.
 
 const API = "/api/admin/support";
 
@@ -21,6 +21,7 @@ type SupportItem = {
   href: string;
   is_visible: boolean;
   topic_title: string;
+  main_title: string;
 };
 
 type FormValues = { title_uk: string; href: string };
@@ -167,10 +168,15 @@ export function SupportList() {
       render: (href: string) => <Tag className="m-0! font-semibold">{href}</Tag>,
     },
     {
-      title: "Тема статей",
+      title: "Тема і відкрита стаття",
       key: "topic",
-      width: 210,
-      render: (_, page) => <span className="text-sm text-ink-soft">{page.topic_title || "Без статей"}</span>,
+      width: 260,
+      render: (_, page) => (
+        <div className="text-sm">
+          <div className="font-semibold">{page.topic_title || "Тему не обрано"}</div>
+          {page.topic_title && <div className="text-ink-soft">{page.main_title || "Найновіша стаття"}</div>}
+        </div>
+      ),
     },
     { title: "На сайті", key: "visible", width: 100, render: (_, page) => visibilitySwitch(page) },
     { title: "", key: "actions", width: 220, align: "right", render: (_, page) => rowActions(page) },
@@ -185,8 +191,8 @@ export function SupportList() {
             Підтримка
           </h1>
           <p className="mt-1.5 max-w-[66ch] text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
-            Сторінки меню «Підтримка» на сайті — у тому ж порядку, що тут. Кожну збирають з блоків, як новину, а внизу
-            показуються статті обраної теми новин. Нова сторінка спочатку схована: заповніть її і ввімкніть «На сайті».
+            Сторінки меню «Підтримка» на сайті — у тому ж порядку, що тут. На кожній відкрита одна стаття з обраної теми
+            новин, решта статей теми — під нею. Нова сторінка спочатку схована: налаштуйте її і ввімкніть «На сайті».
           </p>
         </div>
         <Button size="large" type="primary" icon={<Plus size={18} />} onClick={() => setCreating(true)}>
@@ -219,7 +225,9 @@ export function SupportList() {
               <div className="font-bold">{page.title_uk}</div>
               <div className="text-sm text-ink-soft">EN: {page.title_en || "—"}</div>
               <Tag className="m-0! mt-2! font-semibold">{page.href}</Tag>
-              <div className="mt-1.5 text-sm text-ink-soft">Статті: {page.topic_title || "без статей"}</div>
+              <div className="mt-1.5 text-sm text-ink-soft">
+                {page.topic_title ? `${page.topic_title} · ${page.main_title || "найновіша стаття"}` : "Тему не обрано"}
+              </div>
             </div>
             <div className="mt-3 flex items-center justify-between gap-2 border-t border-ink/8 px-1 pt-3">
               {orderButtons(index)}
@@ -239,7 +247,7 @@ export function SupportList() {
         onClose={() => setCreating(false)}
         onCreated={(page) => {
           setCreating(false);
-          message.success("Сторінку додано — заповніть її");
+          message.success("Сторінку додано — оберіть тему і статтю");
           router.refresh();
           open(page);
         }}

@@ -33,7 +33,7 @@ const radius: Record<string, number> = { slider: 40, gallery: 28, video: 32, tex
 
 /** Text of the news: no card around it, a column for reading; the very first paragraph of the
  *  news is the lead (a bit bolder) */
-function NewsText({ block, lead }: { block: TextBlock; lead: boolean }) {
+export function NewsText({ block, lead }: { block: TextBlock; lead: boolean }) {
   return (
     <section className="max-w-195">
       {block.title && (

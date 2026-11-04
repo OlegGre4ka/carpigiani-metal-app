@@ -210,8 +210,11 @@ class PublicPage(BaseModel):
     # for the arrows of the page
     prev_item: dict | None = None
     next_item: dict | None = None
-    # Support page (4.11): the "contact us" card on the right and the news of its topic
-    # (topic_title / topic_href above)
+    # Support page (4.11): one article of its topic open (title, date, image, blocks above),
+    # the name of the page (for the breadcrumbs), the address of that article, the "contact us"
+    # card on the right and all the news of its topic (topic_title / topic_href above)
+    section_title: str = ""
+    main_href: str = ""
     contact_title: str = ""
     contact_text: str = ""
     articles: list[dict] = []

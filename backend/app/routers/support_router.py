@@ -1,23 +1,14 @@
 """Pages of the "Support" menu (4.11): Carpigiani Gelato University, Technologies and any other
-the client adds. Each is built from blocks; a topic of news can be tied to it — its news go at
-the bottom of the page and into the menu of articles on the right, next to a "contact us" card
-with its own title and text. The pages are the items of the "Support" menu, in their order.
+the client adds. Each is tied to a topic of news: one article of the topic is shown open on the
+page (chosen in the admin panel; none chosen: the newest), the other articles of the topic go
+under it and into the menu of articles on the right, next to a "contact us" card with its own
+title and text. The pages are the items of the "Support" menu, in their order.
 
 Public: the menu and the page itself (asked through /api/pages by its address, pages_router).
-Admin (login required): the list (add, show/hide, order, delete) and the page in the builder.
+Admin (login required): the list (add, show/hide, order, delete) and the settings of a page.
 """
 
-from typing import Annotated
-
-from fastapi import (
-    APIRouter,
-    Depends,
-    File,
-    HTTPException,
-    Response,
-    UploadFile,
-    status,
-)
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 
 from app.db.session import DbSession
@@ -28,23 +19,16 @@ from app.routers.news_router import (
     newest_first,
     news_card,
 )
-from app.routers.pages_router import (
-    blocks_adapter,
-    blocks_for_site,
-    check_kinds,
-    delete_page_images,
-    page_images,
-    upload,
-)
+from app.routers.pages_router import blocks_for_site, delete_page_images, page_images
 from app.schemas.news import Visibility
 from app.schemas.page_blocks import Lang, pick
 from app.schemas.pages import PublicPage
 from app.schemas.support import (
+    SupportAdmin,
     SupportCreate,
     SupportListItem,
     SupportOrder,
-    SupportPageAdmin,
-    SupportSave,
+    SupportSettings,
 )
 from app.services.auth import get_current_user
 
@@ -55,18 +39,8 @@ admin_router = APIRouter(
     dependencies=[Depends(get_current_user)],
 )
 
-# Blocks a support page may not have (they belong to the catalog)
-SUPPORT_FORBIDDEN_BLOCKS = {"subcategory", "categories", "catalogs", "photo"}
 # Articles of the topic on the page (newest first)
 MAX_ARTICLES = 60
-
-
-def support_images(page: SupportPage) -> set[str]:
-    """The photos of the page: of its blocks and the main one."""
-    found = page_images(page.blocks)
-    if page.image:
-        found.add(page.image)
-    return found
 
 
 def ordered(db: DbSession, only_visible: bool = False) -> list[SupportPage]:
@@ -74,6 +48,14 @@ def ordered(db: DbSession, only_visible: bool = False) -> list[SupportPage]:
     if only_visible:
         statement = statement.where(SupportPage.is_visible.is_(True))
     return list(db.scalars(statement))
+
+
+def support_images(page: SupportPage) -> set[str]:
+    """Photos the page kept from before 4.11 (its own blocks and main photo)."""
+    found = page_images(page.blocks)
+    if page.image:
+        found.add(page.image)
+    return found
 
 
 # ---------- The site ----------
@@ -97,22 +79,33 @@ def support_page_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | 
     )
     if page is None:
         return None
+    name = pick({"uk": page.title_uk, "en": page.title_en}, lang)
     topic = db.get(NewsTopic, page.topic_id) if page.topic_id else None
-    articles: list[dict] = []
+    news: list[News] = []
     if topic is not None:
-        news = db.scalars(
-            select(News)
-            .where(News.topic_id == topic.id, News.is_visible.is_(True))
-            .order_by(*newest_first)
-            .limit(MAX_ARTICLES)
+        news = list(
+            db.scalars(
+                select(News)
+                .where(News.topic_id == topic.id, News.is_visible.is_(True))
+                .order_by(*newest_first)
+                .limit(MAX_ARTICLES)
+            )
         )
-        # The topic label is not shown on cards of its own page
-        articles = [news_card(item, {}, lang) for item in news]
+    # The chosen article, if it is still on the site in this topic; else the newest one
+    main = next((n for n in news if n.id == page.main_news_id), None) or (
+        news[0] if news else None
+    )
+    # The topic label is not shown on cards of its own page
+    articles = [news_card(item, {}, lang) for item in news]
+    main_card = next((c for c in articles if main and c["href"] == main.href), None)
     return PublicPage(
         kind="support",
-        title=pick({"uk": page.title_uk, "en": page.title_en}, lang),
-        blocks=blocks_for_site(page.blocks, lang, db),
-        image=page.image,
+        title=main_card["title"] if main_card else name,
+        section_title=name,
+        date=main_card["date"] if main_card else "",
+        image=main.image if main else None,
+        blocks=blocks_for_site(main.blocks, lang, db) if main else [],
+        main_href=main.href if main else "",
         topic_title=pick({"uk": topic.title_uk, "en": topic.title_en}, lang)
         if topic
         else "",
@@ -143,6 +136,7 @@ def topic_of(db: DbSession, page: SupportPage) -> NewsTopic | None:
 
 def list_item(db: DbSession, page: SupportPage) -> SupportListItem:
     topic = topic_of(db, page)
+    main = db.get(News, page.main_news_id) if page.main_news_id else None
     return SupportListItem(
         id=page.id,
         title_uk=page.title_uk,
@@ -150,22 +144,22 @@ def list_item(db: DbSession, page: SupportPage) -> SupportListItem:
         href=page.href,
         is_visible=page.is_visible,
         topic_title=topic.title_uk if topic else "",
+        main_title=main.title_uk if main else "",
     )
 
 
-def page_admin(db: DbSession, page: SupportPage) -> SupportPageAdmin:
+def page_admin(db: DbSession, page: SupportPage) -> SupportAdmin:
     topic = topic_of(db, page)
-    return SupportPageAdmin(
+    return SupportAdmin(
         id=page.id,
         title_uk=page.title_uk,
         title_en=page.title_en,
-        blocks=page.blocks,
         href=page.href,
         topic_id=page.topic_id,
+        main_news_id=page.main_news_id,
         is_visible=page.is_visible,
         contact_title={"uk": page.contact_title_uk, "en": page.contact_title_en},
         contact_text={"uk": page.contact_text_uk, "en": page.contact_text_en},
-        image=page.image,
         topic_title=topic.title_uk if topic else "",
         topic_href=topic.href if topic else "",
     )
@@ -234,39 +228,35 @@ def delete_page(page_id: int, db: DbSession):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@admin_router.get("/{page_id}/page", response_model=SupportPageAdmin)
+@admin_router.get("/{page_id}", response_model=SupportAdmin)
 def read_page(page_id: int, db: DbSession):
     return page_admin(db, get_page(db, page_id))
 
 
-@admin_router.put("/{page_id}/page", response_model=SupportPageAdmin)
-def save_page(page_id: int, data: SupportSave, db: DbSession):
+@admin_router.put("/{page_id}", response_model=SupportAdmin)
+def save_page(page_id: int, data: SupportSettings, db: DbSession):
     page = get_page(db, page_id)
-    blocks = blocks_adapter.dump_python(data.blocks, mode="json")
-    check_kinds(blocks, SUPPORT_FORBIDDEN_BLOCKS, "сторінки підтримки")
     check_topic(db, data.topic_id)
     check_href_free(db, data.href, current=page.href)
-    old_images = support_images(page)
+    main_news_id = data.main_news_id if data.topic_id else None
+    if main_news_id is not None:
+        main = db.get(News, main_news_id)
+        if main is None or main.topic_id != data.topic_id:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                "Обрана стаття не з цієї теми. Оберіть статтю ще раз.",
+            )
 
     page.title_uk = data.title_uk
     page.title_en = data.title_en
-    page.blocks = blocks
     page.href = data.href
     page.topic_id = data.topic_id
+    page.main_news_id = main_news_id
     page.is_visible = data.is_visible
-    page.image = data.image
     page.contact_title_uk = data.contact_title.uk.strip()
     page.contact_title_en = data.contact_title.en.strip()
     page.contact_text_uk = data.contact_text.uk.strip()
     page.contact_text_en = data.contact_text.en.strip()
     db.commit()
     db.refresh(page)
-    delete_page_images(old_images - support_images(page))
     return page_admin(db, page)
-
-
-@admin_router.post("/{page_id}/page/images", status_code=status.HTTP_201_CREATED)
-def upload_image(page_id: int, db: DbSession, image: Annotated[UploadFile, File()]):
-    """A photo for a block of the page. It is kept when the page is saved."""
-    get_page(db, page_id)
-    return upload(image)

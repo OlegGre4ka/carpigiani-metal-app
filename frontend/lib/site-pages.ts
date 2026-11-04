@@ -94,6 +94,9 @@ export type SitePageData = {
   prev_item?: { href: string; title: string; image: string | null } | null;
   next_item?: { href: string; title: string; image: string | null } | null;
   /** Support page (4.11): the "contact us" card and the news of its topic */
+  /** Support page: its name (breadcrumbs) and the address of the article shown open */
+  section_title?: string;
+  main_href?: string;
   contact_title?: string;
   contact_text?: string;
   articles?: NewsCard[];
