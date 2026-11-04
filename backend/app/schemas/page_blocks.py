@@ -84,8 +84,23 @@ PHOTO_CHOICES = {
 }
 
 
+# Text copied from a browser (the old site, another site) carries the whole look of that page:
+# "font-style: normal; letter-spacing: normal; text-transform: none; background-color: white..."
+# (4.11). Nobody writes these defaults by hand, so a style with any of them is a copied one and
+# goes as a whole: the text takes the look of this site. Styles written on purpose stay.
+COPIED_STYLE = re.compile(
+    r"(font-style|font-variant[\w-]*|letter-spacing|word-spacing|text-transform|white-space)"
+    r"\s*:\s*(normal|none)\b|text-align\s*:\s*start\b|text-indent\s*:\s*0|orphans\s*:|widows\s*:"
+    r"|-webkit-|text-decoration-(thickness|style|color)\s*:",
+    re.IGNORECASE,
+)
+
+
 def keep_attribute(tag: str, attribute: str, value: str) -> str | None:
-    """Links to the old site lead to this site; a photo keeps only known places and sizes."""
+    """Links to the old site lead to this site; a photo keeps only known places and sizes;
+    a style copied with the text from another page goes."""
+    if attribute == "style" and COPIED_STYLE.search(value):
+        return None
     if tag == "a" and attribute == "href":
         return site_link(value)
     if tag == "img" and attribute in PHOTO_CHOICES:
