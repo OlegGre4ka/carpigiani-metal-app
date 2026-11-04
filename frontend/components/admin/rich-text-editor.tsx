@@ -85,14 +85,15 @@ const StyledText = Mark.create({
 const htmlHelp = (
   <div className="py-1 text-[13px] leading-snug">
     <p className="mb-1.5 font-extrabold">Що можна змінити в HTML</p>
+    <p className="mb-1.5 opacity-80">Те, чого немає на панелі (жирний, курсив і підкреслення — кнопками):</p>
     <ul className="mb-1.5 list-disc pl-4">
       <li>розмір тексту — font-size: 20px</li>
       <li>колір — color: #0a1b42</li>
       <li>фон тексту — background-color: #fff3c4</li>
-      <li>жирність, курсив — font-weight: 700; font-style: italic</li>
       <li>вирівнювання — text-align: center</li>
       <li>міжрядковий інтервал — line-height: 1.8</li>
-      <li>відстань між літерами, великі літери, підкреслення</li>
+      <li>відстань між літерами — letter-spacing: 1px</li>
+      <li>ВЕЛИКІ ЛІТЕРИ — text-transform: uppercase</li>
     </ul>
     <p className="mb-1">
       Приклад: &lt;span style=&quot;font-size:22px;color:#0a1b42&quot;&gt;текст&lt;/span&gt;
@@ -209,8 +210,8 @@ export function RichTextEditor({
             className="block min-h-64 w-full resize-y bg-transparent px-5 py-4 font-mono text-[13px] leading-[1.65] text-ink outline-none"
           />
           <p className="border-t border-ink/10 px-5 py-2.5 text-xs leading-normal text-ink-soft">
-            Можна змінювати вигляд тексту через style=&quot;…&quot;: розмір (font-size), колір (color), фон (background-color), жирність
-            (font-weight), курсив, вирівнювання (text-align), міжрядковий інтервал (line-height), відстань між літерами. Наприклад:{" "}
+            Можна змінювати вигляд тексту через style=&quot;…&quot;: розмір (font-size), колір (color), фон (background-color),
+            вирівнювання (text-align), міжрядковий інтервал (line-height), відстань між літерами. Наприклад:{" "}
             <code className="rounded bg-white px-1">&lt;span style=&quot;font-size:22px;color:#0a1b42&quot;&gt;текст&lt;/span&gt;</code>. Скрипти й
             інші небезпечні речі сайт прибирає. Натисніть «HTML» ще раз, щоб повернутись до звичайного вигляду.
           </p>

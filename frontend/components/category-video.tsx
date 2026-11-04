@@ -50,8 +50,9 @@ export function CategoryVideo({
               onError={(event) => (event.currentTarget.style.visibility = "hidden")}
               className="size-full object-cover opacity-85 transition-opacity duration-300 group-hover:opacity-100"
             />
-            <span data-reveal-pulse className="absolute top-1/2 left-1/2 flex size-22 -translate-1/2 items-center justify-center rounded-full bg-[image:var(--grad-btn)] shadow-[0_14px_34px_rgba(0,0,0,0.35)] transition-transform duration-300 group-hover:scale-108 max-[820px]:size-16">
-              <svg aria-hidden="true" viewBox="0 0 24 24" fill="#fff" className="ml-1 size-8.5 max-[820px]:size-6.5">
+            {/* Metal like the other round buttons (arrows, zoom, "Up"), navy when the video is hovered (4.11) */}
+            <span data-reveal-pulse className="absolute top-1/2 left-1/2 flex size-22 -translate-1/2 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-ink shadow-[inset_0_-4px_8px_rgb(var(--ink-rgb)/0.18),0_14px_34px_rgba(0,0,0,0.35)] transition-all duration-300 group-hover:scale-108 group-hover:bg-[image:var(--grad-btn)] group-hover:text-white max-[820px]:size-16">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="ml-1 size-8.5 max-[820px]:size-6.5">
                 <path d="M8 5.5v13l11-6.5z" />
               </svg>
             </span>
