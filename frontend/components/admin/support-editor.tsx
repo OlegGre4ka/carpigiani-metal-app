@@ -19,7 +19,8 @@ import { AdminLoader } from "@/components/cone-loader";
 // open, the "contact us" card), under them the articles of the topic: the same list as in
 // "News", with "Add news" right here.
 
-type Loaded = SupportMeta & { id: number; topic_title: string; topic_href: string };
+/** link: where the menu item leads (the address of the article shown open) */
+type Loaded = SupportMeta & { id: number; topic_title: string; topic_href: string; link: string };
 
 const panel =
   "mb-4.5 rounded-[30px] bg-[rgb(var(--paper-rgb)/0.94)] px-7 py-6.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[700px]:px-4.5 max-[700px]:py-5";
@@ -27,7 +28,6 @@ const panel =
 const metaOf = (data: Loaded): SupportMeta => ({
   title_uk: data.title_uk,
   title_en: data.title_en,
-  href: data.href,
   topic_id: data.topic_id,
   main_news_id: data.main_news_id,
   is_visible: data.is_visible,
@@ -92,13 +92,9 @@ export function SupportEditor({ id }: { id: number }) {
       setLang("uk");
       return;
     }
-    if (!draft.href.trim()) {
-      message.error("Вкажіть адресу сторінки");
-      return;
-    }
     setSaving(true);
     try {
-      const response = await call(api, json("PUT", { ...draft, href: draft.href.trim() }));
+      const response = await call(api, json("PUT", draft));
       if (!response.ok) {
         message.error(await readError(response));
         return;
@@ -135,7 +131,7 @@ export function SupportEditor({ id }: { id: number }) {
       <div className="mb-5 flex flex-wrap items-end justify-between gap-5">
         <div className="min-w-0">
           <p className="mb-1.5 text-xs font-extrabold tracking-[2px] text-steel uppercase motion-safe:animate-fade-up">
-            Підтримка · {page.href}
+            Підтримка · {page.link || "статтю ще не обрано"}
           </p>
           <h1 className="font-heading tracking-[-0.02em] text-[38px] leading-[1.05] font-extrabold text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:40ms] max-[600px]:text-[28px]">
             {page.title_uk}
@@ -147,10 +143,10 @@ export function SupportEditor({ id }: { id: number }) {
         <div className="flex flex-wrap gap-3 motion-safe:animate-fade-up motion-safe:[animation-delay:120ms]">
           <Button
             size="large"
-            href={page.is_visible ? page.href : undefined}
+            href={page.is_visible && page.link ? page.link : undefined}
             target="_blank"
-            disabled={!page.is_visible}
-            title={page.is_visible ? "Відкрити збережену сторінку на сайті" : "Сторінку сховано з сайту"}
+            disabled={!page.is_visible || !page.link}
+            title={!page.link ? "У темі ще немає статей на сайті" : page.is_visible ? "Відкрити збережену сторінку на сайті" : "Сторінку сховано з сайту"}
             icon={<ExternalLink size={17} />}
           >
             Переглянути на сайті
@@ -161,6 +157,14 @@ export function SupportEditor({ id }: { id: number }) {
         </div>
       </div>
 
+      {/* No article of the topic on the site: the page is not in the menu (4.11) */}
+      {!page.link && (
+        <p className="mb-4 rounded-2xl bg-tag px-4 py-3 text-sm font-semibold text-tag-ink">
+          {page.topic_id
+            ? "У темі ще немає жодної статті на сайті, тому цього пункту немає в меню «Підтримка». Додайте статтю внизу (кнопка «Додати статтю») і ввімкніть у ній «На сайті» — пункт з'явиться в меню."
+            : "Оберіть тему новин і збережіть. Поки в темі немає жодної статті на сайті, цього пункту немає в меню «Підтримка»."}
+        </p>
+      )}
       {!page.is_visible && (
         <p className="mb-4 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
           Сторінку сховано з сайту: її немає в меню «Підтримка». Коли все буде готово, увімкніть «Показувати на сайті» і
@@ -186,7 +190,7 @@ export function SupportEditor({ id }: { id: number }) {
       {/* The articles of the saved topic: the same list as in "News" */}
       {page.topic_id ? (
         <div className="mt-7">
-          <NewsList topicId={page.topic_id} />
+          <NewsList topicId={page.topic_id} articles />
         </div>
       ) : (
         <p className="mt-7 rounded-2xl bg-mist px-4 py-3 text-sm text-body">

@@ -105,6 +105,8 @@ class NewsSave(PageSave):
     href: Annotated[str, Field(max_length=300)]
     published_on: date
     topic_id: int | None = None
+    # More topics the news is also shown in (its own topic is not repeated here)
+    extra_topic_ids: Annotated[list[int], Field(default_factory=list, max_length=30)]
     image: str | None = None
     summary: Text600 = Text600()
     is_visible: bool = False

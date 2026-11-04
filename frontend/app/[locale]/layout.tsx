@@ -15,6 +15,7 @@ import { ContactWidget } from "@/components/contact-widget";
 import { FontPicker } from "@/components/font-picker";
 import { SiteSplash } from "@/components/site-splash";
 import { ReadyFlag } from "@/components/home-flag";
+import { RichLinks } from "@/components/rich-links";
 import "../globals.css";
 
 // Fonts of the site: lib/site-fonts.ts (all of them can be switched on; the chosen ones come from
@@ -56,6 +57,8 @@ export default async function RootLayout({ children, params }: Props) {
           {/* The splash screen with the logo and its running spark (opening and reloading the site) */}
           <SiteSplash />
           <ReadyFlag />
+          {/* Links inside texts open without reloading the site */}
+          <RichLinks />
           {/* The page is ready at once without the admin item; it is added only for a logged-in admin */}
           <Suspense fallback={<SiteHeader />}>
             <HeaderForVisitor />

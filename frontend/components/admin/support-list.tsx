@@ -18,13 +18,14 @@ type SupportItem = {
   id: number;
   title_uk: string;
   title_en: string;
-  href: string;
   is_visible: boolean;
   topic_title: string;
   main_title: string;
+  /** Where its menu item leads: the address of the article shown open */
+  link: string;
 };
 
-type FormValues = { title_uk: string; href: string };
+type FormValues = { title_uk: string };
 
 export function SupportList() {
   const { message } = App.useApp();
@@ -129,8 +130,8 @@ export function SupportList() {
         type="text"
         aria-label="Переглянути на сайті"
         title={page.is_visible ? "Переглянути на сайті" : "Сторінку сховано з сайту"}
-        disabled={!page.is_visible}
-        href={page.is_visible ? page.href : undefined}
+        disabled={!page.is_visible || !page.link}
+        href={page.is_visible && page.link ? page.link : undefined}
         target="_blank"
         icon={<ExternalLink size={17} />}
       />
@@ -162,10 +163,10 @@ export function SupportList() {
       ),
     },
     {
-      title: "Адреса сторінки",
-      dataIndex: "href",
-      key: "href",
-      render: (href: string) => <Tag className="m-0! font-semibold">{href}</Tag>,
+      title: "Веде на",
+      dataIndex: "link",
+      key: "link",
+      render: (link: string) => (link ? <Tag className="m-0! font-semibold">{link}</Tag> : <span className="text-sm text-hint">Немає в меню: додайте статтю</span>),
     },
     {
       title: "Тема і відкрита стаття",
@@ -224,7 +225,11 @@ export function SupportList() {
             <div className="px-1.5 pt-1">
               <div className="font-bold">{page.title_uk}</div>
               <div className="text-sm text-ink-soft">EN: {page.title_en || "—"}</div>
-              <Tag className="m-0! mt-2! font-semibold">{page.href}</Tag>
+              {page.link ? (
+                <Tag className="m-0! mt-2! font-semibold">{page.link}</Tag>
+              ) : (
+                <div className="mt-2 text-sm text-hint">Немає в меню: додайте статтю</div>
+              )}
               <div className="mt-1.5 text-sm text-ink-soft">
                 {page.topic_title ? `${page.topic_title} · ${page.main_title || "найновіша стаття"}` : "Тему не обрано"}
               </div>
@@ -256,7 +261,7 @@ export function SupportList() {
   );
 }
 
-/** Window: the name in the menu and the address of a new page; the rest is filled in its builder */
+/** Window: the name of a new page in the menu; the topic and the article are chosen on its page */
 function NewSupportPage({
   open,
   onClose,
@@ -282,7 +287,7 @@ function NewSupportPage({
     setSaving(true);
     setError(null);
     try {
-      const response = await call(API, json("POST", { title_uk: values.title_uk.trim(), href: values.href.trim() }));
+      const response = await call(API, json("POST", { title_uk: values.title_uk.trim() }));
       if (!response.ok) {
         setError(await readError(response));
         return;
@@ -317,16 +322,6 @@ function NewSupportPage({
           ]}
         >
           <Input placeholder="Сервіс" />
-        </Form.Item>
-        <Form.Item
-          name="href"
-          label="Адреса сторінки"
-          rules={[
-            { required: true, whitespace: true, message: "Вкажіть адресу сторінки" },
-            { pattern: /^\/(?!\/)\S*$/, message: "Почніть з «/», без пробілів" },
-          ]}
-        >
-          <Input placeholder="/service" />
         </Form.Item>
 
         {error && (

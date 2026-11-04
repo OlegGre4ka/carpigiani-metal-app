@@ -14,8 +14,8 @@ from sqlalchemy import select
 from app.db.session import DbSession
 from app.models import News, NewsTopic, SupportPage
 from app.routers.news_router import (
-    check_href_free,
     check_topic,
+    in_topic,
     newest_first,
     news_card,
 )
@@ -61,40 +61,77 @@ def support_images(page: SupportPage) -> set[str]:
 # ---------- The site ----------
 
 
+def topic_news(db: DbSession, page: SupportPage) -> tuple[NewsTopic | None, list[News]]:
+    """The topic of the page and its articles on the site, newest first."""
+    topic = db.get(NewsTopic, page.topic_id) if page.topic_id else None
+    if topic is None:
+        return None, []
+    news = db.scalars(
+        select(News)
+        .where(in_topic(topic.id), News.is_visible.is_(True))
+        .order_by(*newest_first)
+        .limit(MAX_ARTICLES)
+    )
+    return topic, list(news)
+
+
+def main_of(page: SupportPage, news: list[News]) -> News | None:
+    """The article shown open: the chosen one, if it is on the site in the topic; else the newest."""
+    chosen = next((n for n in news if n.id == page.main_news_id), None)
+    return chosen or (news[0] if news else None)
+
+
+def page_link(db: DbSession, page: SupportPage) -> str:
+    """Where the menu item of the page leads: the address of the article shown open. Empty when
+    its topic has no article on the site: then the page is not in the menu (4.11)."""
+    main = main_of(page, topic_news(db, page)[1])
+    return main.href if main else ""
+
+
 @public_router.get("/support-menu")
 def support_menu(db: DbSession, lang: Lang = "uk") -> list[dict]:
-    """The items of the "Support" menu: the visible pages in their order."""
-    return [
-        {"title": pick({"uk": p.title_uk, "en": p.title_en}, lang), "href": p.href}
-        for p in ordered(db, only_visible=True)
-    ]
+    """The items of the "Support" menu: the visible pages in their order, each leading to the
+    article it shows open (a page whose topic has no article on the site is not in the menu)."""
+    items = []
+    for page in ordered(db, only_visible=True):
+        link = page_link(db, page)
+        if link:
+            items.append(
+                {
+                    "title": pick({"uk": page.title_uk, "en": page.title_en}, lang),
+                    "href": link,
+                }
+            )
+    return items
 
 
 def support_page_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | None:
-    """The support page with this address, if it is shown on the site."""
-    page = db.scalar(
-        select(SupportPage).where(
-            SupportPage.href == href, SupportPage.is_visible.is_(True)
-        )
-    )
+    """The support page at this address: the address of the article it shows open, or its
+    old address (/technologies). Other articles of the topic open as usual news."""
+    pages = ordered(db, only_visible=True)
+    page = next((p for p in pages if p.href == href), None)
     if page is None:
-        return None
-    name = pick({"uk": page.title_uk, "en": page.title_en}, lang)
-    topic = db.get(NewsTopic, page.topic_id) if page.topic_id else None
-    news: list[News] = []
-    if topic is not None:
-        news = list(
-            db.scalars(
-                select(News)
-                .where(News.topic_id == topic.id, News.is_visible.is_(True))
-                .order_by(*newest_first)
-                .limit(MAX_ARTICLES)
-            )
+        article = db.scalar(
+            select(News).where(News.href == href, News.is_visible.is_(True))
         )
-    # The chosen article, if it is still on the site in this topic; else the newest one
-    main = next((n for n in news if n.id == page.main_news_id), None) or (
-        news[0] if news else None
-    )
+        if article is None:
+            return None
+        topics = {article.topic_id, *(article.extra_topic_ids or [])}
+        for candidate in pages:
+            if candidate.topic_id in topics:
+                main = main_of(candidate, topic_news(db, candidate)[1])
+                if main is not None and main.id == article.id:
+                    page = candidate
+                    break
+        if page is None:
+            return None
+
+    name = pick({"uk": page.title_uk, "en": page.title_en}, lang)
+    topic, news = topic_news(db, page)
+    main = main_of(page, news)
+    # Nothing to show (no article of the topic on the site): as if there were no such page
+    if main is None:
+        return None
     # The topic label is not shown on cards of its own page
     articles = [news_card(item, {}, lang) for item in news]
     main_card = next((c for c in articles if main and c["href"] == main.href), None)
@@ -141,10 +178,10 @@ def list_item(db: DbSession, page: SupportPage) -> SupportListItem:
         id=page.id,
         title_uk=page.title_uk,
         title_en=page.title_en,
-        href=page.href,
         is_visible=page.is_visible,
         topic_title=topic.title_uk if topic else "",
         main_title=main.title_uk if main else "",
+        link=page_link(db, page),
     )
 
 
@@ -154,7 +191,6 @@ def page_admin(db: DbSession, page: SupportPage) -> SupportAdmin:
         id=page.id,
         title_uk=page.title_uk,
         title_en=page.title_en,
-        href=page.href,
         topic_id=page.topic_id,
         main_news_id=page.main_news_id,
         is_visible=page.is_visible,
@@ -162,6 +198,7 @@ def page_admin(db: DbSession, page: SupportPage) -> SupportAdmin:
         contact_text={"uk": page.contact_text_uk, "en": page.contact_text_en},
         topic_title=topic.title_uk if topic else "",
         topic_href=topic.href if topic else "",
+        link=page_link(db, page),
     )
 
 
@@ -174,12 +211,11 @@ def list_pages(db: DbSession):
     "", response_model=SupportListItem, status_code=status.HTTP_201_CREATED
 )
 def create_page(data: SupportCreate, db: DbSession):
-    check_href_free(db, data.href)
     last = max((p.sort_order for p in ordered(db)), default=-1)
     page = SupportPage(
         title_uk=data.title_uk,
         title_en="",
-        href=data.href,
+        href=None,
         sort_order=last + 1,
         # Hidden until it is filled
         is_visible=False,
@@ -237,11 +273,10 @@ def read_page(page_id: int, db: DbSession):
 def save_page(page_id: int, data: SupportSettings, db: DbSession):
     page = get_page(db, page_id)
     check_topic(db, data.topic_id)
-    check_href_free(db, data.href, current=page.href)
     main_news_id = data.main_news_id if data.topic_id else None
     if main_news_id is not None:
         main = db.get(News, main_news_id)
-        if main is None or main.topic_id != data.topic_id:
+        if main is None or data.topic_id not in {main.topic_id, *main.extra_topic_ids}:
             raise HTTPException(
                 status.HTTP_400_BAD_REQUEST,
                 "Обрана стаття не з цієї теми. Оберіть статтю ще раз.",
@@ -249,7 +284,6 @@ def save_page(page_id: int, data: SupportSettings, db: DbSession):
 
     page.title_uk = data.title_uk
     page.title_en = data.title_en
-    page.href = data.href
     page.topic_id = data.topic_id
     page.main_news_id = main_news_id
     page.is_visible = data.is_visible

@@ -14,6 +14,8 @@ export type NewsMeta = {
   href: string;
   published_on: string;
   topic_id: number | null;
+  /** More topics it is also shown in (4.11), without its own topic */
+  extra_topic_ids: number[];
   image: string | null;
   summary: Text;
   is_visible: boolean;
@@ -45,7 +47,8 @@ export function NewsFields({
           <Select
             className="w-full"
             value={meta.topic_id ?? 0}
-            onChange={(topic: number) => set({ topic_id: topic || null })}
+            // The own topic is not one of the extra ones
+            onChange={(topic: number) => set({ topic_id: topic || null, extra_topic_ids: meta.extra_topic_ids.filter((id) => id !== topic) })}
             options={[{ value: 0, label: "Без теми" }, ...topics.map((t) => ({ value: t.id, label: t.title_uk }))]}
           />
         </Field>
@@ -60,6 +63,22 @@ export function NewsFields({
           />
         </Field>
       </div>
+
+      <Field label="Показувати ще в темах (можна кілька)">
+        <Select
+          mode="multiple"
+          allowClear
+          className="w-full"
+          value={meta.extra_topic_ids}
+          placeholder="Тільки у своїй темі"
+          onChange={(ids: number[]) => set({ extra_topic_ids: ids })}
+          options={topics.filter((t) => t.id !== meta.topic_id).map((t) => ({ value: t.id, label: t.title_uk }))}
+        />
+      </Field>
+      <Hint>
+        Наприклад, стаття з «Технологій» може бути й у «Carpigiani Gelato University»: її покаже сторінка кожної з цих тем і
+        «Підтримка». Мітка на картці й хлібні крихти — за основною темою.
+      </Hint>
 
       <label className="flex w-fit items-center gap-3 rounded-2xl bg-mist/70 px-4 py-2.5 text-sm font-bold text-ink">
         <Switch checked={meta.is_visible} onChange={(is_visible) => set({ is_visible })} />

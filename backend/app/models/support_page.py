@@ -19,7 +19,9 @@ class SupportPage(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title_uk: Mapped[str] = mapped_column(String(200), nullable=False)
     title_en: Mapped[str] = mapped_column(String(200), nullable=False, default="")
-    href: Mapped[str] = mapped_column(String(300), nullable=False, unique=True)
+    # Its own address is not used for new pages (4.11): the menu item leads to the article shown
+    # open. The first pages keep theirs (/technologies), so old links still open them.
+    href: Mapped[str | None] = mapped_column(String(300), nullable=True, unique=True)
     # Order in the "Support" menu: smaller number goes first
     sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     is_visible: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)

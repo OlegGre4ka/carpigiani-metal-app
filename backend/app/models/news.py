@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, String, func
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.session import Base
@@ -44,6 +44,11 @@ class News(Base):
     # Topic is optional; when the topic is deleted the news stays, without a topic
     topic_id: Mapped[int | None] = mapped_column(
         ForeignKey("news_topics.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    # More topics the news is also shown in (4.11): its topic above stays on its label and in
+    # its breadcrumbs; a deleted topic is taken out of here (news_router.delete_topic)
+    extra_topic_ids: Mapped[list[int]] = mapped_column(
+        ARRAY(Integer), nullable=False, default=list, server_default="{}"
     )
     href: Mapped[str] = mapped_column(String(300), nullable=False)
     title_uk: Mapped[str] = mapped_column(String(200), nullable=False)

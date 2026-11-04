@@ -48,9 +48,10 @@ export type NewsMenu = { topics: { title: string; href: string }[]; pages: strin
  *  Support (its pages) or Contacts. */
 function activeSection(pathname: string, brands: MenuBrand[], newsPages: string[] = [], supportItems: SupportItem[] = []) {
   if (pathname === "/") return "home";
+  // First: an item of "Support" leads to an article, which is also one of the news (4.11)
+  if (supportItems.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))) return "support";
   if (pathname === "/news" || newsPages.includes(pathname)) return "news";
   if (pathname === "/contacts") return "contacts";
-  if (supportItems.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))) return "support";
   if (brands.some((brand) => brand.href === pathname)) return "brands";
   const inCatalog = brands.some((brand) =>
     brand.categories.some(

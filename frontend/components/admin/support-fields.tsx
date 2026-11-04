@@ -5,8 +5,9 @@ import { Input, Select, Switch } from "antd";
 import { Field, Hint, TextInput, type Lang, type Text } from "./page-block-editors";
 import type { Topic } from "./news-topics";
 
-// Settings of a page of the "Support" menu (4.11): its name in the menu, address, topic of news,
-// the article of the topic shown open on the page, the "contact us" card and visibility.
+// Settings of a page of the "Support" menu (4.11): its name in the menu, topic of news, the
+// article of the topic shown open (the menu item leads to its address), the "contact us" card
+// and visibility.
 
 /** The list of support pages in the admin panel */
 export const SUPPORT_PATH = "/fofkas-adminpanel/support";
@@ -14,7 +15,6 @@ export const SUPPORT_PATH = "/fofkas-adminpanel/support";
 export type SupportMeta = {
   title_uk: string;
   title_en: string;
-  href: string;
   topic_id: number | null;
   main_news_id: number | null;
   is_visible: boolean;
@@ -45,19 +45,14 @@ export function SupportFields({
 
   return (
     <div className="flex flex-col gap-4.5">
-      <div className="grid grid-cols-[1.3fr_1fr] gap-4 max-[800px]:grid-cols-1">
-        <Field label={`Назва в меню «Підтримка» (${lang === "uk" ? "UA" : "EN"})`}>
-          <Input
-            value={meta[titleKey]}
-            maxLength={200}
-            placeholder={lang === "en" && meta.title_uk ? meta.title_uk : undefined}
-            onChange={(e) => set({ [titleKey]: e.target.value })}
-          />
-        </Field>
-        <Field label="Адреса сторінки">
-          <Input value={meta.href} maxLength={300} placeholder="/technologies" onChange={(e) => set({ href: e.target.value })} />
-        </Field>
-      </div>
+      <Field label={`Назва в меню «Підтримка» (${lang === "uk" ? "UA" : "EN"})`}>
+        <Input
+          value={meta[titleKey]}
+          maxLength={200}
+          placeholder={lang === "en" && meta.title_uk ? meta.title_uk : undefined}
+          onChange={(e) => set({ [titleKey]: e.target.value })}
+        />
+      </Field>
 
       <div className="grid grid-cols-[1fr_1.3fr] gap-4 max-[800px]:grid-cols-1">
         <Field label="Тема новин">
@@ -88,8 +83,8 @@ export function SupportFields({
         </Field>
       </div>
       <Hint>
-        На сторінці — обрана стаття, відкрита для читання. Решта статей теми йдуть під нею картками й у меню праворуч.
-        Не обрали — відкрита найновіша. Статті ті самі, що в «Новинах»: додати нову можна внизу, у списку статей теми.
+        Пункт меню веде на адресу обраної статті: вона відкрита для читання, решта статей теми — під нею картками й у
+        меню праворуч. Не обрали — найновіша. Статті ті самі, що в «Новинах»: нову можна додати внизу, у списку статей.
       </Hint>
 
       <div className="rounded-2xl bg-mist/60 px-4 py-3.5">

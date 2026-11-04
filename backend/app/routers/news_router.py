@@ -26,7 +26,7 @@ from fastapi import (
     status,
 )
 from pydantic import TypeAdapter
-from sqlalchemy import and_, func, or_, select
+from sqlalchemy import and_, func, or_, select, update
 
 from app.db.session import DbSession
 from app.models import News, NewsTopic
@@ -127,10 +127,21 @@ def visible_topics(db: DbSession) -> dict[int, NewsTopic]:
     }
 
 
+def in_topic(topic_id: int):
+    """News of a topic: its own topic, or the topic is one of its extra topics (4.11)."""
+    return or_(News.topic_id == topic_id, News.extra_topic_ids.any(topic_id))
+
+
 def shown_topics(db: DbSession) -> list[NewsTopic]:
     """Topics on the site (menu, chips, map): turned on and with at least one news item on the
-    site."""
-    with_news = select(News.topic_id).where(News.is_visible.is_(True)).distinct()
+    site (in its own or in its extra topics)."""
+    with_news: set[int] = set()
+    for own, extra in db.execute(
+        select(News.topic_id, News.extra_topic_ids).where(News.is_visible.is_(True))
+    ):
+        if own is not None:
+            with_news.add(own)
+        with_news.update(extra or [])
     return list(
         db.scalars(
             select(NewsTopic)
@@ -206,7 +217,7 @@ def list_news_for_site(
         chosen = next((t for t in topics.values() if t.href == topic), None)
         if chosen is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Тему не знайдено")
-        statement = statement.where(News.topic_id == chosen.id)
+        statement = statement.where(in_topic(chosen.id))
 
     total = db.scalar(select(func.count()).select_from(statement.subquery())) or 0
     items = db.scalars(statement.order_by(*newest_first).offset(offset).limit(limit))
@@ -244,9 +255,7 @@ def news_map(
     topics = visible_topics(db)
     result = []
     for topic in shown_topics(db):
-        of_topic = select(News).where(
-            News.is_visible.is_(True), News.topic_id == topic.id
-        )
+        of_topic = select(News).where(News.is_visible.is_(True), in_topic(topic.id))
         count = db.scalar(select(func.count()).select_from(of_topic.subquery())) or 0
         newest = list(db.scalars(of_topic.order_by(*newest_first).limit(MAP_COUNT)))
         if current and all(n.href != current for n in newest):
@@ -355,16 +364,14 @@ def news_page_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | Non
 
 def topic_counts(db: DbSession) -> dict[int, tuple[int, int]]:
     """For each topic: how many news it has and how many of them are on the site."""
-    rows = db.execute(
-        select(
-            News.topic_id,
-            func.count(),
-            func.count().filter(News.is_visible.is_(True)),
-        )
-        .where(News.topic_id.is_not(None))
-        .group_by(News.topic_id)
-    )
-    return {topic_id: (total, shown) for topic_id, total, shown in rows}
+    counts: dict[int, tuple[int, int]] = {}
+    for own, extra, visible in db.execute(
+        select(News.topic_id, News.extra_topic_ids, News.is_visible)
+    ):
+        for topic_id in {own, *(extra or [])} - {None}:
+            total, shown = counts.get(topic_id, (0, 0))
+            counts[topic_id] = (total + 1, shown + (1 if visible else 0))
+    return counts
 
 
 def topic_read(topic: NewsTopic, counts: dict[int, tuple[int, int]]) -> NewsTopicRead:
@@ -441,8 +448,13 @@ def set_topics_order(data: TopicsOrder, db: DbSession):
 
 @admin_router.delete("/news-topics/{topic_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_topic(topic_id: int, db: DbSession):
-    """Its news stay, without a topic (database rule)."""
+    """Its news stay, without a topic (database rule); it is taken out of their extra topics."""
     db.delete(get_topic(db, topic_id))
+    db.execute(
+        update(News)
+        .where(News.extra_topic_ids.any(topic_id))
+        .values(extra_topic_ids=func.array_remove(News.extra_topic_ids, topic_id))
+    )
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
@@ -478,6 +490,7 @@ def page_admin(db: DbSession, news: News) -> NewsPageAdmin:
         href=news.href,
         published_on=news.published_on,
         topic_id=news.topic_id,
+        extra_topic_ids=news.extra_topic_ids or [],
         topic_title=topic.title_uk if topic else "",
         image=news.image,
         summary={"uk": news.summary_uk, "en": news.summary_en},
@@ -495,7 +508,7 @@ def list_news(db: DbSession, topic_id: int | None = None):
     """All news, newest first; with topic_id only the news of that topic."""
     statement = select(News).order_by(*newest_first)
     if topic_id is not None:
-        statement = statement.where(News.topic_id == topic_id)
+        statement = statement.where(in_topic(topic_id))
     titles = topic_titles(db)
     return [list_item(news, titles) for news in db.scalars(statement)]
 
@@ -553,6 +566,10 @@ def save_news_page(news_id: int, data: NewsSave, db: DbSession):
     blocks = blocks_adapter.dump_python(data.blocks, mode="json")
     check_kinds(blocks, NEWS_FORBIDDEN_BLOCKS, "новини")
     check_topic(db, data.topic_id)
+    # The extra topics: existing ones, without its own topic, each once
+    extra = list(dict.fromkeys(t for t in data.extra_topic_ids if t != data.topic_id))
+    for topic_id in extra:
+        get_topic(db, topic_id)
     check_href_free(db, data.href, current=news.href)
     old_images = news_images(news)
 
@@ -562,6 +579,7 @@ def save_news_page(news_id: int, data: NewsSave, db: DbSession):
     news.href = data.href
     news.published_on = data.published_on
     news.topic_id = data.topic_id
+    news.extra_topic_ids = extra
     news.image = data.image
     news.summary_uk = data.summary.uk
     news.summary_en = data.summary.en

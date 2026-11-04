@@ -38,7 +38,48 @@ function today() {
 
 /** topicId: only the news of this topic, and a new one goes into it.
  *  reloadKey: a change of it loads the list again (e.g. a topic was renamed or deleted). */
-export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadKey?: number }) {
+/** The words of the list: in "Support" the news are called articles (4.11), it is the same thing */
+const NEWS_WORDS = {
+  loadError: "Не вдалося завантажити новини",
+  shown: "Новину показано на сайті",
+  hidden: "Новину сховано з сайту",
+  deleted: "Новину видалено",
+  emptyTopic: "У цій темі ще немає новин.",
+  empty: "Новин ще немає. Натисніть «Додати новину».",
+  deleteTitle: "Видалити новину?",
+  deleteText: "Новина і її фото зникнуть назавжди.",
+  headingTopic: "Новини теми",
+  heading: "Усі новини",
+  note: "Нові зверху. На сайті найновіша — великою карткою, решта — по три в ряд. Нова новина з'явиться на сайті, коли ви ввімкнете «На сайті».",
+  add: "Додати новину",
+  created: "Новину створено. Заповніть її сторінку.",
+  newTitle: "Нова новина",
+  newNote: "Після створення відкриється сторінка новини: там додасте фото, короткий опис і саму новину.",
+  href: "Адреса сторінки новини",
+};
+type Words = typeof NEWS_WORDS;
+const ARTICLE_WORDS: Words = {
+  loadError: "Не вдалося завантажити статті",
+  shown: "Статтю показано на сайті",
+  hidden: "Статтю сховано з сайту",
+  deleted: "Статтю видалено",
+  emptyTopic: "У цій темі ще немає статей.",
+  empty: "Статей ще немає. Натисніть «Додати статтю».",
+  deleteTitle: "Видалити статтю?",
+  deleteText: "Стаття і її фото зникнуть назавжди (і з «Новин» теж).",
+  headingTopic: "Статті теми",
+  heading: "Усі статті",
+  note: "Нові зверху. Стаття є і тут, і в «Новинах» у своїй темі. Нова стаття з'явиться на сайті, коли ви ввімкнете «На сайті».",
+  add: "Додати статтю",
+  created: "Статтю створено. Заповніть її сторінку.",
+  newTitle: "Нова стаття",
+  newNote: "Після створення відкриється сторінка статті: там додасте фото, короткий опис і сам текст.",
+  href: "Адреса сторінки статті",
+};
+
+/** articles: the words "стаття" instead of "новина" (the list on a page of "Support") */
+export function NewsList({ topicId, reloadKey = 0, articles = false }: { topicId?: number; reloadKey?: number; articles?: boolean }) {
+  const w = articles ? ARTICLE_WORDS : NEWS_WORDS;
   const { message } = App.useApp();
   const router = useRouter();
   const call = useAdminCall();
@@ -52,11 +93,11 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
       if (!response.ok) throw new Error(await readError(response));
       setNews(await response.json());
     } catch (error) {
-      if (error instanceof Error && error.message !== "logged out") message.error("Не вдалося завантажити новини");
+      if (error instanceof Error && error.message !== "logged out") message.error(w.loadError);
     } finally {
       setLoading(false);
     }
-  }, [call, message, topicId]);
+  }, [call, message, topicId, w.loadError]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- load the list (again after a change of topics)
@@ -66,7 +107,7 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
   async function toggle(item: NewsItem, isVisible: boolean) {
     setNews((list) => list.map((n) => (n.id === item.id ? { ...n, is_visible: isVisible } : n)));
     const response = await call(`${API}/${item.id}/visibility`, json("PATCH", { is_visible: isVisible }));
-    if (response.ok) message.success(isVisible ? "Новину показано на сайті" : "Новину сховано з сайту");
+    if (response.ok) message.success(isVisible ? w.shown : w.hidden);
     else {
       message.error(await readError(response));
       load();
@@ -77,7 +118,7 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
     const response = await call(`${API}/${item.id}`, { method: "DELETE" });
     if (response.ok) {
       setNews((list) => list.filter((n) => n.id !== item.id));
-      message.success("Новину видалено");
+      message.success(w.deleted);
       router.refresh();
     } else message.error(await readError(response));
   }
@@ -87,7 +128,7 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
   const emptyState = (
     <Empty
       image={Empty.PRESENTED_IMAGE_SIMPLE}
-      description={topicId ? "У цій темі ще немає новин." : "Новин ще немає. Натисніть «Додати новину»."}
+      description={topicId ? w.emptyTopic : w.empty}
       className="py-6"
     />
   );
@@ -118,8 +159,8 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
 
   const deleteButton = (item: NewsItem) => (
     <Popconfirm
-      title="Видалити новину?"
-      description="Новина і її фото зникнуть назавжди."
+      title={w.deleteTitle}
+      description={w.deleteText}
       okText="Видалити"
       cancelText="Скасувати"
       okButtonProps={{ danger: true }}
@@ -181,13 +222,13 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
     <section>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="font-heading tracking-[-0.02em] text-[26px] leading-tight font-extrabold text-ink">{topicId ? "Новини теми" : "Усі новини"}</h2>
+          <h2 className="font-heading tracking-[-0.02em] text-[26px] leading-tight font-extrabold text-ink">{topicId ? w.headingTopic : w.heading}</h2>
           <p className="mt-1 max-w-[62ch] text-sm text-ink-soft">
-            {"Нові зверху. На сайті найновіша — великою карткою, решта — по три в ряд. Нова новина з'явиться на сайті, коли ви ввімкнете «На сайті»."}
+            {w.note}
           </p>
         </div>
         <Button type="primary" size="large" icon={<Plus size={18} />} onClick={() => setCreating(true)}>
-          Додати новину
+          {w.add}
         </Button>
       </div>
 
@@ -240,10 +281,11 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
       <NewNews
         open={creating}
         topicId={topicId}
+        words={w}
         onClose={() => setCreating(false)}
         onCreated={(created) => {
           setCreating(false);
-          message.success("Новину створено. Заповніть її сторінку.");
+          message.success(w.created);
           router.refresh();
           router.push(`${NEWS_BASE}/${created.id}`);
         }}
@@ -256,11 +298,13 @@ export function NewsList({ topicId, reloadKey = 0 }: { topicId?: number; reloadK
 function NewNews({
   open,
   topicId,
+  words,
   onClose,
   onCreated,
 }: {
   open: boolean;
   topicId?: number;
+  words: Words;
   onClose: () => void;
   onCreated: (news: NewsItem) => void;
 }) {
@@ -310,7 +354,7 @@ function NewNews({
   return (
     <Modal
       open={open}
-      title={<span className="font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">Нова новина</span>}
+      title={<span className="font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">{words.newTitle}</span>}
       onCancel={onClose}
       okText="Створити"
       cancelText="Скасувати"
@@ -319,7 +363,7 @@ function NewNews({
       width={560}
     >
       <p className="mb-3 text-sm text-ink-soft">
-        Після створення відкриється сторінка новини: там додасте фото, короткий опис і саму новину.
+        {words.newNote}
       </p>
       <Form<FormValues> id="news-form" form={form} layout="vertical" onFinish={submit} requiredMark={false}>
         <Form.Item
@@ -334,7 +378,7 @@ function NewNews({
         </Form.Item>
         <Form.Item
           name="href"
-          label="Адреса сторінки новини"
+          label={words.href}
           extra="Як на старому сайті: оберіть зі списку або впишіть свою, наприклад /230500-back-to-roots."
           rules={[
             { required: true, whitespace: true, message: "Вкажіть адресу сторінки" },

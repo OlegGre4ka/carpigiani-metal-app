@@ -115,6 +115,7 @@ type Loaded = {
   // News: the fields of its card (href above is its address)
   published_on?: string;
   topic_id?: number | null;
+  extra_topic_ids?: number[];
   topic_title?: string;
   image?: string | null;
   summary?: { uk: string; en: string };
@@ -786,6 +787,7 @@ function toDraft(data: Loaded): Draft {
       href: data.href ?? "",
       published_on: data.published_on,
       topic_id: data.topic_id ?? null,
+      extra_topic_ids: data.extra_topic_ids ?? [],
       image: data.image ?? null,
       summary: data.summary ?? { uk: "", en: "" },
       is_visible: data.is_visible ?? false,
