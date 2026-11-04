@@ -2,18 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronsRight } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { ArrowRight, ChevronsRight } from "lucide-react";
 
-import { cardLift, moreButton, phoneArrow } from "@/components/card-styles";
+import { cardLift, phoneArrow } from "@/components/card-styles";
 import { Link } from "@/i18n/navigation";
 import type { EquipmentCard } from "@/lib/site-pages";
 
 // Cards of equipment / showcases (category pages, the IFI chips and the showcases block on the
 // home page). All cards are the same height: the description is cut to 3 lines. A click on a
 // card opens the page of the equipment at once (no quick view: the client asked for it).
-// Large screens: "View" floats up on the photo on hover. Phones: no button, a double arrow
-// at the bottom of the card says "open it to read more".
+// A round metal arrow right of the name says "open it" (4.11, instead of the "View" button
+// over the photo): on hover of the card it turns navy, like all the round buttons.
 // onNavy: on the navy home page (mockup): blue cards with a thin metal rim.
 
 /** Phones: double arrow at the bottom of a card, "open it to read more" (also on category cards) */
@@ -67,7 +66,6 @@ function isCutout(img: HTMLImageElement) {
 }
 
 function Card({ item, onNavy, pop }: { item: EquipmentCard; onNavy: boolean; pop: boolean }) {
-  const t = useTranslations("Equipment");
   // A machine cut out on a transparent background: on hover it comes forward, out of the card
   // The server says it (cutout); the photo itself is also checked in the browser as a fallback
   const [seen, setSeen] = useState(false);
@@ -108,14 +106,18 @@ function Card({ item, onNavy, pop }: { item: EquipmentCard; onNavy: boolean; pop
             className={`relative max-h-[92%] w-auto max-w-[88%] object-contain ${cutout ? `eq-pop-img ${onWhite ? "eq-on-white" : ""}` : "transition-transform duration-400 group-hover:scale-105"}`}
           />
         )}
-        {item.href && <span className={`absolute right-3 bottom-3 z-3 ${moreButton}`}>{t("view")}</span>}
       </span>
-      <span className={`mx-1.5 mt-4 mb-1.5 line-clamp-2 font-extrabold max-[820px]:mt-3 max-[820px]:text-base ${onNavy ? "text-[19px] leading-[1.3] text-white" : "text-xl text-ink"}`}>{item.title}</span>
+      <span className="mx-1.5 mt-4 mb-1.5 flex items-start gap-2.5 max-[820px]:mt-3 max-[820px]:gap-2">
+        <span className={`line-clamp-2 min-w-0 flex-1 font-extrabold max-[820px]:text-base ${onNavy ? "text-[19px] leading-[1.3] text-white" : "text-xl text-ink"}`}>{item.title}</span>
+        {item.href && (
+          <span aria-hidden="true" className="card-arrow -mt-1 max-[820px]:mt-0">
+            <ArrowRight className="size-4.5 max-[820px]:size-4" strokeWidth={2.4} />
+          </span>
+        )}
+      </span>
       {item.text && (
         <span className={`mx-1.5 mb-1.5 line-clamp-3 text-sm leading-normal max-[820px]:text-[13px] ${onNavy ? "text-on-navy-soft" : "text-ink-soft"}`}>{item.text}</span>
       )}
-      {/* Phones: double arrow at the bottom, "open it to read more" */}
-      {item.href && <PhoneArrow onNavy={onNavy} />}
     </>
   );
 

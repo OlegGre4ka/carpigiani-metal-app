@@ -725,7 +725,7 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       {draft.support && (
         <section className={`${panel} motion-safe:animate-fade-up motion-safe:[animation-delay:180ms]`}>
           <h2 className="mb-3.5 font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">Налаштування сторінки</h2>
-          <SupportFields meta={draft.support} lang={lang} topics={topics} onChange={(support) => change({ support })} />
+          <SupportFields meta={draft.support} lang={lang} topics={topics} upload={upload} onChange={(support) => change({ support })} />
         </section>
       )}
 
@@ -851,6 +851,7 @@ function toDraft(data: Loaded): Draft {
       is_visible: data.is_visible ?? false,
       contact_title: data.contact_title,
       contact_text: data.contact_text ?? { uk: "", en: "" },
+      image: data.image ?? null,
     };
   }
   // A news item: the fields of its card

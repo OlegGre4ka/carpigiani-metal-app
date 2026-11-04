@@ -28,6 +28,8 @@ class SupportPage(Base):
         ForeignKey("news_topics.id", ondelete="SET NULL"), nullable=True
     )
     blocks: Mapped[list] = mapped_column(JSONB, nullable=False, default=list)
+    # The main photo at the top of the page (like the main photo of a news item)
+    image: Mapped[str | None] = mapped_column(String(300), nullable=True)
     # The card "contact us" on the right
     contact_title_uk: Mapped[str] = mapped_column(
         String(200), nullable=False, default=""

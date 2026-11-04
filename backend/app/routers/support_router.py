@@ -61,6 +61,14 @@ SUPPORT_FORBIDDEN_BLOCKS = {"subcategory", "categories", "catalogs", "photo"}
 MAX_ARTICLES = 60
 
 
+def support_images(page: SupportPage) -> set[str]:
+    """The photos of the page: of its blocks and the main one."""
+    found = page_images(page.blocks)
+    if page.image:
+        found.add(page.image)
+    return found
+
+
 def ordered(db: DbSession, only_visible: bool = False) -> list[SupportPage]:
     statement = select(SupportPage).order_by(SupportPage.sort_order, SupportPage.id)
     if only_visible:
@@ -104,6 +112,7 @@ def support_page_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | 
         kind="support",
         title=pick({"uk": page.title_uk, "en": page.title_en}, lang),
         blocks=blocks_for_site(page.blocks, lang, db),
+        image=page.image,
         topic_title=pick({"uk": topic.title_uk, "en": topic.title_en}, lang)
         if topic
         else "",
@@ -156,6 +165,7 @@ def page_admin(db: DbSession, page: SupportPage) -> SupportPageAdmin:
         is_visible=page.is_visible,
         contact_title={"uk": page.contact_title_uk, "en": page.contact_title_en},
         contact_text={"uk": page.contact_text_uk, "en": page.contact_text_en},
+        image=page.image,
         topic_title=topic.title_uk if topic else "",
         topic_href=topic.href if topic else "",
     )
@@ -217,7 +227,7 @@ def set_order(data: SupportOrder, db: DbSession):
 def delete_page(page_id: int, db: DbSession):
     """The page goes; its topic and the news of the topic stay in "News"."""
     page = get_page(db, page_id)
-    images = page_images(page.blocks)
+    images = support_images(page)
     db.delete(page)
     db.commit()
     delete_page_images(images)
@@ -236,7 +246,7 @@ def save_page(page_id: int, data: SupportSave, db: DbSession):
     check_kinds(blocks, SUPPORT_FORBIDDEN_BLOCKS, "сторінки підтримки")
     check_topic(db, data.topic_id)
     check_href_free(db, data.href, current=page.href)
-    old_images = page_images(page.blocks)
+    old_images = support_images(page)
 
     page.title_uk = data.title_uk
     page.title_en = data.title_en
@@ -244,13 +254,14 @@ def save_page(page_id: int, data: SupportSave, db: DbSession):
     page.href = data.href
     page.topic_id = data.topic_id
     page.is_visible = data.is_visible
+    page.image = data.image
     page.contact_title_uk = data.contact_title.uk.strip()
     page.contact_title_en = data.contact_title.en.strip()
     page.contact_text_uk = data.contact_text.uk.strip()
     page.contact_text_en = data.contact_text.en.strip()
     db.commit()
     db.refresh(page)
-    delete_page_images(old_images - page_images(page.blocks))
+    delete_page_images(old_images - support_images(page))
     return page_admin(db, page)
 
 

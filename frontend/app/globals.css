@@ -2028,6 +2028,50 @@ button:not(:disabled),
   }
 }
 
+/* The round metal arrow of an equipment card (4.11, instead of "View"): metal; when the card
+   is hovered it turns the same deep navy as the round buttons below */
+.card-arrow {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgb(255 255 255 / 0.8);
+  color: var(--ink);
+  background: var(--metal);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 6px 14px rgb(var(--shadow-rgb) / 0.22);
+  transition: color 0.3s, box-shadow 0.3s;
+}
+.card-arrow svg {
+  transition: translate 0.3s;
+}
+.group:hover .card-arrow,
+.group:focus-visible .card-arrow {
+  color: #fff;
+  background:
+    radial-gradient(circle at 30% 22%, rgb(120 170 230 / 0.32), transparent 58%),
+    radial-gradient(rgb(255 255 255 / 0.07) 0.7px, transparent 1px) 0 0 / 3px 3px,
+    linear-gradient(150deg, #17487d 0%, #0b2f5e 50%, #03224a 100%);
+  border-color: rgb(225 236 250 / 0.95);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.25),
+    inset 0 -6px 12px rgb(0 10 35 / 0.45),
+    0 10px 22px rgb(0 10 40 / 0.4);
+}
+.group:hover .card-arrow svg {
+  translate: 2px 0;
+}
+@media (max-width: 820px) {
+  .card-arrow {
+    width: 32px;
+    height: 32px;
+  }
+}
+
 /* Round metal buttons (slider arrows of all sliders, "Up"): on hover deep navy with a fine
    texture (client's sample, 27.10), one look for all of them. Outside the layers: stronger
    than the utility classes of the buttons (slider-controls.tsx, contact-widget.tsx). */

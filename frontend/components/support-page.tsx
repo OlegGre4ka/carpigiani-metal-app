@@ -5,6 +5,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ContactForm } from "@/components/contact-form";
 import { EquipmentPageMark } from "@/components/contact-widget";
 import { NewsGrid } from "@/components/news-cards";
+import { NewsPhoto } from "@/components/news-photo";
 import { Reveal } from "@/components/reveal";
 import { Block } from "@/components/site-page";
 import { Link } from "@/i18n/navigation";
@@ -31,8 +32,14 @@ export async function SupportPage({ page, href }: { page: SitePageData; href: st
 
       <div className="grid grid-cols-[minmax(0,1fr)_340px] gap-10 max-[1100px]:grid-cols-[minmax(0,1fr)_300px] max-[1100px]:gap-7 max-[820px]:grid-cols-1">
         <div className="flex min-w-0 flex-col gap-8 max-[820px]:gap-5.5">
+          {/* The main photo, as on a news page */}
+          {page.image && (
+            <Reveal delay={60} radius={32}>
+              <NewsPhoto image={page.image} alt={page.title} />
+            </Reveal>
+          )}
           {page.blocks.map((block, index) => (
-            <Reveal key={block.id} delay={Math.min(index, 4) * 90} radius={30} className="min-w-0">
+            <Reveal key={block.id} delay={Math.min(index + (page.image ? 1 : 0), 4) * 90} radius={30} className="min-w-0">
               <Block block={block} compact title={page.title} />
             </Reveal>
           ))}

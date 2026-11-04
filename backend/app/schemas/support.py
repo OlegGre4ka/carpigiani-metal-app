@@ -5,7 +5,7 @@ from typing import Annotated
 from pydantic import BaseModel, Field, field_validator
 
 from app.schemas.news import need_href
-from app.schemas.page_blocks import Text200, Text600
+from app.schemas.page_blocks import Text200, Text600, check_image
 from app.schemas.pages import PageSave
 
 
@@ -46,6 +46,13 @@ class SupportSave(PageSave):
     is_visible: bool = True
     contact_title: Text200 = Text200()
     contact_text: Text600 = Text600()
+    # The main photo at the top of the page
+    image: str | None = None
+
+    @field_validator("image")
+    @classmethod
+    def _check_image(cls, value: str | None) -> str | None:
+        return check_image(value) if value else None
 
     @field_validator("href")
     @classmethod
