@@ -106,25 +106,26 @@ def support_menu(db: DbSession, lang: Lang = "uk") -> list[dict]:
 
 
 def support_page_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | None:
-    """The support page at this address: the address of the article it shows open, or its
-    old address (/technologies). Other articles of the topic open as usual news."""
+    """The support page at this address: the address of the article it shows open. Other
+    articles of the topic open as usual news."""
     pages = ordered(db, only_visible=True)
-    page = next((p for p in pages if p.href == href), None)
+    if not pages:
+        return None
+    article = db.scalar(
+        select(News).where(News.href == href, News.is_visible.is_(True))
+    )
+    if article is None:
+        return None
+    topics = {article.topic_id, *(article.extra_topic_ids or [])}
+    page = None
+    for candidate in pages:
+        if candidate.topic_id in topics:
+            main = main_of(candidate, topic_news(db, candidate)[1])
+            if main is not None and main.id == article.id:
+                page = candidate
+                break
     if page is None:
-        article = db.scalar(
-            select(News).where(News.href == href, News.is_visible.is_(True))
-        )
-        if article is None:
-            return None
-        topics = {article.topic_id, *(article.extra_topic_ids or [])}
-        for candidate in pages:
-            if candidate.topic_id in topics:
-                main = main_of(candidate, topic_news(db, candidate)[1])
-                if main is not None and main.id == article.id:
-                    page = candidate
-                    break
-        if page is None:
-            return None
+        return None
 
     name = pick({"uk": page.title_uk, "en": page.title_en}, lang)
     topic, news = topic_news(db, page)

@@ -60,7 +60,6 @@ class SupportSettings(BaseModel):
         return value.strip()
 
 
-
 class SupportAdmin(SupportSettings):
     id: int
     topic_title: str
