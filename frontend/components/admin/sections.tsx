@@ -78,6 +78,18 @@ export const adminSections: AdminSection[] = [
     ),
   },
   {
+    href: "/fofkas-adminpanel/support",
+    title: "Підтримка",
+    text: "Сторінки меню «Підтримка»: Gelato University, Технології та інші",
+    icon: (
+      <>
+        <circle cx="12" cy="12" r="8.5" />
+        <circle cx="12" cy="12" r="3.5" />
+        <path d="M6 6l3.5 3.5M14.5 14.5L18 18M18 6l-3.5 3.5M9.5 14.5L6 18" />
+      </>
+    ),
+  },
+  {
     href: "/fofkas-adminpanel/requests",
     title: "Заявки",
     text: "Повідомлення з форми «Зв'язатися з нами»",

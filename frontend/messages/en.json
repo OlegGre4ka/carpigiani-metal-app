@@ -244,5 +244,11 @@
       "brands": "Manufacturers",
       "news": "News"
     }
+  },
+  "SupportPage": {
+    "articles": "Articles",
+    "articlesOf": "Articles: {topic}",
+    "toContacts": "Contacts page",
+    "orContacts": "or see all our contacts"
   }
 }

@@ -181,9 +181,10 @@ class PublicPage(BaseModel):
     kind "category": a category page (/gelato); "equipment": a page of equipment (/labotronic),
     then category_* is the category it belongs to (for the breadcrumbs);
     "news": a news item (/210500-hlbny) with its date, main photo, topic and other news;
-    "news_topic": the page of a news topic (its news are asked for separately, page by page)."""
+    "news_topic": the page of a news topic (its news are asked for separately, page by page);
+    "support": a page of the "Support" menu (app/routers/support_router.py)."""
 
-    kind: Literal["category", "equipment", "news", "news_topic"] = "category"
+    kind: Literal["category", "equipment", "news", "news_topic", "support"] = "category"
     # Brand of the category: the map of the right column shows the categories of this brand
     brand: str = "carpigiani"
     # The brand for the breadcrumbs: the title of its page and its address (/ifi)
@@ -209,3 +210,8 @@ class PublicPage(BaseModel):
     # for the arrows of the page
     prev_item: dict | None = None
     next_item: dict | None = None
+    # Support page (4.11): the "contact us" card on the right and the news of its topic
+    # (topic_title / topic_href above)
+    contact_title: str = ""
+    contact_text: str = ""
+    articles: list[dict] = []

@@ -5,14 +5,7 @@
 export const comingSoonPages: Record<string, string> = {
   // Slider
   maestro: "Slider.maestro.title",
-  "carpigiani-gelato-university": "Slider.university.title",
   ready: "Slider.ready.title",
-
-  // Main menu
-  support: "Nav.support",
-  "gelato-crystal": "SupportMenu.gelatoCrystal",
-  project: "SupportMenu.project",
-  service: "SupportMenu.service",
 
   // Catalog: Carpigiani
   gelato: "Catalog.gelato",

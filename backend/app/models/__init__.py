@@ -7,6 +7,7 @@ from app.models.equipment_subcategory import EquipmentSubcategory
 from app.models.item import Item
 from app.models.news import News, NewsTopic
 from app.models.site_setting import SiteSetting
+from app.models.support_page import SupportPage
 from app.models.user import PasswordResetToken, User
 
 __all__ = [
@@ -21,5 +22,6 @@ __all__ = [
     "NewsTopic",
     "PasswordResetToken",
     "SiteSetting",
+    "SupportPage",
     "User",
 ]

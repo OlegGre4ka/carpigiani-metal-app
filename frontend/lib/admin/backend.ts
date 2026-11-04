@@ -97,3 +97,15 @@ export const getMenuTopics = cache(async (): Promise<{ href: string; title: stri
     return [];
   }
 });
+
+/** Pages of "Підтримка" for the menu on the left (under "Підтримка"). Asked once per page. */
+export const getMenuSupport = cache(async (): Promise<{ href: string; title: string }[]> => {
+  try {
+    const response = await backendFetch("/api/admin/support");
+    if (!response.ok) return [];
+    const pages: { id: number; title_uk: string }[] = await response.json();
+    return pages.map((page) => ({ href: `${ADMIN_PATH}/support/${page.id}`, title: page.title_uk }));
+  } catch {
+    return [];
+  }
+});

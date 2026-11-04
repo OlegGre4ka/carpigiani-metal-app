@@ -28,12 +28,8 @@ export type MenuCategory = {
   groups?: { title: string; items: { title: string; href: string }[] }[];
 };
 
-const supportItems = [
-  { key: "gelatoUniversity", href: "/carpigiani-gelato-university" },
-  { key: "gelatoCrystal", href: "/gelato-crystal" },
-  { key: "project", href: "/project" },
-  { key: "service", href: "/service" },
-] as const;
+/** An item of the "Support" menu: a page made in the admin panel → "Підтримка" (4.11) */
+export type SupportItem = { title: string; href: string };
 
 /** A brand for the menus: title already in the page language */
 export type MenuBrand = {
@@ -50,12 +46,11 @@ export type NewsMenu = { topics: { title: string; href: string }[]; pages: strin
 /** Which item of the main menu is the open page in: Home, News (the list, topics, news),
  *  Manufacturers (brand pages), Equipment catalog (categories and equipment from the menu),
  *  Support (its pages) or Contacts. */
-function activeSection(pathname: string, brands: MenuBrand[], newsPages: string[] = []) {
+function activeSection(pathname: string, brands: MenuBrand[], newsPages: string[] = [], supportItems: SupportItem[] = []) {
   if (pathname === "/") return "home";
   if (pathname === "/news" || newsPages.includes(pathname)) return "news";
   if (pathname === "/contacts") return "contacts";
-  if (pathname === "/support" || supportItems.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`)))
-    return "support";
+  if (supportItems.some((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))) return "support";
   if (brands.some((brand) => brand.href === pathname)) return "brands";
   const inCatalog = brands.some((brand) =>
     brand.categories.some(
@@ -254,17 +249,19 @@ export function SiteHeader({
   isAdmin = false,
   brands = [],
   news = { topics: [], pages: [] },
+  support = [],
 }: {
   isAdmin?: boolean;
   /** Visible brands with their categories, from the admin panel */
   brands?: MenuBrand[];
   /** News: the pages on which "News" is lit (topics are not in the menu any more) */
   news?: NewsMenu;
+  /** The pages of the "Support" menu, from the admin panel */
+  support?: SupportItem[];
 }) {
   const t = useTranslations("Nav");
-  const ts = useTranslations("SupportMenu");
   const pathname = usePathname();
-  const section = activeSection(pathname, brands, news.pages);
+  const section = activeSection(pathname, brands, news.pages, support);
   // Phones: the main menu (burger)
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -331,25 +328,29 @@ export function SiteHeader({
             </div>
           </div>
 
-          <div data-hover-menu className="group relative" onClick={supportMenu.onClick} onMouseLeave={supportMenu.onMouseLeave}>
-            <Link
-              href="/support"
-              aria-current={pathname === "/support" ? "page" : undefined}
-              className={`${navItem(section === "support")} flex items-center gap-1`}
-            >
-              {t("support")}
-              <ChevronDown aria-hidden="true" className="size-4" />
-            </Link>
-            <div className={`${panel} right-0 ${supportMenu.hidden}`}>
-              <div className={`${panelBox} w-max min-w-65`}>
-                {supportItems.map((item) => (
-                  <Link key={item.href} href={item.href} className={panelLink}>
-                    {ts(item.key)}
-                  </Link>
-                ))}
+          {/* Support (4.11): only opens the list of its pages, like the catalog */}
+          {support.length > 0 && (
+            <div data-hover-menu className="group relative" onClick={supportMenu.onClick} onMouseLeave={supportMenu.onMouseLeave}>
+              <button type="button" className={`${navItem(section === "support")} flex items-center gap-1`}>
+                {t("support")}
+                <ChevronDown aria-hidden="true" className="size-4" />
+              </button>
+              <div className={`${panel} right-0 ${supportMenu.hidden}`}>
+                <div className={`${panelBox} w-max min-w-65`}>
+                  {support.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      aria-current={pathname === item.href ? "page" : undefined}
+                      className={panelLink}
+                    >
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <Link href="/contacts" aria-current={section === "contacts" ? "page" : undefined} className={navItem(section === "contacts")}>
             {t("contacts")}
@@ -412,9 +413,16 @@ export function SiteHeader({
                   ))}
                 </div>
               ))}
-              <Link href="/support" onClick={close} className={mobileItem(section === "support")}>
-                {t("support")}
-              </Link>
+              {support.length > 0 && (
+                <>
+                  <div className="px-3.5 pt-2.5 pb-1 text-xs font-extrabold tracking-[1.5px] text-sky uppercase">{t("support")}</div>
+                  {support.map((item) => (
+                    <Link key={item.href} href={item.href} onClick={close} className={`${mobileItem(pathname === item.href)} pl-6`}>
+                      {item.title}
+                    </Link>
+                  ))}
+                </>
+              )}
               <Link href="/contacts" onClick={close} aria-current={section === "contacts" ? "page" : undefined} className={mobileItem(section === "contacts")}>
                 {t("contacts")}
               </Link>

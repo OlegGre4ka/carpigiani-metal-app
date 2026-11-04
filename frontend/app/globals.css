@@ -1693,6 +1693,7 @@ button:not(:disabled),
     justify-self: start;
   }
   .hero-photo {
+    display: block;
     padding: 3px;
     border-radius: 30px;
     background: var(--hero-photo-rim);
@@ -1775,14 +1776,6 @@ button:not(:disabled),
   .hero-dot.on i {
     width: 40px;
     background: var(--metal);
-  }
-  .hero-count {
-    margin-left: 12px;
-    font-size: 13px;
-    letter-spacing: 1px;
-  }
-  .hero-count b {
-    color: #fff;
   }
   .hero-bottom-line {
     position: absolute;
@@ -1993,13 +1986,10 @@ button:not(:disabled),
       width: max-content;
       margin-left: 12px;
       gap: 0;
-      padding: 2px 12px 2px 4px;
+      padding: 2px 4px;
       border-radius: 999px;
       background: rgb(6 22 51 / 0.6);
       backdrop-filter: blur(4px);
-    }
-    .hero-count {
-      font-size: 12px;
     }
   }
   /* Tablets standing up: a bigger title and a bigger group photo */

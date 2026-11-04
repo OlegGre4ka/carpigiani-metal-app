@@ -147,6 +147,11 @@ def href_owner(db: DbSession, href: str) -> str | None:
     news = db.scalar(select(News).where(News.href == href))
     if news:
         return f"новина «{news.title_uk}»"
+    from app.models import SupportPage
+
+    support = db.scalar(select(SupportPage).where(SupportPage.href == href))
+    if support:
+        return f"сторінка підтримки «{support.title_uk}»"
     for sub in db.scalars(
         select(EquipmentSubcategory).where(
             EquipmentSubcategory.items.contains([{"href": href}])
@@ -629,6 +634,11 @@ def get_public_page(
     # Pages of news and of news topics (app/routers/news_router.py; imported here, because
     # that router itself is built on the helpers of this one)
     from app.routers.news_router import news_page_for_site
+    from app.routers.support_router import support_page_for_site
+
+    support = support_page_for_site(db, href, lang)
+    if support is not None:
+        return support
 
     news = news_page_for_site(db, href, lang)
     if news is None:

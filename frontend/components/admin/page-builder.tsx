@@ -40,7 +40,9 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { useLeaveGuard } from "./leave-guard";
 import { NewsFields, type NewsMeta } from "./news-fields";
+import { NewsList } from "./news-list";
 import { NEWS_BASE, type Topic } from "./news-topics";
+import { SUPPORT_PATH, SupportFields, type SupportMeta } from "./support-fields";
 
 import {
   CatalogsEditor,
@@ -83,6 +85,8 @@ export type PageTarget =
   | { kind: "category"; id: number }
   | { kind: "equipment"; categoryId: number; subcategoryId: number; itemId: string }
   | { kind: "news"; id: number }
+  /** a page of the "Support" menu (4.11) */
+  | { kind: "support"; id: number }
   /** brands: all brands (a category can be moved to another one) */
   | { kind: "brand"; brand: AdminBrand; brands: AdminBrand[] };
 
@@ -126,10 +130,14 @@ type Loaded = {
   hidden_chips?: number[];
   chips?: { id: number; title_uk: string; enabled: boolean }[];
   brand_title?: string;
+  // Support page: the "contact us" card on the right (its topic is topic_id above)
+  contact_title?: { uk: string; en: string };
+  contact_text?: { uk: string; en: string };
+  topic_href?: string;
 };
 
 /** news: the fields of the news card (news pages only) */
-type Draft = { title_uk: string; title_en: string; blocks: Block[]; news?: NewsMeta; brand?: BrandMeta };
+type Draft = { title_uk: string; title_en: string; blocks: Block[]; news?: NewsMeta; brand?: BrandMeta; support?: SupportMeta };
 
 const kinds: Record<BlockType, { name: string; icon: ReactNode }> = {
   categories: { name: "Категорії", icon: <FolderOpen size={19} /> },
@@ -151,6 +159,8 @@ const blocksOf: Record<PageTarget["kind"], BlockType[]> = {
   equipment: ["photo", "text", "gallery", "features", "table", "video", "catalogs"],
   // The main photo of a news item is a field of its card, above the blocks
   news: ["text", "gallery", "slider", "video"],
+  // Support pages: text, photos, video, advantages, tables
+  support: ["text", "gallery", "slider", "video", "features", "table"],
   // Brand pages: the cards of its categories and the blocks of category pages
   brand: ["categories", "slider", "text", "gallery", "features", "table", "video", "catalogs"],
 };
@@ -249,6 +259,7 @@ export function PageBuilder({ target }: { target: PageTarget }) {
   const isCategory = target.kind === "category";
   const isNews = target.kind === "news";
   const isBrand = target.kind === "brand";
+  const isSupport = target.kind === "support";
   const api =
     target.kind === "category"
       ? `/api/admin/equipment-categories/${target.id}/page`
@@ -256,6 +267,8 @@ export function PageBuilder({ target }: { target: PageTarget }) {
         ? `/api/admin/news/${target.id}/page`
         : target.kind === "brand"
           ? `/api/admin/brands/${target.brand.id}/page`
+          : target.kind === "support"
+            ? `/api/admin/support/${target.id}/page`
           : `/api/admin/subcategories/${target.subcategoryId}/items/${encodeURIComponent(target.itemId)}/page`;
   const [page, setPage] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -303,14 +316,14 @@ export function PageBuilder({ target }: { target: PageTarget }) {
           setCategoryTitles(Object.fromEntries(list.map((c) => [c.id, c.title_uk])));
         }
       }
-      if (isNews) {
+      if (isNews || isSupport) {
         const topicsResponse = await call("/api/admin/news-topics");
         if (topicsResponse.ok) setTopics(await topicsResponse.json());
       }
     } catch (error) {
       if (error instanceof Error && error.message !== "logged out") setFailed(true);
     }
-  }, [api, call, isCategory, isNews]);
+  }, [api, call, isCategory, isNews, isSupport]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- first load of the page
@@ -392,20 +405,30 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       message.error("Вкажіть адресу сторінки новини");
       return false;
     }
+    if (version.support && !version.support.href.trim()) {
+      message.error("Вкажіть адресу сторінки");
+      return false;
+    }
     if (version.news && !version.news.published_on) {
       message.error("Вкажіть дату новини");
       return false;
     }
     // A news item is saved with the fields of its card next to the title and the blocks;
     // a brand page with the line under the title and the filters
-    const { news, brand, ...pageVersion } = version;
+    const { news, brand, support, ...pageVersion } = version;
     setSaving(true);
     try {
       const response = await call(api, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(
-          news ? { ...pageVersion, ...news, href: news.href.trim() } : brand ? { ...pageVersion, ...brand } : pageVersion,
+          news
+            ? { ...pageVersion, ...news, href: news.href.trim() }
+            : support
+              ? { ...pageVersion, ...support, href: support.href.trim() }
+              : brand
+                ? { ...pageVersion, ...brand }
+                : pageVersion,
         ),
       });
       if (!response.ok) {
@@ -499,13 +522,15 @@ export function PageBuilder({ target }: { target: PageTarget }) {
     onSite &&
     (isBrand
       ? page.is_visible === true
-      : page.saved && (isNews ? page.is_visible === true : isCategory || page.item_visible !== false));
+      : page.saved && (isNews || isSupport ? page.is_visible === true : isCategory || page.item_visible !== false));
   const blockTypes = blocksOf[target.kind];
   // The pages of each brand are in its own section
   const base = brandBase(page.category_brand);
   const back =
     target.kind === "brand"
       ? { href: BRANDS_PATH, text: "До виробників" }
+      : target.kind === "support"
+      ? { href: SUPPORT_PATH, text: "До сторінок підтримки" }
       : target.kind === "category"
       ? { href: base, text: "До списку категорій" }
       : target.kind === "news"
@@ -539,10 +564,20 @@ export function PageBuilder({ target }: { target: PageTarget }) {
               ? `Категорія · ${page.category_title} · ${href}`
               : isNews
                 ? `Новина · ${page.topic_title || "Без теми"} · ${href}`
+                : isSupport
+                ? `Підтримка · ${href}`
                 : `Обладнання · ${page.item_title} · ${href || "адресу не вказано"}`}
           </p>
           <h1 className="font-heading tracking-[-0.02em] text-[38px] leading-[1.05] font-extrabold text-ink motion-safe:animate-fade-up motion-safe:[animation-delay:40ms] max-[600px]:text-[28px]">
-            {isBrand ? "Сторінка бренду" : isCategory ? "Сторінка категорії" : isNews ? "Сторінка новини" : "Сторінка обладнання"}
+            {isBrand
+              ? "Сторінка бренду"
+              : isCategory
+                ? "Сторінка категорії"
+                : isNews
+                  ? "Сторінка новини"
+                  : isSupport
+                    ? "Сторінка підтримки"
+                    : "Сторінка обладнання"}
           </h1>
           <p className="mt-1.5 max-w-160 text-[15px] leading-normal text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
             Збирайте сторінку з блоків, як з кубиків. На сайті вони йдуть зверху вниз у тому ж порядку.
@@ -562,6 +597,8 @@ export function PageBuilder({ target }: { target: PageTarget }) {
                     ? "Виробника сховано з сайту: показати його можна на сторінці «Виробники»"
                     : isNews
                     ? "Новину сховано з сайту"
+                    : isSupport
+                    ? "Сторінку сховано з сайту"
                     : page.saved
                       ? "Обладнання сховано з сайту"
                       : "Спочатку збережіть сторінку"
@@ -605,6 +642,12 @@ export function PageBuilder({ target }: { target: PageTarget }) {
       {isNews && page.is_visible === false && (
         <p className="mb-4 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
           Новину сховано з сайту. Коли заповните її, увімкніть «Показувати на сайті» нижче і збережіть.
+        </p>
+      )}
+      {isSupport && page.is_visible === false && (
+        <p className="mb-4 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
+          Сторінку сховано з сайту: її немає в меню «Підтримка». Коли заповните її, увімкніть «Показувати на сайті»
+          нижче і збережіть.
         </p>
       )}
       {target.kind === "equipment" && !href && (
@@ -675,6 +718,14 @@ export function PageBuilder({ target }: { target: PageTarget }) {
         <section className={`${panel} motion-safe:animate-fade-up motion-safe:[animation-delay:180ms]`}>
           <h2 className="mb-3.5 font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">Картка новини</h2>
           <NewsFields meta={draft.news} lang={lang} topics={topics} upload={upload} onChange={(news) => change({ news })} />
+        </section>
+      )}
+
+      {/* Support page: its address, topic of news, the "contact us" card and visibility */}
+      {draft.support && (
+        <section className={`${panel} motion-safe:animate-fade-up motion-safe:[animation-delay:180ms]`}>
+          <h2 className="mb-3.5 font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">Налаштування сторінки</h2>
+          <SupportFields meta={draft.support} lang={lang} topics={topics} onChange={(support) => change({ support })} />
         </section>
       )}
 
@@ -757,6 +808,18 @@ export function PageBuilder({ target }: { target: PageTarget }) {
         </Button>
       </div>
 
+      {/* Support page: the articles of its topic (the saved one); a new one is added to the topic */}
+      {isSupport &&
+        (page.topic_id ? (
+          <div className="mt-7">
+            <NewsList topicId={page.topic_id} />
+          </div>
+        ) : (
+          <p className="mt-7 rounded-2xl bg-mist px-4 py-3 text-sm text-body">
+            Оберіть тему новин у налаштуваннях вище і збережіть — тут з&apos;являться її статті, і можна буде додати нову.
+          </p>
+        ))}
+
       {isCategory && (
         <NewSubcategory
           open={creatingFor !== null}
@@ -778,6 +841,16 @@ function toDraft(data: Loaded): Draft {
       subtitle_en: data.subtitle_en ?? "",
       show_equipment: data.show_equipment,
       hidden_chips: data.hidden_chips ?? [],
+    };
+  }
+  // A support page: its address, topic, "contact us" card and visibility
+  if (data.contact_title !== undefined) {
+    draft.support = {
+      href: data.href ?? "",
+      topic_id: data.topic_id ?? null,
+      is_visible: data.is_visible ?? false,
+      contact_title: data.contact_title,
+      contact_text: data.contact_text ?? { uk: "", en: "" },
     };
   }
   // A news item: the fields of its card

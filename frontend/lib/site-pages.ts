@@ -67,7 +67,7 @@ export type PageBlock =
  *  to Ukrainian where they are empty): a category page (/gelato), an equipment page (/labotronic),
  *  a news item (/230500-back-to-roots) or the page of a news topic (/news/content/5-interesting). */
 export type SitePageData = {
-  kind: "category" | "equipment" | "news" | "news_topic";
+  kind: "category" | "equipment" | "news" | "news_topic" | "support";
   title: string;
   /** The category (for the breadcrumbs); on an equipment page, the category it belongs to */
   category_title: string;
@@ -93,6 +93,10 @@ export type SitePageData = {
   /** Equipment: the models before and after in its category, for the arrows of the page */
   prev_item?: { href: string; title: string; image: string | null } | null;
   next_item?: { href: string; title: string; image: string | null } | null;
+  /** Support page (4.11): the "contact us" card and the news of its topic */
+  contact_title?: string;
+  contact_text?: string;
+  articles?: NewsCard[];
 };
 
 /** The page with this address in this language, or null if there is none yet.
@@ -235,6 +239,18 @@ export const loadContacts = cache(async (lang: string): Promise<SiteContacts | n
     return (await response.json()) as SiteContacts;
   } catch {
     return null;
+  }
+});
+
+/** The pages of the "Support" menu (admin panel → "Підтримка"), in their order */
+export const loadSupportMenu = cache(async (lang: string): Promise<{ title: string; href: string }[]> => {
+  try {
+    const query = new URLSearchParams({ lang: lang === "en" ? "en" : "uk" });
+    const response = await fetch(`${BACKEND_URL}/api/pages/support-menu?${query}`, { cache: "no-store" });
+    if (!response.ok) return [];
+    return (await response.json()) as { title: string; href: string }[];
+  } catch {
+    return [];
   }
 });
 

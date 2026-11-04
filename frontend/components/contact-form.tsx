@@ -26,6 +26,8 @@ export function ContactForm({
   page = "",
   firstFieldRef,
   heading,
+  customTitle,
+  customText,
 }: {
   variant: "page" | "popup";
   /** The equipment the request is about ("Carpigiani Maestro") */
@@ -36,6 +38,9 @@ export function ContactForm({
   firstFieldRef?: Ref<HTMLInputElement>;
   /** "contact": the title "Contact us" also in the right column (news pages) */
   heading?: "quote" | "contact";
+  /** Own title and text above the fields (support pages: "Want to learn how to make gelato?") */
+  customTitle?: string;
+  customText?: string;
 }) {
   const t = useTranslations("Contact");
   const locale = useLocale();
@@ -159,8 +164,8 @@ export function ContactForm({
 
   return (
     <form onSubmit={submit} noValidate className="text-ink">
-      <h3 className={`mb-1 font-heading tracking-[-0.02em] text-[23px] leading-[1.02] font-extrabold metal-text-dark ${variant === "popup" ? "pr-10" : ""}`}>{title}</h3>
-      <p className="mb-2.5 text-[13px] leading-[1.45] text-ink-soft">{t("text")}</p>
+      <h3 className={`mb-1 font-heading tracking-[-0.02em] text-[23px] leading-[1.02] font-extrabold metal-text-dark ${variant === "popup" ? "pr-10" : ""}`}>{customTitle || title}</h3>
+      <p className="mb-2.5 text-[13px] leading-[1.45] text-ink-soft">{customText || t("text")}</p>
       {inquiry}
 
       {(status === "failed" || status === "tooMany") && (

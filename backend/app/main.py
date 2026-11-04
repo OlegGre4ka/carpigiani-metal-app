@@ -26,6 +26,8 @@ from app.routers.search_router import admin_router as search_admin_router
 from app.routers.search_router import router as search_router
 from app.routers.settings_router import admin_router as settings_admin_router
 from app.routers.settings_router import public_router as settings_public_router
+from app.routers.support_router import admin_router as support_admin_router
+from app.routers.support_router import public_router as support_public_router
 from app.services.images import UPLOADS_DIR, UPLOADS_URL
 
 app = FastAPI(title="Carpigiani API")
@@ -65,6 +67,8 @@ app.include_router(settings_admin_router)
 app.include_router(requests_router)
 app.include_router(search_router)
 app.include_router(search_admin_router)
+app.include_router(support_public_router)
+app.include_router(support_admin_router)
 app.include_router(ai_router)
 
 # Uploaded photos (categories, equipment, news)

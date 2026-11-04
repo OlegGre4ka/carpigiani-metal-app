@@ -7,7 +7,7 @@ import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
 import { getCurrentUser } from "@/lib/admin/backend";
 import { loadEquipmentCategories, loadSiteBrands } from "@/lib/equipment-categories";
-import { loadContacts, loadEquipmentMap, loadGeneral, loadNewsMenu } from "@/lib/site-pages";
+import { loadContacts, loadEquipmentMap, loadGeneral, loadNewsMenu, loadSupportMenu } from "@/lib/site-pages";
 import { siteFontCss, siteFontVariables } from "@/lib/site-fonts";
 import { ContactsSync } from "@/components/contacts-sync";
 import { SiteFooter } from "@/components/site-footer";
@@ -80,7 +80,7 @@ export default async function RootLayout({ children, params }: Props) {
 // the "Manufacturers" and "Equipment catalog" menus, and the news pages
 async function HeaderForVisitor() {
   const locale = await getLocale();
-  const [user, siteBrands, news] = await Promise.all([getCurrentUser(), loadSiteBrands(), loadNewsMenu(locale)]);
+  const [user, siteBrands, news, support] = await Promise.all([getCurrentUser(), loadSiteBrands(), loadNewsMenu(locale), loadSupportMenu(locale)]);
   // Each brand: its categories, each with its equipment that has a page (the submenu that
   // slides out on hover)
   const brands = await Promise.all(
@@ -102,7 +102,7 @@ async function HeaderForVisitor() {
       };
     }),
   );
-  return <SiteHeader isAdmin={Boolean(user)} brands={brands} news={news} />;
+  return <SiteHeader isAdmin={Boolean(user)} brands={brands} news={news} support={support} />;
 }
 
 // Footer with the contacts from the admin panel; the phones also go to the contact forms

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 
 import { BrandPage } from "@/components/brand-page";
 import { SitePage } from "@/components/site-page";
+import { SupportPage } from "@/components/support-page";
 import { ComingSoon } from "@/components/coming-soon";
 import { NewsArticle } from "@/components/news-article";
 import { NewsListPage } from "@/components/news-list-page";
@@ -90,6 +91,7 @@ async function PageContent({ params, searchParams }: Props) {
     const number = Number((await searchParams).page);
     return <NewsListPage page={Number.isInteger(number) && number > 1 ? number : 1} topicHref={page.topic_href} />;
   }
+  if (page?.kind === "support") return <SupportPage page={page} href={addressOf(slug)} />;
   if (page) return <SitePage page={page} href={addressOf(slug)} locale={locale} />;
 
   const key = titleKey(slug);

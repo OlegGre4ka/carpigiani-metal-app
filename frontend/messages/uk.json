@@ -244,5 +244,11 @@
       "brands": "Виробники",
       "news": "Новини"
     }
+  },
+  "SupportPage": {
+    "articles": "Статті",
+    "articlesOf": "Статті: {topic}",
+    "toContacts": "Сторінка «Контакти»",
+    "orContacts": "або перегляньте всі наші контакти"
   }
 }

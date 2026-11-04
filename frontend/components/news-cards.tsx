@@ -102,7 +102,7 @@ export function FeaturedNews({ item }: { item: NewsCard }) {
           <Link
             href={item.href}
             tabIndex={-1}
-            className="btn-shine relative z-1 inline-flex items-center gap-2 self-start rounded-full bg-[image:var(--grad-btn)] px-6 py-3.25 text-sm font-extrabold text-white shadow-[0_10px_22px_rgb(var(--brand-rgb)/0.28)] transition hover:brightness-108"
+            className="metal-round relative z-1 inline-flex items-center gap-2 self-start rounded-full border border-white/80 bg-[image:var(--metal)] px-6 py-3.25 text-sm font-extrabold text-[#05070b] shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_10px_22px_rgb(var(--shadow-rgb)/0.22)] transition-colors hover:text-white focus-visible:text-white"
           >
             {t("readMore")}
             <ArrowRight size={17} strokeWidth={2.6} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1" />

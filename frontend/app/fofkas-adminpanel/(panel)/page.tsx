@@ -195,9 +195,10 @@ function news(n: number) {
 /** What is already filled in: categories of each brand, and news. */
 async function loadCounts(sections: AdminSection[]): Promise<Record<string, string | null>> {
   try {
-    const [response, newsResponse] = await Promise.all([
+    const [response, newsResponse, supportResponse] = await Promise.all([
       backendFetch("/api/admin/equipment-categories"),
       backendFetch("/api/admin/news"),
+      backendFetch("/api/admin/support"),
     ]);
     if (!response.ok) return {};
     const all = (await response.json()) as { is_visible: boolean; brand?: string }[];
@@ -212,6 +213,10 @@ async function loadCounts(sections: AdminSection[]): Promise<Record<string, stri
     const newsList = newsResponse.ok ? ((await newsResponse.json()) as { is_visible: boolean }[]) : [];
     if (newsList.length) {
       counts["/fofkas-adminpanel/news"] = `${news(newsList.length)}, на сайті ${newsList.filter((item) => item.is_visible).length}`;
+    }
+    const supportList = supportResponse.ok ? ((await supportResponse.json()) as { is_visible: boolean }[]) : [];
+    if (supportList.length) {
+      counts["/fofkas-adminpanel/support"] = `Сторінок: ${supportList.length}, на сайті ${supportList.filter((item) => item.is_visible).length}`;
     }
     return counts;
   } catch {

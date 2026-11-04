@@ -17,10 +17,16 @@ const home: AdminSection = {
 };
 
 const NEWS_SECTION = "/fofkas-adminpanel/news";
+const SUPPORT_SECTION = "/fofkas-adminpanel/support";
 
 /** Home, "Виробники", then a section per brand (from the database) with its categories,
- *  then the other sections; under "News" its topics */
-function menuItems(brands: AdminBrand[], categories: AdminSubsection[], topics: AdminSubsection[]): AdminSection[] {
+ *  then the other sections; under "News" its topics, under "Підтримка" its pages */
+function menuItems(
+  brands: AdminBrand[],
+  categories: AdminSubsection[],
+  topics: AdminSubsection[],
+  support: AdminSubsection[] = [],
+): AdminSection[] {
   return [
     home,
     brandsSection,
@@ -28,7 +34,13 @@ function menuItems(brands: AdminBrand[], categories: AdminSubsection[], topics: 
       ...section,
       children: categories.filter((category) => category.brand === section.brand),
     })),
-    ...adminSections.map((section) => (section.href === NEWS_SECTION ? { ...section, children: topics } : section)),
+    ...adminSections.map((section) =>
+      section.href === NEWS_SECTION
+        ? { ...section, children: topics }
+        : section.href === SUPPORT_SECTION
+          ? { ...section, children: support }
+          : section,
+    ),
   ];
 }
 
@@ -38,7 +50,7 @@ function isActive(pathname: string, href: string, exactOnly = false) {
 }
 
 /** What every menu gets from the server */
-type MenuData = { brands: AdminBrand[]; categories: AdminSubsection[]; topics: AdminSubsection[] };
+type MenuData = { brands: AdminBrand[]; categories: AdminSubsection[]; topics: AdminSubsection[]; support?: AdminSubsection[] };
 
 /** List of sections. A section with sub-sections opens a nested list under it. */
 function AdminNav({ onNavigate, ...data }: MenuData & { onNavigate?: () => void }) {
@@ -56,12 +68,13 @@ function NavList({
   brands,
   categories,
   topics,
+  support,
   onNavigate,
 }: MenuData & {
   pathname: string;
   onNavigate?: () => void;
 }) {
-  const items = menuItems(brands, categories, topics);
+  const items = menuItems(brands, categories, topics, support);
   // The section of the current page is open by default; a click on the arrow flips it
   const [flipped, setFlipped] = useState<string[]>([]);
   // On another page the sections start again from "the section of the page is open": a section

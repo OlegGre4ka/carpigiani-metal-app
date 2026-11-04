@@ -6,7 +6,7 @@ import { AdminMobileMenu, AdminSidebar, AdminSidebarFallback } from "@/component
 import { AdminSearch } from "@/components/admin/admin-search";
 import { AntdProvider } from "@/components/admin/antd-provider";
 import { UserBadge } from "@/components/admin/user-badge";
-import { getAdminBrands, getCurrentUser, getMenuCategories, getMenuTopics } from "@/lib/admin/backend";
+import { getAdminBrands, getCurrentUser, getMenuCategories, getMenuSupport, getMenuTopics } from "@/lib/admin/backend";
 import { AdminLoader } from "@/components/cone-loader";
 import { AdminMark } from "@/components/brand-logo";
 
@@ -77,8 +77,13 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
 
 // Menus with the brands, their categories (and subcategories) and the topics of news from the database
 async function menuData() {
-  const [brands, categories, topics] = await Promise.all([getAdminBrands(), getMenuCategories(), getMenuTopics()]);
-  return { brands, categories, topics };
+  const [brands, categories, topics, support] = await Promise.all([
+    getAdminBrands(),
+    getMenuCategories(),
+    getMenuTopics(),
+    getMenuSupport(),
+  ]);
+  return { brands, categories, topics, support };
 }
 
 async function Sidebar() {

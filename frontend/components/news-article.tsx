@@ -25,6 +25,9 @@ import { loadNewsMap, type SitePageData, type TextBlock } from "@/lib/site-pages
 // "Contact" button, the arrows at the bottom.
 
 // Blocks appear when scrolled to; the first ones on the screen one by one
+// The "Back to news" button is hidden for now (4.11, Oleh): the way back is in the breadcrumbs
+const SHOW_BACK = false;
+
 const delay = (index: number) => (index < 3 ? 120 + index * 90 : 0);
 const radius: Record<string, number> = { slider: 40, gallery: 28, video: 32, text: 24 };
 
@@ -50,7 +53,12 @@ export async function NewsArticle({ page, href }: { page: SitePageData; href: st
   const locale = await getLocale();
   const t = await getTranslations("News");
   const map = await loadNewsMap(locale, href);
-  const crumbs = [{ title: t("title"), href: "/news" }, { title: page.title }];
+  // News › its topic › the news: the topic leads to the news of the topic (4.11)
+  const crumbs = [
+    { title: t("title"), href: "/news" },
+    ...(page.topic_title ? [{ title: page.topic_title, href: page.topic_href || undefined }] : []),
+    { title: page.title },
+  ];
   const allNews = { title: t("allNews"), href: "/news" };
   const firstText = page.blocks.findIndex((block) => block.type === "text");
   const shift = page.image ? 1 : 0;
@@ -61,7 +69,8 @@ export async function NewsArticle({ page, href }: { page: SitePageData; href: st
       <EquipmentPageMark name="" />
       <Breadcrumbs items={crumbs} />
       <div className="mb-2.5 flex flex-wrap items-center gap-x-3 gap-y-2 motion-safe:animate-fade-up motion-safe:[animation-delay:40ms]">
-        {/* Back to the list of all news */}
+        {/* Back to the list of all news (hidden for now, see SHOW_BACK) */}
+        {SHOW_BACK && (
         <Link
           href="/news"
           className="group inline-flex items-center gap-1.5 rounded-full border border-ink/15 bg-white/70 py-1.25 pr-3.5 pl-2.5 text-xs font-extrabold text-brand transition-colors hover:bg-white"
@@ -69,6 +78,7 @@ export async function NewsArticle({ page, href }: { page: SitePageData; href: st
           <ArrowLeft size={15} strokeWidth={2.6} aria-hidden="true" className="transition-transform duration-300 group-hover:-translate-x-0.5" />
           {t("back")}
         </Link>
+        )}
         {page.topic_title && page.topic_href && (
           <Link
             href={page.topic_href}

@@ -110,15 +110,17 @@ export function HeroSlider() {
                         block as the text, so a bigger font only pushes it down and it never
                         covers the text */}
                     {slide.key === "university" && (
-                      <div className="hero-photo hero-photo-uni">
+                      // The photo leads to the page of the University, like the button (4.11)
+                      <Link href={slide.href} tabIndex={-1} className="hero-photo hero-photo-uni">
                         <Image src={`${img}gelato-university-3x2.webp`} alt="Carpigiani Gelato University" width={765} height={510} sizes="(max-width: 820px) 330px, 560px" loading="lazy" />
-                      </div>
+                      </Link>
                     )}
                   </div>
                 </div>
-                {/* The machine: takes all the room left by the text (globals.css .hero-prodbox) */}
+                {/* The machine: takes all the room left by the text (globals.css .hero-prodbox).
+                    It leads to the page of the machine, like the button (as on the old site, 4.11) */}
                 {slide.prod && (
-                  <div className="hero-prodbox">
+                  <Link href={slide.href} tabIndex={-1} className="hero-prodbox">
                     <Image
                       src={`${img}${slide.prod.src}`}
                       alt={slide.prod.alt}
@@ -129,7 +131,7 @@ export function HeroSlider() {
                       loading={i === 0 ? undefined : "lazy"}
                       className="hero-prod"
                     />
-                  </div>
+                  </Link>
                 )}
               </div>
             </div>
@@ -149,7 +151,7 @@ export function HeroSlider() {
         <Chevron dir="right" />
       </button>
 
-      {/* Dots and the counter */}
+      {/* Dots: the wide one is the slide shown (no counter, 4.11) */}
       <div className="hero-dots">
         <div className="hero-wrap">
           {slides.map((slide, i) => (
@@ -164,9 +166,6 @@ export function HeroSlider() {
               <i />
             </button>
           ))}
-          <span className="hero-count">
-            <b>{String(active + 1).padStart(2, "0")}</b> / {String(slides.length).padStart(2, "0")}
-          </span>
         </div>
       </div>
       <div aria-hidden="true" className="brand-line hero-bottom-line" />
