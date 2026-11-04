@@ -164,6 +164,10 @@ export function RichTextEditor({
         class: "rich min-h-36 max-w-none px-5 py-4.5 text-base outline-none",
         "aria-label": "Текст блоку",
       },
+      // Text pasted from another site or Word comes without its look (4.11: the text of the old
+      // site came with a background): it takes the look of this site. Styles written on purpose
+      // in the "HTML" view stay.
+      transformPastedHTML: (html) => html.replace(/\sstyle\s*=\s*("[^"]*"|'[^']*')/gi, ""),
     },
     onUpdate: ({ editor }) => {
       // The editor adds an empty line after a list or a photo at the end, so the cursor can go
