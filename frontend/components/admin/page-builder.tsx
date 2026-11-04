@@ -40,6 +40,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { useLeaveGuard } from "./leave-guard";
 import { AdminNotFound } from "./admin-not-found";
+import { TranslateButton } from "./ai-translate";
 import { NewsFields, type NewsMeta } from "./news-fields";
 import { NEWS_BASE, type Topic } from "./news-topics";
 
@@ -598,11 +599,20 @@ export function PageBuilder({ target }: { target: PageTarget }) {
           ]}
         />
         {/* On phones the hint is left out, so the bar stays one line */}
-        <span className="text-[13px] text-hint max-[700px]:hidden">
+        <span className="min-w-0 flex-1 text-[13px] text-hint max-[700px]:hidden">
           {lang === "uk"
             ? "Фото, порядок і налаштування блоків спільні для обох мов."
             : "Сірим показано український текст. Де англійського немає, на /en буде український."}
         </span>
+        {/* The English texts from the Ukrainian ones (AI); shown in English to check them */}
+        <TranslateButton
+          value={draft}
+          onApply={(translated) => {
+            setDraft(translated);
+            setDirty(true);
+            setLang("en");
+          }}
+        />
       </div>
 
       {isCategory && !onSite && (

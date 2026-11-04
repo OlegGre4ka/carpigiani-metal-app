@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { json, readError, useAdminCall } from "./admin-fetch";
 import { AdminNotFound } from "./admin-not-found";
+import { TranslateButton } from "./ai-translate";
 import { useLeaveGuard } from "./leave-guard";
 import { NewsList } from "./news-list";
 import type { Topic } from "./news-topics";
@@ -183,14 +184,23 @@ export function SupportEditor({ id }: { id: number }) {
       <section className={`${panel} motion-safe:animate-fade-up motion-safe:[animation-delay:160ms]`}>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-heading tracking-[-0.02em] text-[23px] font-extrabold text-ink">Налаштування сторінки</h2>
-          <Segmented<Lang>
-            value={lang}
-            onChange={setLang}
-            options={[
-              { value: "uk", label: "Українська" },
-              { value: "en", label: "English" },
-            ]}
-          />
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Segmented<Lang>
+              value={lang}
+              onChange={setLang}
+              options={[
+                { value: "uk", label: "Українська" },
+                { value: "en", label: "English" },
+              ]}
+            />
+            <TranslateButton
+              value={draft}
+              onApply={(translated) => {
+                change(translated);
+                setLang("en");
+              }}
+            />
+          </div>
         </div>
         <SupportFields meta={draft} lang={lang} topics={topics} articles={articles} onChange={change} />
       </section>

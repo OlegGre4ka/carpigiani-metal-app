@@ -109,6 +109,12 @@ export function NewsArrows({ newer, older }: { newer: Neighbour; older: Neighbou
   return <PageArrows prev={newer} next={older} prevLabel={t("newer")} nextLabel={t("older")} navLabel={t("title")} />;
 }
 
+/** A page of "Support": the newer and the older article of its topic (5.11), staying in Support */
+export function SupportArrows({ newer, older }: { newer: Neighbour; older: Neighbour }) {
+  const t = useTranslations("SupportPage");
+  return <PageArrows prev={newer} next={older} prevLabel={t("newer")} nextLabel={t("older")} navLabel={t("articles")} />;
+}
+
 /** Equipment: the model before and after in its category */
 export function ModelArrows({ prev, next }: { prev: Neighbour; next: Neighbour }) {
   const t = useTranslations("Equipment");

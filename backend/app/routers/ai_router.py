@@ -1,4 +1,5 @@
-"""AI help in the admin panel (29.10): a table from a picture.
+"""AI help in the admin panel: a table from a picture (29.10) and the English texts of a page
+translated from its Ukrainian ones (5.11).
 
 The admin uploads a screenshot or a photo of a table (from a catalog, a PDF, the old site) in the
 "Table" block; Google Gemini reads it and gives the cells in Ukrainian and in English. The admin
@@ -20,6 +21,7 @@ from urllib.request import urlopen
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
+from pydantic import BaseModel, Field
 
 from app.services.auth import get_current_user
 from app.services.rate_limit import check_rate_limit, client_ip
@@ -65,6 +67,29 @@ SCHEMA = {
 
 def ask_gemini(picture: bytes, mime: str) -> dict:
     """The table read by Gemini: {"header": [...], "rows": [[...]]}."""
+    parts = [
+        {"text": PROMPT},
+        {
+            "inline_data": {
+                "mime_type": mime,
+                "data": base64.b64encode(picture).decode(),
+            }
+        },
+    ]
+    answer = call_gemini(parts, SCHEMA, timeout=90)
+    try:
+        text = answer["candidates"][0]["content"]["parts"][0]["text"]
+        return json.loads(text)
+    except KeyError, IndexError, TypeError, ValueError:
+        log.warning("Gemini gave no table: %s", str(answer)[:500])
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "AI не знайшов таблицю на картинці. Спробуйте чіткіший скрін.",
+        ) from None
+
+
+def call_gemini(parts: list[dict], schema: dict, timeout: int) -> dict:
+    """One request to Gemini with an answer in JSON of this shape (its whole answer)."""
     key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not key:
         raise HTTPException(
@@ -73,23 +98,11 @@ def ask_gemini(picture: bytes, mime: str) -> dict:
         )
     model = os.environ.get("GEMINI_MODEL", "").strip() or "gemini-2.5-flash"
     body = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": PROMPT},
-                    {
-                        "inline_data": {
-                            "mime_type": mime,
-                            "data": base64.b64encode(picture).decode(),
-                        }
-                    },
-                ]
-            }
-        ],
+        "contents": [{"parts": parts}],
         "generationConfig": {
             "temperature": 0,
             "responseMimeType": "application/json",
-            "responseSchema": SCHEMA,
+            "responseSchema": schema,
         },
     }
     request = UrlRequest(
@@ -99,8 +112,8 @@ def ask_gemini(picture: bytes, mime: str) -> dict:
         method="POST",
     )
     try:
-        with urlopen(request, timeout=90) as response:
-            answer = json.load(response)
+        with urlopen(request, timeout=timeout) as response:
+            return json.load(response)
     except HTTPError as error:
         log.warning("Gemini answered %s: %s", error.code, error.read()[:500])
         if error.code == 429:
@@ -119,15 +132,6 @@ def ask_gemini(picture: bytes, mime: str) -> dict:
     except URLError, TimeoutError, ValueError:
         raise HTTPException(
             status.HTTP_502_BAD_GATEWAY, "AI зараз не відповідає. Спробуйте пізніше."
-        ) from None
-    try:
-        text = answer["candidates"][0]["content"]["parts"][0]["text"]
-        return json.loads(text)
-    except KeyError, IndexError, TypeError, ValueError:
-        log.warning("Gemini gave no table: %s", str(answer)[:500])
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_CONTENT,
-            "AI не знайшов таблицю на картинці. Спробуйте чіткіший скрін.",
         ) from None
 
 
@@ -178,3 +182,90 @@ async def table_from_picture(
             "AI не знайшов таблицю на картинці. Спробуйте чіткіший скрін.",
         )
     return table
+
+
+# ---------- Translation of a page into English (5.11) ----------
+
+MAX_TEXTS, MAX_TEXT, MAX_TOTAL = 400, 20000, 120000
+
+TRANSLATE_PROMPT = """You translate the texts of the website of the Ukrainian dealer of Italian
+equipment for ice cream, gelato and pastry (Carpigiani, IFI, ISA) from Ukrainian into English.
+Below is a JSON list of texts, each with an "id". Translate every "text" into natural, clear
+English for customers of the equipment, and return the same ids with their translations.
+Rules:
+- Keep brand names, model names, codes, numbers and units exactly as they are (Carpigiani,
+  Labotronic, Maestro, IFI, ISA, 220 V, 15 kg/h...). "Джелато" is "gelato".
+- Some texts are HTML: keep every tag and attribute exactly where it is (<p>, <strong>, <ul>,
+  <li>, <a href="...">, <img ...>, <h2>...), translate only the words between the tags.
+- Do not add or drop anything: no notes, no quotes around the text.
+- A text that is already English or has no words (a number, a code) stays as it is.
+
+Texts:
+"""
+
+TRANSLATE_SCHEMA = {
+    "type": "OBJECT",
+    "properties": {
+        "items": {
+            "type": "ARRAY",
+            "items": {
+                "type": "OBJECT",
+                "properties": {"id": {"type": "STRING"}, "text": {"type": "STRING"}},
+                "required": ["id", "text"],
+            },
+        }
+    },
+    "required": ["items"],
+}
+
+
+class TranslateItem(BaseModel):
+    id: Annotated[str, Field(max_length=200)]
+    text: Annotated[str, Field(max_length=MAX_TEXT)]
+
+
+class TranslateRequest(BaseModel):
+    items: Annotated[list[TranslateItem], Field(max_length=MAX_TEXTS)]
+
+
+def translate_texts(items: list[TranslateItem]) -> dict[str, str]:
+    payload = json.dumps(
+        [{"id": i.id, "text": i.text} for i in items], ensure_ascii=False
+    )
+    answer = call_gemini(
+        [{"text": TRANSLATE_PROMPT + payload}], TRANSLATE_SCHEMA, timeout=180
+    )
+    try:
+        text = answer["candidates"][0]["content"]["parts"][0]["text"]
+        found = json.loads(text)["items"]
+    except KeyError, IndexError, TypeError, ValueError:
+        log.warning("Gemini gave no translation: %s", str(answer)[:500])
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            "AI не зміг перекласти. Спробуйте ще раз.",
+        ) from None
+    asked = {i.id for i in items}
+    return {
+        str(t["id"]): str(t["text"]).strip()[:MAX_TEXT]
+        for t in found
+        if isinstance(t, dict) and str(t.get("id")) in asked and t.get("text")
+    }
+
+
+@router.post("/translate")
+async def translate(request: Request, data: TranslateRequest) -> dict:
+    """The English texts of a page from its Ukrainian ones: {"items": {id: English}}.
+    Nothing is saved here: the admin checks them and saves the page as usual."""
+    check_rate_limit(
+        f"ai-translate:{client_ip(request)}", limit=60, window_seconds=60 * 60
+    )
+    items = [i for i in data.items if i.text.strip()]
+    if not items:
+        return {"items": {}}
+    if sum(len(i.text) for i in items) > MAX_TOTAL:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "Сторінка завелика для перекладу за раз. Перекладіть частину блоків вручну.",
+        )
+    # Gemini takes a while: the server keeps answering others meanwhile
+    return {"items": await run_in_threadpool(translate_texts, items)}

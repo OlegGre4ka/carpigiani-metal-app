@@ -249,7 +249,9 @@
     "articles": "Articles",
     "articlesOf": "Articles: {topic}",
     "toContacts": "Contacts page",
-    "orContacts": "or see all our contacts"
+    "orContacts": "or see all our contacts",
+    "newer": "Newer article",
+    "older": "Older article"
   },
   "NotFound": {
     "eyebrow": "Error 404",

@@ -6,6 +6,7 @@ import { ContactForm } from "@/components/contact-form";
 import { EquipmentPageMark } from "@/components/contact-widget";
 import { SectionMark } from "@/components/section-mark";
 import { NewsText } from "@/components/news-article";
+import { SupportArrows } from "@/components/news-arrows";
 import { NewsGrid } from "@/components/news-cards";
 import { NewsPhoto } from "@/components/news-photo";
 import { Reveal } from "@/components/reveal";
@@ -35,6 +36,10 @@ export async function SupportPage({ page, href }: { page: SitePageData; href: st
   const articles = (page.articles ?? []).map((article) => ({ ...article, href: linkOf(article.href) }));
   const open = linkOf(page.main_href ?? "");
   const others = articles.filter((article) => article.href !== open);
+  // The arrows on the sides: the newer and the older article of the topic (as on news pages)
+  const at = articles.findIndex((article) => article.href === open);
+  const newer = at > 0 ? articles[at - 1] : null;
+  const older = at >= 0 && at < articles.length - 1 ? articles[at + 1] : null;
   const firstText = page.blocks.findIndex((block) => block.type === "text");
   const shift = page.image ? 1 : 0;
 
@@ -91,6 +96,11 @@ export async function SupportPage({ page, href }: { page: SitePageData; href: st
               {block.type === "text" ? <NewsText block={block} lead={index === firstText} /> : <Block block={block} compact title={page.title} />}
             </Reveal>
           ))}
+          {/* From article to article of the topic, as on news pages */}
+          <SupportArrows
+            newer={newer ? { href: newer.href, title: newer.title } : null}
+            older={older ? { href: older.href, title: older.title } : null}
+          />
         </div>
 
         {/* Right column: as tall as the left one, nothing with a transform around the sticky card */}
