@@ -215,6 +215,10 @@ class PublicPage(BaseModel):
     # card on the right and all the news of its topic (topic_title / topic_href above)
     section_title: str = ""
     main_href: str = ""
+    # The support page (its id: other articles of its topic are opened with ?support=id and stay
+    # in the Support layout) and the address of the article its menu item leads to
+    support_id: int = 0
+    support_home: str = ""
     contact_title: str = ""
     contact_text: str = ""
     articles: list[dict] = []

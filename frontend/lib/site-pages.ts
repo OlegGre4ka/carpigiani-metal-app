@@ -97,6 +97,10 @@ export type SitePageData = {
   /** Support page: its name (breadcrumbs) and the address of the article shown open */
   section_title?: string;
   main_href?: string;
+  /** Support page: its id (other articles of its topic open with ?support=id) and the address
+   *  of the article its menu item leads to */
+  support_id?: number;
+  support_home?: string;
   contact_title?: string;
   contact_text?: string;
   articles?: NewsCard[];
@@ -104,9 +108,11 @@ export type SitePageData = {
 
 /** The page with this address in this language, or null if there is none yet.
  *  Asked once per visit even if both the tab title and the page need it. */
-export const loadSitePage = cache(async (href: string, lang: string): Promise<SitePageData | null> => {
+/** support: the id of a page of "Support" the article was opened from (it stays in that layout) */
+export const loadSitePage = cache(async (href: string, lang: string, support: number = 0): Promise<SitePageData | null> => {
   try {
     const query = new URLSearchParams({ href, lang: lang === "en" ? "en" : "uk" });
+    if (support > 0) query.set("support", String(support));
     const response = await fetch(`${BACKEND_URL}/api/pages?${query}`, { cache: "no-store" });
     if (!response.ok) return null;
     return (await response.json()) as SitePageData;
@@ -294,5 +300,19 @@ export const loadBrandPage = cache(async (href: string, lang: string): Promise<B
     return (await response.json()) as BrandPageData;
   } catch {
     return null;
+  }
+});
+
+/** A partner of the strip "Partners" on the home page (admin panel → "Загальні налаштування" →
+ *  "Партнери"): name, logo and its site (empty: the logo is not a link) */
+export type Partner = { title: string; logo: string; url: string };
+
+export const loadPartners = cache(async (): Promise<Partner[]> => {
+  try {
+    const response = await fetch(`${BACKEND_URL}/api/partners`, { cache: "no-store" });
+    if (!response.ok) return [];
+    return (await response.json()) as Partner[];
+  } catch {
+    return [];
   }
 });

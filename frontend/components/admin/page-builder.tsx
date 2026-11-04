@@ -39,6 +39,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { useLeaveGuard } from "./leave-guard";
+import { AdminNotFound } from "./admin-not-found";
 import { NewsFields, type NewsMeta } from "./news-fields";
 import { NEWS_BASE, type Topic } from "./news-topics";
 
@@ -261,6 +262,8 @@ export function PageBuilder({ target }: { target: PageTarget }) {
   const [page, setPage] = useState<Loaded | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [failed, setFailed] = useState(false);
+  // The page is not there (deleted, or a wrong address): the 404 of the admin panel
+  const [missing, setMissing] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [lang, setLang] = useState<Lang>("uk");
@@ -286,6 +289,10 @@ export function PageBuilder({ target }: { target: PageTarget }) {
   const load = useCallback(async () => {
     try {
       const pageResponse = await call(api);
+      if (pageResponse.status === 404) {
+        setMissing(true);
+        return;
+      }
       if (!pageResponse.ok) throw new Error(await readError(pageResponse));
       const data: Loaded = await pageResponse.json();
       setPage(data);
@@ -483,6 +490,7 @@ export function PageBuilder({ target }: { target: PageTarget }) {
     move(ids.indexOf(String(active.id)), ids.indexOf(String(over.id)));
   }
 
+  if (missing) return <AdminNotFound />;
   if (failed) {
     return (
       <div className="rounded-[28px] bg-white/75 p-8">

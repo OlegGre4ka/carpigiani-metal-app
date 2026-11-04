@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { ContactForm } from "@/components/contact-form";
 import { EquipmentPageMark } from "@/components/contact-widget";
+import { SectionMark } from "@/components/section-mark";
 import { NewsText } from "@/components/news-article";
 import { NewsGrid } from "@/components/news-cards";
 import { NewsPhoto } from "@/components/news-photo";
@@ -27,8 +28,13 @@ const radius: Record<string, number> = { slider: 40, gallery: 28, video: 32, tex
 export async function SupportPage({ page, href }: { page: SitePageData; href: string }) {
   const locale = await getLocale();
   const t = await getTranslations();
-  const articles = page.articles ?? [];
-  const others = articles.filter((article) => article.href !== page.main_href);
+  // An article of the topic opened from here stays in "Support" (4.11): ?support=<this page>;
+  // the article of the menu item keeps its own address
+  const linkOf = (articleHref: string) =>
+    articleHref === page.support_home || !page.support_id ? articleHref : `${articleHref}?support=${page.support_id}`;
+  const articles = (page.articles ?? []).map((article) => ({ ...article, href: linkOf(article.href) }));
+  const open = linkOf(page.main_href ?? "");
+  const others = articles.filter((article) => article.href !== open);
   const firstText = page.blocks.findIndex((block) => block.type === "text");
   const shift = page.image ? 1 : 0;
 
@@ -36,7 +42,16 @@ export async function SupportPage({ page, href }: { page: SitePageData; href: st
     <main className="mx-auto w-full max-w-360 flex-1 px-20 pb-18 max-[820px]:px-4 max-[820px]:pb-12">
       {/* The form is on the right: the floating "Contact us" button hides on large screens */}
       <EquipmentPageMark name="" />
-      <Breadcrumbs items={[{ title: t("Nav.support") }, { title: page.section_title || page.title }]} />
+      {/* "Support" stays lit in the menu, also on an article that is one of the news */}
+      <SectionMark section="support" />
+      <Breadcrumbs
+        items={[
+          { title: t("Nav.support") },
+          // The name of the page leads to its first article, unless that one is open
+          { title: page.section_title || page.title, href: page.support_home && page.support_home !== page.main_href ? page.support_home : undefined },
+          ...(page.support_home && page.support_home !== page.main_href ? [{ title: page.title }] : []),
+        ]}
+      />
       {(page.topic_title || page.date) && (
         <div className="mb-2.5 flex flex-wrap items-center gap-x-3 gap-y-2 motion-safe:animate-fade-up motion-safe:[animation-delay:40ms]">
           {page.topic_title &&
@@ -91,10 +106,9 @@ export async function SupportPage({ page, href }: { page: SitePageData; href: st
                 </p>
                 <ul className="flex flex-col gap-0.5">
                   {articles.map((article) => {
-                    const open = article.href === page.main_href;
                     return (
                       <li key={article.href}>
-                        {open ? (
+                        {article.href === open ? (
                           // The article open on this page: a dark pill, as in the menu of news
                           <span aria-current="page" className="flex items-start gap-2 rounded-[14px] bg-navbar px-3 py-2 text-[14px] leading-snug font-bold text-white">
                             <span aria-hidden="true" className="mt-1.75 size-1.5 shrink-0 rounded-full bg-sky" />

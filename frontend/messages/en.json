@@ -250,5 +250,18 @@
     "articlesOf": "Articles: {topic}",
     "toContacts": "Contacts page",
     "orContacts": "or see all our contacts"
+  },
+  "NotFound": {
+    "eyebrow": "Error 404",
+    "title": "Page not found",
+    "text": "The address may have changed or the page was removed. Try the search, look through the catalog or go back to the home page.",
+    "home": "Home page",
+    "search": "Search the site",
+    "metaTitle": "Page not found"
+  },
+  "Partners": {
+    "title": "Partners",
+    "prev": "Previous partners",
+    "next": "Next partners"
   }
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 
+import { RequestsList } from "@/components/admin/requests-list";
 import { SectionIcon, adminSections, brandSections, type AdminSection } from "@/components/admin/sections";
 import { backendFetch, getAdminBrands } from "@/lib/admin/backend";
 import { BRANDS_PATH } from "@/lib/admin/brands";
@@ -57,20 +58,6 @@ function NotConnected({ children = "Ще не підключено" }: { childre
   );
 }
 
-function Empty({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
-  return (
-    <div className="flex items-start gap-4 rounded-[22px] border border-dashed border-ink/20 bg-page/60 p-5">
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-mist text-brand">
-        <SectionIcon className="size-5.5">{icon}</SectionIcon>
-      </span>
-      <div>
-        <p className="font-bold">{title}</p>
-        <p className="mt-1 text-sm leading-normal text-ink-soft">{children}</p>
-      </div>
-    </div>
-  );
-}
-
 /* ---------- 1. Quick actions ---------- */
 
 const actions = [
@@ -99,80 +86,19 @@ function QuickActions() {
 
 /* ---------- 2. Requests from the contact form ---------- */
 
-type RequestItem = { id: number; name: string; email: string; subject: string; message: string; is_read: boolean; created_at: string };
-
-async function loadRequests(): Promise<{ items: RequestItem[]; new: number } | null> {
-  try {
-    const response = await backendFetch("/api/admin/requests");
-    if (!response.ok) return null;
-    return (await response.json()) as { items: RequestItem[]; new: number };
-  } catch {
-    return null;
-  }
-}
-
-/** "1 нова заявка", "3 нові заявки", "5 нових заявок" */
-function newRequests(n: number) {
-  const last = n % 10;
-  const lastTwo = n % 100;
-  if (last === 1 && lastTwo !== 11) return "нова заявка";
-  if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return "нові заявки";
-  return "нових заявок";
-}
-
-// The card shows at once; the requests come from the server inside Suspense
+// All the requests right here (4.11: no menu item of its own): a click opens one in the card
 function Requests() {
   return (
-    <Card delay={240} title="Заявки" badge={<Link href="/fofkas-adminpanel/requests" className="text-sm font-bold text-brand hover:text-ink">Усі заявки →</Link>}>
-      <Suspense fallback={<p className="text-ink-soft">…</p>}>
-        <RequestsSummary />
-      </Suspense>
+    <Card delay={240} title="Заявки">
+      <RequestsList />
     </Card>
-  );
-}
-
-async function RequestsSummary() {
-  const data = await loadRequests();
-  const latest = data?.items.slice(0, 4) ?? [];
-  return (
-    <>
-      <div className="mb-4 flex items-baseline gap-2">
-        <span className="text-[40px] leading-none font-extrabold text-brand">{data?.new ?? 0}</span>
-        <span className="text-sm font-semibold text-ink-soft">{newRequests(data?.new ?? 0)}</span>
-      </div>
-      {latest.length === 0 ? (
-        <Empty
-          title="Заявок поки немає"
-          icon={
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
-          }
-        >
-          Тут будуть останні заявки з форми «Зв&apos;язатися з нами» на сайті.
-        </Empty>
-      ) : (
-        <ul className="flex flex-col divide-y divide-ink/8">
-          {latest.map((item) => (
-            <li key={item.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
-              <span aria-hidden="true" className={`size-2 shrink-0 rounded-full ${item.is_read ? "bg-ink/15" : "bg-brand"}`} />
-              <Link href="/fofkas-adminpanel/requests" className="min-w-0 flex-1 hover:text-brand">
-                <b className={`block truncate text-[15px] ${item.is_read ? "font-semibold" : "font-extrabold"}`}>
-                  {item.name || item.email}
-                  {item.subject && <span className="font-semibold text-ink-soft"> · {item.subject}</span>}
-                </b>
-                <span className="block truncate text-sm text-ink-soft">{item.message || "(без повідомлення)"}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
   );
 }
 
 /* ---------- 3. Content of the site ---------- */
 
 /** Sections that are not content to fill in */
-const NOT_CONTENT = ["/fofkas-adminpanel/requests", "/fofkas-adminpanel/contacts", "/fofkas-adminpanel/settings"];
+const NOT_CONTENT = ["/fofkas-adminpanel/contacts", "/fofkas-adminpanel/settings"];
 
 /** "1 категорія", "3 категорії", "5 категорій" */
 function categories(n: number) {

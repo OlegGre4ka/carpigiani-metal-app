@@ -5,6 +5,7 @@ import { BrandShowcases } from "@/components/brand-showcases";
 import { EquipmentCategories } from "@/components/equipment-categories";
 import { HeroSlider } from "@/components/hero-slider";
 import { HomeNews } from "@/components/home-news";
+import { HomePartners } from "@/components/home-partners";
 import { PageLoader } from "@/components/page-loader";
 import { Services } from "@/components/services";
 
@@ -25,6 +26,8 @@ export default function HomePage() {
         <BrandShowcases brand="ifi" withTitle />
         {/* The three newest news and "All news" */}
         <HomeNews />
+        {/* The logos of the partners, before the footer (admin panel → settings → "Партнери") */}
+        <HomePartners />
       </Suspense>
     </main>
   );

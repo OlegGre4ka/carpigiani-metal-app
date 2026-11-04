@@ -381,8 +381,26 @@ button:not(:disabled),
   .rich ol {
     padding-left: 1.4em;
   }
+  /* Lists (4.11, Oleh): navy stars, as the stars of the old site but in the colour of the
+     menu; numbered lists: navy bold numbers */
   .rich ul {
-    list-style: disc;
+    list-style: none;
+    padding-left: 0;
+  }
+  .rich ul > li {
+    position: relative;
+    padding-left: 1.7em;
+  }
+  .rich ul > li::before {
+    content: "";
+    position: absolute;
+    left: 0.1em;
+    top: 0.32em;
+    width: 1em;
+    height: 1em;
+    background: var(--navbar);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.1l-6.1 3.5 1.5-6.8L2.2 9.2l6.9-.7z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.1l-6.1 3.5 1.5-6.8L2.2 9.2l6.9-.7z'/%3E%3C/svg%3E") center / contain no-repeat;
   }
   .rich ol {
     list-style: decimal;
@@ -390,8 +408,9 @@ button:not(:disabled),
   .rich li + li {
     margin-top: 6px;
   }
-  .rich li::marker {
-    color: var(--color-brand-light);
+  .rich ol > li::marker {
+    color: var(--navbar);
+    font-weight: 800;
   }
   .rich blockquote {
     border-left: 3px solid var(--color-brand-light);

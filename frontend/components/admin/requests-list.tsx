@@ -1,16 +1,17 @@
 "use client";
 
 import { App, Button, Empty, Popconfirm, Segmented } from "antd";
-import { Mail, Phone, Trash2 } from "lucide-react";
+import { ChevronDown, Mail, Phone, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { json, readError, useAdminCall } from "./admin-fetch";
 import { AdminLoader } from "@/components/cone-loader";
 
-// "Requests" of the admin panel: everything sent from the contact form of the site, newest
-// first — the same text as goes by email. A new request is marked; opening it makes it read
-// (it can be marked new again). Telegram and email come later.
+// Requests of the admin panel: everything sent from the contact form of the site, newest
+// first — the same text as goes by email. A new request is marked; opening it (an accordion,
+// right in the list) makes it read; it can be marked new again. Since 4.11 the list is in the
+// card "Заявки" on the home page of the admin panel (no menu item of its own).
 
 const API = "/api/admin/requests";
 
@@ -26,6 +27,15 @@ type Request = {
   is_read: boolean;
   created_at: string;
 };
+
+/** "1 нова заявка", "3 нові заявки", "5 нових заявок" */
+function newRequests(n: number) {
+  const last = n % 10;
+  const lastTwo = n % 100;
+  if (last === 1 && lastTwo !== 11) return "нова заявка";
+  if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return "нові заявки";
+  return "нових заявок";
+}
 
 /** "23.10.2026, 21:05" in Kyiv time */
 function when(iso: string) {
@@ -87,12 +97,10 @@ export function RequestsList() {
 
   return (
     <div>
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-heading tracking-[-0.02em] text-[33px] leading-tight font-extrabold text-ink motion-safe:animate-fade-up max-[600px]:text-[26px]">Заявки</h1>
-          <p className="mt-1.5 max-w-[62ch] text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
-            Усе, що надіслали через форму на сайті. Нові зверху; відкрита заявка стає переглянутою.
-          </p>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-baseline gap-2">
+          <span className="text-[40px] leading-none font-extrabold text-brand">{fresh}</span>
+          <span className="text-sm font-semibold text-ink-soft">{newRequests(fresh)}</span>
         </div>
         <Segmented
           value={filter}
@@ -105,24 +113,25 @@ export function RequestsList() {
       </div>
 
       {shown.length === 0 ? (
-        <div className="rounded-[28px] steel-card p-6">
+        <div className="rounded-[22px] border border-dashed border-ink/20 p-4">
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={filter === "new" ? "Нових заявок немає." : "Заявок поки немає. Вони з'являться тут, щойно хтось заповнить форму на сайті."}
           />
         </div>
       ) : (
-        <ul className="flex flex-col gap-3 motion-safe:animate-fade-up motion-safe:[animation-delay:120ms]">
+        // A long list scrolls inside the card
+        <ul className="-mx-1 flex max-h-[560px] flex-col gap-2.5 overflow-y-auto overscroll-contain px-1 pb-1">
           {shown.map((item) => {
             const expanded = open === item.id;
             return (
               <li
                 key={item.id}
-                className={`overflow-hidden rounded-[24px] border bg-[rgb(var(--paper-rgb)/0.96)] shadow-[0_10px_28px_rgb(var(--shadow-rgb)/0.07)] ${
+                className={`shrink-0 overflow-hidden rounded-[20px] border bg-white shadow-[0_6px_16px_rgb(var(--shadow-rgb)/0.06)] ${
                   item.is_read ? "border-white/90" : "border-brand-light/60"
                 }`}
               >
-                <button type="button" onClick={() => toggle(item)} aria-expanded={expanded} className="flex w-full items-center gap-3.5 px-5 py-4 text-left max-[700px]:flex-wrap max-[700px]:gap-2 max-[700px]:px-4">
+                <button type="button" onClick={() => toggle(item)} aria-expanded={expanded} className="flex w-full cursor-pointer items-center gap-3.5 px-4 py-3.5 text-left max-[700px]:flex-wrap max-[700px]:gap-2">
                   <span
                     aria-label={item.is_read ? "Переглянута" : "Нова"}
                     className={`size-2.5 shrink-0 rounded-full ${item.is_read ? "bg-ink/15" : "bg-brand shadow-[0_0_0_4px_rgb(var(--brand-light-rgb)/0.2)]"}`}
@@ -134,11 +143,12 @@ export function RequestsList() {
                     </b>
                     <span className="block truncate text-sm text-ink-soft">{item.message || "(без повідомлення)"}</span>
                   </span>
-                  <span className="shrink-0 text-sm whitespace-nowrap text-ink-soft">{when(item.created_at)}</span>
+                  <span className="shrink-0 text-[13px] whitespace-nowrap text-ink-soft">{when(item.created_at)}</span>
+                  <ChevronDown aria-hidden="true" className={`size-4.5 shrink-0 text-ink-soft transition-transform ${expanded ? "rotate-180" : ""}`} />
                 </button>
                 {expanded && (
-                  <div className="border-t border-ink/8 px-5 pt-4 pb-5 max-[700px]:px-4">
-                    <dl className="grid grid-cols-[150px_1fr] gap-x-4 gap-y-2 text-[15px] max-[700px]:grid-cols-1 max-[700px]:gap-y-0.5">
+                  <div className="border-t border-ink/8 px-4 pt-4 pb-4.5">
+                    <dl className="grid grid-cols-[120px_1fr] gap-x-4 gap-y-2 text-[15px] max-[700px]:grid-cols-1 max-[700px]:gap-y-0.5">
                       <dt className="font-bold text-ink-soft">Ім&apos;я</dt>
                       <dd className="mb-1.5">{item.name || "—"}</dd>
                       <dt className="font-bold text-ink-soft">Email</dt>

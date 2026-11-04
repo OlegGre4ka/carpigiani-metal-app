@@ -10,6 +10,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { BackButton } from "@/components/back-button";
 import { BrandMark } from "@/components/brand-logo";
+import { useMarkedSection } from "@/components/section-mark";
 
 // Brands (manufacturers) come from the admin panel → "Виробники", in its order; hidden ones are
 // not sent. Their pages keep the addresses of the old site (/carpigiani, /ifi, /isa).
@@ -262,7 +263,9 @@ export function SiteHeader({
 }) {
   const t = useTranslations("Nav");
   const pathname = usePathname();
-  const section = activeSection(pathname, brands, news.pages, support);
+  // A page can say its section itself (an article opened from "Support", components/section-mark.tsx)
+  const marked = useMarkedSection();
+  const section = marked ?? activeSection(pathname, brands, news.pages, support);
   // Phones: the main menu (burger)
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -361,6 +364,8 @@ export function SiteHeader({
           {isAdmin && (
             <NextLink
               href={ADMIN_HREF}
+              // In a new tab, as "Open the site" in the admin panel (4.11)
+              target="_blank"
               aria-label={t("admin")}
               className="group/admin relative ml-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
             >
@@ -430,6 +435,7 @@ export function SiteHeader({
               {isAdmin && (
                 <NextLink
                   href={ADMIN_HREF}
+                  target="_blank"
                   onClick={close}
                   className="mt-1 flex items-center gap-2 rounded-[14px] bg-white/10 px-3.5 py-2.5 text-[15px] font-semibold text-white"
                 >

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 import { json, readError, useAdminCall } from "./admin-fetch";
+import { AdminNotFound } from "./admin-not-found";
 import { useLeaveGuard } from "./leave-guard";
 import { NewsList } from "./news-list";
 import type { Topic } from "./news-topics";
@@ -45,6 +46,8 @@ export function SupportEditor({ id }: { id: number }) {
   const [topics, setTopics] = useState<Topic[]>([]);
   const [articles, setArticles] = useState<ArticleOption[]>([]);
   const [failed, setFailed] = useState(false);
+  // The page is not there (deleted, or a wrong address): the 404 of the admin panel
+  const [missing, setMissing] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [lang, setLang] = useState<Lang>("uk");
@@ -52,6 +55,10 @@ export function SupportEditor({ id }: { id: number }) {
   useEffect(() => {
     Promise.all([call(api), call("/api/admin/news-topics")])
       .then(async ([pageResponse, topicsResponse]) => {
+        if (pageResponse.status === 404) {
+          setMissing(true);
+          return;
+        }
         if (!pageResponse.ok) throw new Error(await readError(pageResponse));
         const data: Loaded = await pageResponse.json();
         setPage(data);
@@ -113,6 +120,7 @@ export function SupportEditor({ id }: { id: number }) {
     }
   }
 
+  if (missing) return <AdminNotFound />;
   if (failed) {
     return <div className="rounded-[28px] bg-white/75 p-8 text-ink-soft">Не вдалося завантажити сторінку. Оновіть сторінку.</div>;
   }

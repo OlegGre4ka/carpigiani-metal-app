@@ -105,9 +105,13 @@ def support_menu(db: DbSession, lang: Lang = "uk") -> list[dict]:
     return items
 
 
-def support_page_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | None:
-    """The support page at this address: the address of the article it shows open. Other
-    articles of the topic open as usual news."""
+def support_page_for_site(
+    db: DbSession, href: str, lang: Lang, support: int | None = None
+) -> PublicPage | None:
+    """The support page at this address. Without `support`: the address of the article a
+    page shows open (its menu item leads there). With `support` (the id of a support page, 4.11):
+    any article of its topic, opened from that page, stays in the Support layout; opened from
+    "News" (without it) the same article is a usual news page."""
     pages = ordered(db, only_visible=True)
     if not pages:
         return None
@@ -116,14 +120,23 @@ def support_page_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | 
     )
     if article is None:
         return None
-    topics = {article.topic_id, *(article.extra_topic_ids or [])}
+
     page = None
-    for candidate in pages:
-        if candidate.topic_id in topics:
-            main = main_of(candidate, topic_news(db, candidate)[1])
-            if main is not None and main.id == article.id:
-                page = candidate
-                break
+    if support is not None:
+        page = next((p for p in pages if p.id == support), None)
+        # Only an article of its topic
+        if page is not None and all(
+            n.id != article.id for n in topic_news(db, page)[1]
+        ):
+            page = None
+    if page is None:
+        topics = {article.topic_id, *(article.extra_topic_ids or [])}
+        for candidate in pages:
+            if candidate.topic_id in topics:
+                main = main_of(candidate, topic_news(db, candidate)[1])
+                if main is not None and main.id == article.id:
+                    page = candidate
+                    break
     if page is None:
         return None
 
@@ -135,15 +148,19 @@ def support_page_for_site(db: DbSession, href: str, lang: Lang) -> PublicPage | 
         return None
     # The topic label is not shown on cards of its own page
     articles = [news_card(item, {}, lang) for item in news]
-    main_card = next((c for c in articles if main and c["href"] == main.href), None)
+    shown = next((c for c in articles if c["href"] == article.href), None)
+    if shown is None:
+        return None
     return PublicPage(
         kind="support",
-        title=main_card["title"] if main_card else name,
+        title=shown["title"],
         section_title=name,
-        date=main_card["date"] if main_card else "",
-        image=main.image if main else None,
-        blocks=blocks_for_site(main.blocks, lang, db) if main else [],
-        main_href=main.href if main else "",
+        support_id=page.id,
+        support_home=main.href,
+        date=shown["date"],
+        image=article.image,
+        blocks=blocks_for_site(article.blocks, lang, db),
+        main_href=article.href,
         topic_title=pick({"uk": topic.title_uk, "en": topic.title_en}, lang)
         if topic
         else "",

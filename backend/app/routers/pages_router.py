@@ -602,6 +602,8 @@ def get_public_page(
     db: DbSession,
     href: Annotated[str, Query(max_length=500)],
     lang: Lang = "uk",
+    # An article opened from a page of "Support" (its id): it stays in the Support layout
+    support: Annotated[int | None, Query(ge=1)] = None,
 ):
     category = db.scalar(
         select(EquipmentCategory).where(
@@ -631,9 +633,9 @@ def get_public_page(
     from app.routers.news_router import news_page_for_site
     from app.routers.support_router import support_page_for_site
 
-    support = support_page_for_site(db, href, lang)
-    if support is not None:
-        return support
+    support_page = support_page_for_site(db, href, lang, support)
+    if support_page is not None:
+        return support_page
 
     news = news_page_for_site(db, href, lang)
     if news is None:

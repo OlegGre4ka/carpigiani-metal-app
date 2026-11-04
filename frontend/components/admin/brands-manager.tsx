@@ -507,12 +507,13 @@ function BrandForm({
   );
 }
 
-/** The page of the brand is still empty: the site does not show the brand yet (29.10) */
+/** The page of the brand is still empty: the site does not show the brand yet, though it is
+ *  turned on (29.10); it appears by itself once there is something on its page */
 function EmptyNote({ show }: { show: boolean }) {
   if (!show) return null;
   return (
     <Tag color="orange" className="m-0! mt-1.5! font-semibold whitespace-normal!">
-      Не показується на сайті — сторінка ще порожня
+      Увімкнено, але поки не на сайті: сторінка порожня. Додайте категорію або блок на «Сторінці бренду» — і він з&apos;явиться
     </Tag>
   );
 }

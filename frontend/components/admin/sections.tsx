@@ -89,17 +89,7 @@ export const adminSections: AdminSection[] = [
       </>
     ),
   },
-  {
-    href: "/fofkas-adminpanel/requests",
-    title: "Заявки",
-    text: "Повідомлення з форми «Зв'язатися з нами»",
-    icon: (
-      <>
-        <path d="M4 5h16v11H8l-4 4z" />
-        <path d="M8 9h8M8 12h5" />
-      </>
-    ),
-  },
+  // "Заявки" is not a section of the menu (4.11): the requests open on the home page
   {
     href: "/fofkas-adminpanel/contacts",
     title: "Контакти",
@@ -114,10 +104,13 @@ export const adminSections: AdminSection[] = [
   {
     href: "/fofkas-adminpanel/settings",
     title: "Загальні налаштування",
-    text: "Шрифти заголовків і тексту всього сайту",
-    // 30.10: each kind of settings is its own sub-item (more will come)
+    text: "Шрифти всього сайту і партнери на головній",
+    // 30.10: each kind of settings is its own sub-item
     groupOnly: true,
-    children: [{ href: "/fofkas-adminpanel/settings/fonts", title: "Шрифти" }],
+    children: [
+      { href: "/fofkas-adminpanel/settings/fonts", title: "Шрифти" },
+      { href: "/fofkas-adminpanel/settings/partners", title: "Партнери" },
+    ],
     icon: (
       <>
         <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
