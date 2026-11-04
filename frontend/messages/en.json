@@ -210,8 +210,8 @@
     "byTopic": "News by topic",
     "allInTopic": "All in the topic ({count}) →",
     "back": "Back to news",
-    "newer": "Newer news",
-    "older": "Older news",
+    "newer": "Previous news",
+    "older": "Next news",
     "prev": "Previous news",
     "next": "Next news",
     "goTo": "Show news from no. {n}"
@@ -250,8 +250,8 @@
     "articlesOf": "Articles: {topic}",
     "toContacts": "Contacts page",
     "orContacts": "or see all our contacts",
-    "newer": "Newer article",
-    "older": "Older article"
+    "newer": "Previous article",
+    "older": "Next article"
   },
   "NotFound": {
     "eyebrow": "Error 404",
