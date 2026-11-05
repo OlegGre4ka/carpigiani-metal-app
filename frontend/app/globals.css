@@ -1370,9 +1370,9 @@ button:not(:disabled),
 /* Splash screen (components/site-splash.tsx): fades away after the drawing (or at once on click) */
 @layer components {
   .site-splash {
-    /* fades away when the spark has flashed in the tip of the cone (components/brand-logo.tsx:
-       the flash is at 2.15 s) */
-    animation: splash-out 0.5s ease 2.95s forwards;
+    /* The script fades it when the spark has flashed (2.15 s) and the page has loaded
+       (components/site-splash.tsx); this is the latest moment, even without the scripts */
+    animation: splash-out 0.5s ease 6s forwards;
   }
   .splash-logo {
     animation: splash-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -1385,7 +1385,15 @@ button:not(:disabled),
     }
   }
   .site-splash.leaving {
-    animation: splash-out 0.35s ease forwards;
+    /* its own name: with the same one the browser counts the time from the opening and the
+       screen would vanish at once instead of fading */
+    animation: splash-leave 0.45s ease forwards;
+  }
+  @keyframes splash-leave {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
   }
   @keyframes splash-out {
     to {

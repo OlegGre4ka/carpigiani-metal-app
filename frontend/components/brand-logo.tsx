@@ -61,18 +61,18 @@ export function AnimatedBrandMark({ className = "" }: { className?: string }) {
           <filter id="spark-blur" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="5" />
           </filter>
-          <filter id="spark-halo" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="16" />
-          </filter>
         </defs>
         {sparkPath.map((d, i) => (
           <g key={i}>
             {/* The glowing trail behind the spark */}
             <path d={d} fill="none" stroke="#9ad6ff" strokeWidth="13" strokeLinecap="round" filter="url(#spark-blur)" strokeDasharray={`150 ${sparkLen[i] + 300}`} className={`spk-trail-${i}`} />
-            {/* The spark itself: a dot that runs along the thread, a blue halo around it */}
+            {/* The spark itself, as before (29.10): a white dot in a soft blue glow, moved along
+                the thread by CSS (offset-path), so the browser only shifts it — smooth */}
             <g className={`spk-dot-${i}`}>
-              <path d={d} fill="none" stroke="#5aa8ff" strokeWidth="90" strokeLinecap="round" filter="url(#spark-halo)" strokeDasharray={`0.01 ${sparkLen[i] + 1000}`} className={`spk-run-${i}`} />
-              <path d={d} fill="none" stroke="#ffffff" strokeWidth="20" strokeLinecap="round" strokeDasharray={`0.01 ${sparkLen[i] + 1000}`} className={`spk-run-${i}`} />
+              <g className={`spk-run-${i}`} style={{ offsetPath: `path("${d}")` }}>
+                <circle r="62" fill="url(#spark-glow)" />
+                <circle r="10" fill="#ffffff" />
+              </g>
             </g>
           </g>
         ))}
@@ -101,8 +101,7 @@ const sparkCss = (() => {
     const trail = d + 0.18;
     css += `.spk-trail-${i}{stroke-dashoffset:150;opacity:0;animation:spk-trail-move-${i} ${trail}s linear ${b}s both,spk-trail-fade ${trail}s linear ${b}s both}`;
     css += `@keyframes spk-trail-move-${i}{from{stroke-dashoffset:150}to{stroke-dashoffset:${-len}}}`;
-    css += `.spk-run-${i}{stroke-dashoffset:0;animation:spk-run-${i} ${d}s cubic-bezier(${splines[i]}) ${b}s both}`;
-    css += `@keyframes spk-run-${i}{from{stroke-dashoffset:0}to{stroke-dashoffset:${-len}}}`;
+    css += `.spk-run-${i}{offset-rotate:0deg;offset-distance:0%;animation:spk-run ${d}s cubic-bezier(${splines[i]}) ${b}s both}`;
     if (i < sparkPath.length - 1) {
       css += `.spk-dot-${i}{opacity:0;animation:spk-dot-blink ${d}s linear ${b}s both}`;
     } else {
@@ -114,6 +113,7 @@ const sparkCss = (() => {
       css += `@keyframes spk-dot-last{0%{opacity:0}${(on * 100).toFixed(2)}%{opacity:1}${(hold * 100).toFixed(2)}%{opacity:1}100%{opacity:0}}`;
     }
   });
+  css += "@keyframes spk-run{from{offset-distance:0%}to{offset-distance:100%}}";
   css += "@keyframes spk-trail-fade{0%{opacity:0}8%{opacity:1}85%{opacity:1}100%{opacity:0}}";
   css += "@keyframes spk-dot-blink{0%{opacity:0}8%{opacity:1}90%{opacity:1}100%{opacity:0}}";
   css += `.spk-final{opacity:0;animation:spk-show .5s linear ${SPARK_END + 0.1}s both}@keyframes spk-show{to{opacity:1}}`;

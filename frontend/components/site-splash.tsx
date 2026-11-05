@@ -33,9 +33,26 @@ export function SiteSplash() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the site is opened
   }, []);
 
-  // The spark runs by itself from the very first moment the splash is on the screen (plain SVG
-  // animation, it does not wait for the scripts of the page: 29.10, no pause before it); the
-  // screen fades away by CSS when the spark has flashed in the tip (.site-splash in globals.css)
+  // The spark runs by itself from the very first moment the splash is on the screen (CSS
+  // animation, it does not wait for the scripts of the page: 29.10, no pause before it)
+  // The screen waits for the page (5.11): it fades when the spark has flashed (2.95 s) AND the
+  // page has loaded (photos too), so the page is already there behind it. At most 6 s: then the
+  // CSS fades it anyway, even without the scripts (.site-splash in globals.css).
+  useEffect(() => {
+    if (state !== "shown") return;
+    const least = matchMedia("(prefers-reduced-motion: reduce)").matches ? 600 : 2950;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const leave = () => {
+      timer = setTimeout(() => setState((now) => (now === "shown" ? "leaving" : now)), Math.max(0, least - performance.now()));
+    };
+    if (document.readyState === "complete") leave();
+    else window.addEventListener("load", leave, { once: true });
+    return () => {
+      window.removeEventListener("load", leave);
+      clearTimeout(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the site is opened
+  }, []);
   // Safety net: even if the styles of the site did not load, the screen goes away by itself
   useEffect(() => {
     const timer = setTimeout(() => setState("gone"), 7000);
