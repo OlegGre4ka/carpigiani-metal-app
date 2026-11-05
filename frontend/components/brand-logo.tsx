@@ -44,6 +44,10 @@ const SPARK_END = 2.15;
 export function AnimatedBrandMark({ className = "" }: { className?: string }) {
   return (
     <span className={`relative inline-block ${className}`}>
+      {/* The whole run is CSS animation (5.11): it starts the moment the splash is drawn, on the
+          same clock as the fading of the splash. SVG's own animation waited for the whole page
+          (slider photos too), so the spark started late and the splash left before the flash. */}
+      <style>{sparkCss}</style>
       {/* eslint-disable-next-line @next/next/no-img-element -- the same small picture as BrandMark */}
       <img src="/images/logo-mark-nospark.webp" alt="" aria-hidden="true" width={330} height={462} fetchPriority="high" className="block h-full w-auto" />
       <svg aria-hidden="true" viewBox="0 0 575 805" className="logo-spark absolute inset-0 size-full overflow-visible">
@@ -57,42 +61,68 @@ export function AnimatedBrandMark({ className = "" }: { className?: string }) {
           <filter id="spark-blur" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="5" />
           </filter>
+          <filter id="spark-halo" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="16" />
+          </filter>
         </defs>
-        {/* The glowing trail behind the spark, one piece of the thread after another */}
         {sparkPath.map((d, i) => (
-          <path key={i} d={d} fill="none" stroke="#9ad6ff" strokeWidth="13" strokeLinecap="round" filter="url(#spark-blur)" strokeDasharray={`150 ${sparkLen[i] + 300}`} strokeDashoffset="150" opacity="0">
-            <animate attributeName="stroke-dashoffset" from="150" to={-sparkLen[i]} begin={`${sparkBegin[i]}s`} dur={`${sparkDur[i] + 0.18}s`} fill="freeze" />
-            <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.85;1" begin={`${sparkBegin[i]}s`} dur={`${sparkDur[i] + 0.18}s`} fill="freeze" />
-          </path>
-        ))}
-        {/* The spark: it runs piece by piece and hides for a blink between the pieces */}
-        {sparkPath.map((d, i) => (
-          <g key={i} opacity="0">
-            <circle r="62" fill="url(#spark-glow)" />
-            <circle r="10" fill="#ffffff" />
-            <animateMotion path={d} begin={`${sparkBegin[i]}s`} dur={`${sparkDur[i]}s`} fill="freeze" calcMode="spline" keyPoints="0;1" keyTimes="0;1" keySplines={i === 2 ? "0.3 0 0.4 1" : "0.4 0 0.6 1"} />
-            <animate attributeName="opacity" values={i === 2 ? "0;1;1" : "0;1;1;0"} keyTimes={i === 2 ? "0;0.06;1" : "0;0.08;0.9;1"} begin={`${sparkBegin[i]}s`} dur={`${sparkDur[i]}s`} fill="freeze" />
-            {i === 2 && <animate attributeName="opacity" to="0" begin={`${SPARK_END + 0.35}s`} dur="0.4s" fill="freeze" />}
+          <g key={i}>
+            {/* The glowing trail behind the spark */}
+            <path d={d} fill="none" stroke="#9ad6ff" strokeWidth="13" strokeLinecap="round" filter="url(#spark-blur)" strokeDasharray={`150 ${sparkLen[i] + 300}`} className={`spk-trail-${i}`} />
+            {/* The spark itself: a dot that runs along the thread, a blue halo around it */}
+            <g className={`spk-dot-${i}`}>
+              <path d={d} fill="none" stroke="#5aa8ff" strokeWidth="90" strokeLinecap="round" filter="url(#spark-halo)" strokeDasharray={`0.01 ${sparkLen[i] + 1000}`} className={`spk-run-${i}`} />
+              <path d={d} fill="none" stroke="#ffffff" strokeWidth="20" strokeLinecap="round" strokeDasharray={`0.01 ${sparkLen[i] + 1000}`} className={`spk-run-${i}`} />
+            </g>
           </g>
         ))}
-        {/* The flash in the tip: brighter for a moment, then the usual spark of the mark */}
         {/* The usual mark with its spark in the tip: comes in during the flash and stays */}
-        <image href="/images/logo-mark.webp" width="575" height="805" opacity="0">
-          <animate attributeName="opacity" to="1" begin={`${SPARK_END + 0.1}s`} dur="0.5s" fill="freeze" />
-        </image>
-        <g transform="translate(286 735)" opacity="0">
-          <circle r="80" fill="url(#spark-glow)">
-            <animate attributeName="r" values="20;170;70" keyTimes="0;0.35;1" begin={`${SPARK_END}s`} dur="0.8s" fill="freeze" />
-          </circle>
-          <path d="M-150 0 L150 0 M0 -95 L0 95" stroke="#e8f5ff" strokeWidth="6" strokeLinecap="round" filter="url(#spark-blur)">
-            <animate attributeName="opacity" values="0;1;0.35" keyTimes="0;0.3;1" begin={`${SPARK_END}s`} dur="0.8s" fill="freeze" />
-          </path>
-          <animate attributeName="opacity" values="0;1;0" keyTimes="0;0.25;1" begin={`${SPARK_END}s`} dur="1.1s" fill="freeze" />
+        <image href="/images/logo-mark.webp" width="575" height="805" className="spk-final" />
+        {/* The flash in the tip: brighter for a moment */}
+        <g transform="translate(286 735)">
+          <g className="spk-flash">
+            <circle r="70" fill="url(#spark-glow)" className="spk-flash-glow" />
+            <path d="M-150 0 L150 0 M0 -95 L0 95" stroke="#e8f5ff" strokeWidth="6" strokeLinecap="round" filter="url(#spark-blur)" className="spk-flash-rays" />
+          </g>
         </g>
       </svg>
     </span>
   );
 }
+
+/** The run of the spark as CSS (times and lengths from the constants above) */
+const sparkCss = (() => {
+  const splines = ["0.4, 0, 0.6, 1", "0.4, 0, 0.6, 1", "0.3, 0, 0.4, 1"];
+  let css = "";
+  sparkPath.forEach((_, i) => {
+    const b = sparkBegin[i];
+    const d = sparkDur[i];
+    const len = sparkLen[i];
+    const trail = d + 0.18;
+    css += `.spk-trail-${i}{stroke-dashoffset:150;opacity:0;animation:spk-trail-move-${i} ${trail}s linear ${b}s both,spk-trail-fade ${trail}s linear ${b}s both}`;
+    css += `@keyframes spk-trail-move-${i}{from{stroke-dashoffset:150}to{stroke-dashoffset:${-len}}}`;
+    css += `.spk-run-${i}{stroke-dashoffset:0;animation:spk-run-${i} ${d}s cubic-bezier(${splines[i]}) ${b}s both}`;
+    css += `@keyframes spk-run-${i}{from{stroke-dashoffset:0}to{stroke-dashoffset:${-len}}}`;
+    if (i < sparkPath.length - 1) {
+      css += `.spk-dot-${i}{opacity:0;animation:spk-dot-blink ${d}s linear ${b}s both}`;
+    } else {
+      // The last piece: the spark stays in the tip, then fades into the flash
+      const total = SPARK_END + 0.75 - b;
+      const on = (0.06 * d) / total;
+      const hold = (SPARK_END + 0.35 - b) / total;
+      css += `.spk-dot-${i}{opacity:0;animation:spk-dot-last ${total}s linear ${b}s both}`;
+      css += `@keyframes spk-dot-last{0%{opacity:0}${(on * 100).toFixed(2)}%{opacity:1}${(hold * 100).toFixed(2)}%{opacity:1}100%{opacity:0}}`;
+    }
+  });
+  css += "@keyframes spk-trail-fade{0%{opacity:0}8%{opacity:1}85%{opacity:1}100%{opacity:0}}";
+  css += "@keyframes spk-dot-blink{0%{opacity:0}8%{opacity:1}90%{opacity:1}100%{opacity:0}}";
+  css += `.spk-final{opacity:0;animation:spk-show .5s linear ${SPARK_END + 0.1}s both}@keyframes spk-show{to{opacity:1}}`;
+  css += `.spk-flash{opacity:0;animation:spk-flash 1.1s linear ${SPARK_END}s both}@keyframes spk-flash{0%{opacity:0}25%{opacity:1}100%{opacity:0}}`;
+  css += `.spk-flash-glow{transform-box:fill-box;transform-origin:center;transform:scale(.29);animation:spk-glow .8s linear ${SPARK_END}s both}`;
+  css += "@keyframes spk-glow{0%{transform:scale(.29)}35%{transform:scale(2.43)}100%{transform:scale(1)}}";
+  css += `.spk-flash-rays{opacity:0;animation:spk-rays .8s linear ${SPARK_END}s both}@keyframes spk-rays{0%{opacity:0}30%{opacity:1}100%{opacity:.35}}`;
+  return css;
+})();
 
 /** The mark of the admin panel (4.11, Oleh): the mark in a steel gear on a navy disc, so the
  *  admin panel is told from the site at a glance (tab icon, login, top bar, search). */
