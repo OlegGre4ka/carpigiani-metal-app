@@ -1112,11 +1112,14 @@ export function PhotoEditor({
   onChange,
   upload,
   hint,
+  dark = false,
 }: {
   block: PhotoBlock;
   onChange: (b: PhotoBlock) => void;
   upload: Uploader;
   hint?: ReactNode;
+  /** The photo is shown on a dark background on the site (the logo of the footer, 5.11) */
+  dark?: boolean;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -1139,7 +1142,13 @@ export function PhotoEditor({
       {block.image ? (
         <div className="flex flex-wrap items-end gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element -- preview of the uploaded photo */}
-          <img src={block.image} alt="" className="h-60 w-auto max-w-full rounded-[20px] border border-ink/10 bg-white object-contain p-3" />
+          <img
+            src={block.image}
+            alt=""
+            className={`w-auto max-w-full rounded-[20px] border object-contain ${
+              dark ? "h-28 border-white/10 bg-[image:var(--grad-footer-graphite)] p-5" : "h-60 border-ink/10 bg-white p-3"
+            }`}
+          />
           <div className="flex gap-2">
             <button type="button" disabled={busy} onClick={() => input.current?.click()} className={smallButton}>
               {busy ? <Spinner dark /> : <Pencil size={16} aria-hidden="true" />} {busy ? "Завантажуємо фото…" : "Замінити фото"}

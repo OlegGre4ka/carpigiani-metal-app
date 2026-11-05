@@ -7,7 +7,7 @@ import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
 import { getCurrentUser } from "@/lib/admin/backend";
 import { loadEquipmentCategories, loadSiteBrands } from "@/lib/equipment-categories";
-import { loadContacts, loadEquipmentMap, loadGeneral, loadNewsMenu, loadSupportMenu } from "@/lib/site-pages";
+import { loadContacts, loadEquipmentMap, loadFooter, loadGeneral, loadNewsMenu, loadSupportMenu } from "@/lib/site-pages";
 import { siteFontCss, siteFontVariables } from "@/lib/site-fonts";
 import { ContactsSync } from "@/components/contacts-sync";
 import { SiteFooter } from "@/components/site-footer";
@@ -110,10 +110,11 @@ async function HeaderForVisitor() {
 
 // Footer with the contacts from the admin panel; the phones also go to the contact forms
 async function FooterWithContacts() {
-  const contacts = await loadContacts(await getLocale());
+  const locale = await getLocale();
+  const [contacts, footer] = await Promise.all([loadContacts(locale), loadFooter(locale)]);
   return (
     <>
-      <SiteFooter contacts={contacts} />
+      <SiteFooter contacts={contacts} footer={footer} />
       {contacts && <ContactsSync phones={contacts.phones} />}
     </>
   );

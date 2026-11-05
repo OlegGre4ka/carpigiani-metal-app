@@ -2,6 +2,8 @@ import "server-only";
 
 import { cache } from "react";
 
+import type { Network } from "@/components/social-icons";
+
 // The Next.js server talks to the API directly
 const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:8000";
 
@@ -251,6 +253,29 @@ export const loadContacts = cache(async (lang: string): Promise<SiteContacts | n
     const response = await fetch(`${BACKEND_URL}/api/pages/contacts?${query}`, { cache: "no-store" });
     if (!response.ok) return null;
     return (await response.json()) as SiteContacts;
+  } catch {
+    return null;
+  }
+});
+
+/** The footer (admin panel → Загальні налаштування → Футер, 5.11) in the language of the page:
+ *  the shown blocks in their order, the text under the name, the own logo (empty: the cone),
+ *  the shown socials and the links. Null: not answered yet (the footer shows what it always had). */
+export type SiteFooterData = {
+  about: string;
+  logo: string;
+  socials: { network: Network; url: string }[];
+  blocks: ("company" | "address" | "contacts" | "links")[];
+  links_title: string;
+  links: { title: string; href: string }[];
+};
+
+export const loadFooter = cache(async (lang: string): Promise<SiteFooterData | null> => {
+  try {
+    const query = new URLSearchParams({ lang: lang === "en" ? "en" : "uk" });
+    const response = await fetch(`${BACKEND_URL}/api/pages/footer?${query}`, { cache: "no-store" });
+    if (!response.ok) return null;
+    return (await response.json()) as SiteFooterData;
   } catch {
     return null;
   }
