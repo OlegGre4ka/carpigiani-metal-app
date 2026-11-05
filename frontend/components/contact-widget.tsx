@@ -8,6 +8,11 @@ import { ContactForm } from "@/components/contact-form";
 // Shows the "up" button after this much scrolling
 const SHOW_UP_AFTER = 300;
 
+// The floating "Contact us" button is hidden for now (5.11, the client does not want it).
+// Kept in the code: may be removed at the end of the project (claude/hidden.md in the project).
+// Hidden: the "up" button takes its place in the corner.
+const SHOW_CONTACT_FAB = false;
+
 /** Put on pages with the contact form in the right column: equipment (components/site-page.tsx)
  *  and news (name "", components/news-article.tsx). While the page is open, <html> gets
  *  data-equipment-page="<equipment name>": the floating button hides on large screens and
@@ -88,7 +93,9 @@ export function ContactWidget() {
         aria-label={t("toTop")}
         // inert: hidden from screen readers and from the keyboard, and a focus inside goes away
         inert={!(showUp && !open)}
-        className={`contact-up metal-round fixed right-8 bottom-26 z-58 flex size-14 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-[#05070b] shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:text-white max-[820px]:right-5 max-[820px]:bottom-22 max-[820px]:size-12 ${
+        className={`contact-up metal-round fixed z-58 ${
+          SHOW_CONTACT_FAB ? "right-8 bottom-26 max-[820px]:right-5 max-[820px]:bottom-22" : "right-7 bottom-7 max-[820px]:right-4 max-[820px]:bottom-4"
+        } flex size-14 items-center justify-center rounded-full border-2 border-white/90 bg-[image:var(--metal)] text-[#05070b] shadow-[inset_0_-4px_8px_rgb(var(--brand-rgb)/0.18),0_12px_26px_rgb(var(--ink-rgb)/0.25)] transition-all duration-300 hover:scale-112 hover:text-white max-[820px]:size-12 ${
           showUp && !open ? "opacity-100" : "pointer-events-none translate-y-3 opacity-0"
         }`}
       >
@@ -107,7 +114,7 @@ export function ContactWidget() {
       </button>
 
       {/* Form: a card above the button; on phones a panel from the bottom over a dimmed page */}
-      {open && (
+      {SHOW_CONTACT_FAB && open && (
         <>
           <div aria-hidden="true" onClick={close} className="scrim-in fixed inset-0 z-58 hidden bg-[rgb(var(--ink-rgb)/0.45)] max-[820px]:block" />
           <div
@@ -133,7 +140,8 @@ export function ContactWidget() {
         </>
       )}
 
-      {/* Main button */}
+      {/* Main button (hidden for now, see SHOW_CONTACT_FAB) */}
+      {SHOW_CONTACT_FAB && (
       <button
         ref={fabRef}
         type="button"
@@ -160,6 +168,7 @@ export function ContactWidget() {
         <span className="max-[820px]:hidden">{t("open")}</span>
         <span className="hidden max-[820px]:inline">{t("openShort")}</span>
       </button>
+      )}
     </>
   );
 }
