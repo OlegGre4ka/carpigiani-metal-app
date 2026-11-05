@@ -23,6 +23,7 @@ from app.schemas.settings import (
     DEFAULT_CONTACTS,
     DEFAULT_FOOTER,
     DEFAULT_GENERAL,
+    FOOTER_COLUMNS,
     FOOTER_LOGOS,
     Contacts,
     Footer,
@@ -164,35 +165,71 @@ def find_address(q: Annotated[str, Query(min_length=3, max_length=200)]) -> list
 # ---------- Footer (5.11) ----------
 
 
+# The first footer (saved before the parts) had 4 blocks in a row: where their parts go
+OLD_BLOCKS = {
+    "company": ["brand", "about"],
+    "address": ["address", "socials"],
+    "contacts": ["contacts"],
+    "links": ["links"],
+}
+
+
 def footer_of(db: DbSession) -> dict:
     """The saved footer, or the one the site had before it was first saved."""
     row = db.get(SiteSetting, "footer")
-    return {**DEFAULT_FOOTER, **(row.data if row else {})}
+    data = {**DEFAULT_FOOTER, **(row.data if row else {})}
+    old = data.pop("blocks", None)
+    if old and not (row and "pieces" in row.data):
+        # Saved with the 4 blocks (5.11, the first version): each block becomes a column
+        pieces = []
+        for index, block in enumerate(old, start=1):
+            pieces += [
+                {"key": key, "column": index, "visible": block["visible"]}
+                for key in OLD_BLOCKS[block["key"]]
+            ]
+        pieces.append({"key": "about2", "column": 2, "visible": True})
+        data["pieces"] = pieces
+    return data
 
 
 @public_router.get("/footer")
 def get_footer(db: DbSession, lang: Lang = "uk") -> dict:
-    """The footer in the language of the page: the shown blocks in their order (links only
-    with at least one link), the shown socials."""
+    """The footer in the language of the page: the columns that have something to show, each
+    with its parts in their order; the texts, the logo, the shown socials and the links."""
     data = footer_of(db)
     links = [
         {"title": pick(link["title"], lang) or link["href"], "href": link["href"]}
         for link in data["links"]
     ]
-    blocks = [
-        block["key"]
-        for block in data["blocks"]
-        if block["visible"] and (block["key"] != "links" or links)
+    socials = [
+        {"network": s["network"], "url": s["url"]}
+        for s in data["socials"]
+        if s["visible"]
     ]
+    about = pick(data["about"], lang)
+    about2 = pick(data["about2"], lang)
+    # A part with nothing in it is left out (an empty text, no links, no socials)
+    has = {
+        "brand": True,
+        "about": bool(about.strip()),
+        "about2": bool(about2.strip()),
+        "address": True,
+        "socials": bool(socials),
+        "contacts": True,
+        "links": bool(links),
+    }
+    columns: list[list[str]] = [[] for _ in range(FOOTER_COLUMNS)]
+    for piece in data["pieces"]:
+        if piece["visible"] and has[piece["key"]]:
+            columns[piece["column"] - 1].append(piece["key"])
     return {
-        "about": pick(data["about"], lang),
+        "title": pick(data["title"], lang),
+        "about": about,
+        "about2": about2,
         "logo": data["logo"],
-        "socials": [
-            {"network": s["network"], "url": s["url"]}
-            for s in data["socials"]
-            if s["visible"]
-        ],
-        "blocks": blocks,
+        "show_logo": data["show_logo"],
+        "socials": socials,
+        "columns": [column for column in columns if column],
         "links_title": pick(data["links_title"], lang),
         "links": links,
     }

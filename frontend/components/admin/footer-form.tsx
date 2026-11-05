@@ -1,7 +1,7 @@
 "use client";
 
 import { App, Button, Input, Segmented, Select, Switch } from "antd";
-import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
@@ -14,29 +14,58 @@ import { AdminLoader } from "@/components/cone-loader";
 import { NETWORKS, SocialIcon, type Network } from "@/components/social-icons";
 
 // "Загальні налаштування" → "Футер" (5.11): the footer of every page of the site. The client
-// changes the text under the name of the company, the logo (none: the cone of the site), the
-// socials, the order of the blocks and which are shown, and the block "Links" (hidden at first).
+// changes the texts (the second one optional), the logo (none: the cone of the site), the
+// socials, the links (hidden at first) and where each part stands: in which of the 4 columns
+// and in which order (moved by arrows; an empty column is not shown on the site).
 // The name, the address, the phones and the email are in "Contacts" (one place for them).
 // Data: backend/app/routers/settings_router.py (footer).
 
 const API = "/api/admin/settings/footer";
 
-type BlockKey = "company" | "address" | "contacts" | "links";
+type PieceKey = "brand" | "about" | "about2" | "address" | "socials" | "contacts" | "links";
+type Piece = { key: PieceKey; column: number; visible: boolean };
 type Footer = {
+  title: Text;
   about: Text;
+  about2: Text;
   logo: string;
+  show_logo: boolean;
   socials: { network: Network; url: string; visible: boolean }[];
-  blocks: { key: BlockKey; visible: boolean }[];
+  pieces: Piece[];
   links_title: Text;
   links: { title: Text; href: string }[];
 };
 
-const BLOCKS: Record<BlockKey, { title: string; text: string }> = {
-  company: { title: "Про компанію", text: "Лого, назва компанії й текст під нею" },
-  address: { title: "Адреса й соцмережі", text: "Адреса з «Контактів», під нею значки соцмереж" },
-  contacts: { title: "Телефони й пошта", text: "З розділу «Контакти»" },
-  links: { title: "Посилання", text: "Свій список посилань (видно, коли є хоча б одне)" },
+const PIECES: Record<PieceKey, { title: string; text: string }> = {
+  brand: { title: "Лого й заголовок", text: "Нижче, у «Тексти й лого»" },
+  about: { title: "Текст", text: "Нижче, у «Тексти й лого»" },
+  about2: { title: "Другий текст", text: "Порожній — на сайті не видно" },
+  address: { title: "Адреса", text: "З «Контактів»" },
+  socials: { title: "Соцмережі", text: "Значки, список нижче" },
+  contacts: { title: "Телефони й пошта", text: "З «Контактів»" },
+  links: { title: "Посилання", text: "Видно, коли є хоча б одне" },
 };
+const COLUMNS = [1, 2, 3, 4];
+
+/** The parts with one moved: up/down inside its column, or into the column on the left/right
+ *  (it goes to the bottom of that column) */
+function movePiece(pieces: Piece[], key: PieceKey, step: "up" | "down" | "left" | "right"): Piece[] {
+  const piece = pieces.find((p) => p.key === key)!;
+  if (step === "left" || step === "right") {
+    const column = piece.column + (step === "left" ? -1 : 1);
+    return [...pieces.filter((p) => p.key !== key), { ...piece, column }];
+  }
+  const same = pieces.filter((p) => p.column === piece.column);
+  const other = same[same.indexOf(piece) + (step === "up" ? -1 : 1)];
+  const a = pieces.indexOf(piece);
+  const b = pieces.indexOf(other);
+  const next = [...pieces];
+  [next[a], next[b]] = [next[b], next[a]];
+  return next;
+}
+
+const pieceButton =
+  "flex size-7 cursor-pointer items-center justify-center rounded-full text-white/80 transition-colors hover:bg-white/15 hover:text-white disabled:cursor-default disabled:opacity-25 disabled:hover:bg-transparent";
 
 const MAX_SOCIALS = 10;
 const MAX_LINKS = 10;
@@ -198,30 +227,73 @@ export function FooterForm() {
       {/* One language bar for all the texts of the page */}
       <div className="mb-4.5 flex justify-end motion-safe:animate-fade-up motion-safe:[animation-delay:100ms]">{langBar}</div>
 
-      <Section title="Блоки футера" delay={120}>
-        <Hint>Порядок тут — порядок на сайті (зліва направо; на телефоні — згори вниз). Вимкнений блок на сайті не видно.</Hint>
-        <ul className="flex flex-col gap-2">
-          {data.blocks.map((block, index) => (
-            <li key={block.key} className={`${row} ${block.visible ? "" : "opacity-60"}`}>
-              <div className="min-w-0 flex-1">
-                <div className="font-bold text-ink">{BLOCKS[block.key].title}</div>
-                <div className="text-sm text-ink-soft">{BLOCKS[block.key].text}</div>
+      <Section title="Розташування" delay={120}>
+        <Hint>
+          Колонки — як на сайті, зліва направо (на телефоні — одна під одною). Стрілки ← → переносять частину в сусідню колонку, ↑ ↓ —
+          вище чи нижче в колонці. Око — показати чи сховати. Порожня колонка на сайті не видна.
+        </Hint>
+        <div className="grid grid-cols-4 gap-3 max-[1300px]:grid-cols-2 max-[600px]:grid-cols-1">
+          {COLUMNS.map((column) => {
+            const inColumn = data.pieces.filter((p) => p.column === column);
+            return (
+              <div key={column} className="flex min-h-40 flex-col gap-2 rounded-[22px] bg-[image:var(--grad-footer-graphite)] p-2.5 text-white">
+                <p className="px-1.5 pt-0.5 text-[11px] font-extrabold tracking-[1.5px] text-white/60 uppercase">Колонка {column}</p>
+                {inColumn.length === 0 && <p className="m-auto px-2 text-center text-sm text-white/45">Порожньо — на сайті не видно</p>}
+                {inColumn.map((piece, index) => {
+                  const move = (step: "up" | "down" | "left" | "right") => change({ pieces: movePiece(data.pieces, piece.key, step) });
+                  return (
+                    <div key={piece.key} className={`rounded-2xl bg-white/10 px-3 pt-2 pb-1.5 ${piece.visible ? "" : "opacity-50"}`}>
+                      <div className="text-sm font-bold">{PIECES[piece.key].title}</div>
+                      <div className="text-xs text-white/60">{PIECES[piece.key].text}</div>
+                      <div className="mt-1 flex items-center justify-between">
+                        <span className="flex">
+                          <button type="button" aria-label="У колонку ліворуч" disabled={column === 1} onClick={() => move("left")} className={pieceButton}>
+                            <ArrowLeft size={15} />
+                          </button>
+                          <button type="button" aria-label="Вище" disabled={index === 0} onClick={() => move("up")} className={pieceButton}>
+                            <ArrowUp size={15} />
+                          </button>
+                          <button type="button" aria-label="Нижче" disabled={index === inColumn.length - 1} onClick={() => move("down")} className={pieceButton}>
+                            <ArrowDown size={15} />
+                          </button>
+                          <button type="button" aria-label="У колонку праворуч" disabled={column === COLUMNS.length} onClick={() => move("right")} className={pieceButton}>
+                            <ArrowRight size={15} />
+                          </button>
+                        </span>
+                        <button
+                          type="button"
+                          aria-label={piece.visible ? "Сховати на сайті" : "Показати на сайті"}
+                          title={piece.visible ? "Видно на сайті — сховати" : "Сховано — показати"}
+                          onClick={() => change({ pieces: data.pieces.map((p) => (p.key === piece.key ? { ...p, visible: !p.visible } : p)) })}
+                          className={pieceButton}
+                        >
+                          {piece.visible ? <Eye size={15} /> : <EyeOff size={15} />}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <OrderButtons index={index} count={data.blocks.length} onMove={(step) => change({ blocks: moved(data.blocks, index, step) })} />
-              <label className="flex shrink-0 cursor-pointer items-center gap-2 text-sm font-semibold">
-                <Switch
-                  checked={block.visible}
-                  onChange={(visible) => change({ blocks: data.blocks.map((b, i) => (i === index ? { ...b, visible } : b)) })}
-                />
-                На сайті
-              </label>
-            </li>
-          ))}
-        </ul>
+            );
+          })}
+        </div>
       </Section>
 
-      <Section title="Про компанію" delay={160}>
-        <Field label="Лого біля назви">
+      <Section title="Тексти й лого" delay={160}>
+        <Field label={`Заголовок (${lang === "uk" ? "UA" : "EN"})`}>
+          <TextInput
+            value={data.title}
+            lang={lang}
+            placeholder="Порожньо — назва компанії з «Контактів»"
+            onChange={(title) => change({ title })}
+            className="max-w-110"
+          />
+        </Field>
+        <label className="mt-4 mb-1 flex w-fit cursor-pointer items-center gap-3 text-sm font-bold text-ink">
+          <Switch checked={data.show_logo} onChange={(show_logo) => change({ show_logo })} />
+          Показувати лого біля заголовка
+        </label>
+        <Field label="Лого">
           <PhotoEditor
             block={{ id: "logo", type: "photo", visible: true, image: data.logo || null }}
             onChange={(block) => change({ logo: block.image ?? "" })}
@@ -230,13 +302,17 @@ export function FooterForm() {
             hint="Найкраще PNG або WebP з прозорим фоном, світле (футер темний). Не завантажили — на сайті ріжок, як зараз."
           />
         </Field>
-        <Field label={`Текст під назвою (${lang === "uk" ? "UA" : "EN"})`} className="mt-4">
+        <Field label={`Текст (${lang === "uk" ? "UA" : "EN"})`} className="mt-4">
           <TextInput value={data.about} lang={lang} area maxLength={600} onChange={(about) => change({ about })} />
         </Field>
+        <Field label={`Другий текст (${lang === "uk" ? "UA" : "EN"})`} className="mt-4">
+          <TextInput value={data.about2} lang={lang} area maxLength={600} onChange={(about2) => change({ about2 })} />
+        </Field>
+        <Hint>Новий рядок у тексті — новий рядок на сайті. Довгий текст можна розділити на два й поставити другий в іншу колонку, у «Розташуванні».</Hint>
       </Section>
 
       <Section title="Соцмережі" delay={200}>
-        <Hint>Значки під адресою. Оберіть мережу й вставте повне посилання на сторінку (https://…). Вимкнену на сайті не видно.</Hint>
+        <Hint>Значки соцмереж (де вони стоять — у «Розташуванні»). Оберіть мережу й вставте повне посилання на сторінку (https://…). Вимкнену на сайті не видно.</Hint>
         <ul className="flex flex-col gap-2">
           {data.socials.map((social, index) => {
             const set = (next: Partial<Footer["socials"][number]>) =>
@@ -287,8 +363,8 @@ export function FooterForm() {
 
       <Section title="Посилання" delay={240}>
         <Hint>
-          Окремий блок футера зі своїм списком: сторінки сайту (/news) або інші сайти (https://…). Щоб він з&apos;явився на сайті,
-          увімкніть його вгорі, у «Блоках футера».
+          Окрема частина футера зі своїм списком: сторінки сайту (/news) або інші сайти (https://…). Щоб вона з&apos;явилась на сайті,
+          покажіть «Посилання» (око) вгорі, у «Розташуванні».
         </Hint>
         <Field label={`Заголовок блоку (${lang === "uk" ? "UA" : "EN"})`}>
           <TextInput value={data.links_title} lang={lang} onChange={(links_title) => change({ links_title })} className="max-w-110" />

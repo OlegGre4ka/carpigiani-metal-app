@@ -258,14 +258,22 @@ export const loadContacts = cache(async (lang: string): Promise<SiteContacts | n
   }
 });
 
+/** A part of the footer the client puts into a column (admin panel → Футер) */
+export type FooterPiece = "brand" | "about" | "about2" | "address" | "socials" | "contacts" | "links";
+
 /** The footer (admin panel → Загальні налаштування → Футер, 5.11) in the language of the page:
- *  the shown blocks in their order, the text under the name, the own logo (empty: the cone),
- *  the shown socials and the links. Null: not answered yet (the footer shows what it always had). */
+ *  the columns with something to show, each with its parts in their order; the texts, the own
+ *  logo (empty: the cone), the shown socials and the links. Null: not answered yet (the footer
+ *  shows what it always had). */
 export type SiteFooterData = {
+  /** The title next to the logo; empty: the name of the company */
+  title: string;
   about: string;
+  about2: string;
   logo: string;
+  show_logo: boolean;
   socials: { network: Network; url: string }[];
-  blocks: ("company" | "address" | "contacts" | "links")[];
+  columns: FooterPiece[][];
   links_title: string;
   links: { title: string; href: string }[];
 };

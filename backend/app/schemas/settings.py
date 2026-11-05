@@ -77,8 +77,11 @@ DEFAULT_GENERAL = {"font_title": "inter-tight", "font_text": "inter-tight"}
 Network = Literal[
     "facebook", "instagram", "youtube", "telegram", "viber", "tiktok", "linkedin"
 ]
-# The blocks of the footer, in the order the client puts them
-FooterBlockKey = Literal["company", "address", "contacts", "links"]
+# The parts of the footer (5.11): the client puts each into one of the columns, in his order
+FooterPieceKey = Literal[
+    "brand", "about", "about2", "address", "socials", "contacts", "links"
+]
+FOOTER_COLUMNS = 4
 FOOTER_LOGOS = "/uploads/footer/"
 
 
@@ -101,8 +104,12 @@ class Social(BaseModel):
         return value
 
 
-class FooterBlock(BaseModel):
-    key: FooterBlockKey
+class FooterPiece(BaseModel):
+    """A part of the footer: in which column (1–4) and whether it is shown. The order of the
+    list is the order inside the columns."""
+
+    key: FooterPieceKey
+    column: Annotated[int, Field(ge=1, le=FOOTER_COLUMNS)] = 1
     visible: bool = True
 
 
@@ -120,15 +127,20 @@ class FooterLink(BaseModel):
 
 
 class Footer(BaseModel):
-    """The footer of every page of the site (5.11): the text under the name of the company, its
-    own logo (empty: the cone of the site), the socials, the order of the blocks and whether
-    each is shown, and the block "Links". The name, the address, the phones and the email come
-    from "Contacts"; the last line "© … · made by AO Studio" is always there."""
+    """The footer of every page of the site (5.11): the texts (the second one optional), its own
+    logo (empty: the cone of the site), the socials, the links, and where each part stands: in
+    which of the 4 columns and in which order (an empty column is not shown). The name, the
+    address, the phones and the email come from "Contacts"; the last line "© … · made by AO
+    Studio" is always there."""
 
+    # The title next to the logo (empty: the name of the company from "Contacts")
+    title: Text200 = Text200()
     about: Text600 = Text600()
+    about2: Text600 = Text600()
     logo: Annotated[str, Field(max_length=300)] = ""
+    show_logo: bool = True
     socials: Annotated[list[Social], Field(max_length=10)] = []
-    blocks: Annotated[list[FooterBlock], Field(min_length=4, max_length=4)]
+    pieces: Annotated[list[FooterPiece], Field(min_length=7, max_length=7)]
     links_title: Text200 = Text200()
     links: Annotated[list[FooterLink], Field(max_length=10)] = []
 
@@ -139,22 +151,24 @@ class Footer(BaseModel):
             raise ValueError("Лого треба завантажити через адмін-панель")
         return value
 
-    @field_validator("blocks")
+    @field_validator("pieces")
     @classmethod
-    def _each_once(cls, value: list[FooterBlock]) -> list[FooterBlock]:
-        if len({block.key for block in value}) != len(value):
-            raise ValueError("Кожен блок футера має бути один раз")
+    def _each_once(cls, value: list[FooterPiece]) -> list[FooterPiece]:
+        if len({piece.key for piece in value}) != len(value):
+            raise ValueError("Кожна частина футера має бути один раз")
         return value
 
 
 # What the footer had before the client saved it (the same as before 5.11). "Links" is there
-# but hidden until the client fills and shows it.
+# but hidden until the client fills and shows it; the second text is empty (not shown).
 DEFAULT_FOOTER = {
     "about": {
         "uk": "Обладнання для морозива та джелатерій. Італійська якість, сервіс в Україні.",
         "en": "Equipment for ice cream makers and gelaterias. Italian quality, service in Ukraine.",
     },
+    "title": {"uk": "", "en": ""},
     "logo": "",
+    "show_logo": True,
     "socials": [
         {
             "network": "facebook",
@@ -172,11 +186,15 @@ DEFAULT_FOOTER = {
             "visible": True,
         },
     ],
-    "blocks": [
-        {"key": "company", "visible": True},
-        {"key": "address", "visible": True},
-        {"key": "contacts", "visible": True},
-        {"key": "links", "visible": False},
+    "about2": {"uk": "", "en": ""},
+    "pieces": [
+        {"key": "brand", "column": 1, "visible": True},
+        {"key": "about", "column": 1, "visible": True},
+        {"key": "address", "column": 2, "visible": True},
+        {"key": "socials", "column": 2, "visible": True},
+        {"key": "about2", "column": 2, "visible": True},
+        {"key": "contacts", "column": 3, "visible": True},
+        {"key": "links", "column": 4, "visible": False},
     ],
     "links_title": {"uk": "Корисні посилання", "en": "Useful links"},
     "links": [],
