@@ -36,7 +36,7 @@ const link = "text-on-navy transition-colors hover:text-white";
 // Long words (an e-mail, an address) wrap instead of pushing the footer wider
 const wrap = "min-w-0 [overflow-wrap:anywhere]";
 const textSize = "text-[15px] leading-[1.6] max-[820px]:text-[13px]";
-// A column with a text is as wide as the text allows (up to 360 px), the others as their content
+// A column with a text gets a bigger share of the width
 const hasText = (column: FooterPiece[]) => column.includes("about") || column.includes("about2");
 
 export function SiteFooter({ contacts, footer }: { contacts?: SiteContacts | null; footer?: SiteFooterData | null }) {
@@ -46,7 +46,7 @@ export function SiteFooter({ contacts, footer }: { contacts?: SiteContacts | nul
   const company = contacts ? contacts.company : t("company");
   const data = footer ?? { ...defaultFooter, about: t("about") };
 
-  const about = (text: string) => <p className={`${wrap} text-sm leading-normal whitespace-pre-line text-on-navy-soft`}>{text}</p>;
+  const about = (text: string) => <p className={`${wrap} max-w-110 text-sm leading-normal whitespace-pre-line text-on-navy-soft max-[1100px]:max-w-none`}>{text}</p>;
 
   const pieces: Record<FooterPiece, ReactNode> = {
     // The logo (can be switched off) and the title (its own, or the name of the company)
@@ -124,9 +124,11 @@ export function SiteFooter({ contacts, footer }: { contacts?: SiteContacts | nul
     ),
   };
 
-  // Large screens: the columns in one row spread evenly. Tablets and phones: the column with the
+  // Large screens: the columns in one row, each takes its share of the width (a column with a text
+  // a bit more), the same gap between any number of them (5.11: spread edge to edge, two columns
+  // stood too far apart). Tablets and phones: the column with the
   // name of the company on its own row, the others side by side, as many as fit.
-  const columns = data.columns.map((column) => (hasText(column) ? "minmax(0,22.5rem)" : "auto")).join(" ");
+  const columns = data.columns.map((column) => (hasText(column) ? "minmax(0,1.5fr)" : "minmax(0,1fr)")).join(" ");
 
   return (
     <div className="mx-auto w-full max-w-360 px-20 pb-10 max-[820px]:px-4 max-[820px]:pb-24">
@@ -138,7 +140,7 @@ export function SiteFooter({ contacts, footer }: { contacts?: SiteContacts | nul
           {data.columns.length > 0 && (
             <div
               style={{ "--footer-cols": columns } as CSSProperties}
-              className="relative z-1 grid grid-cols-(--footer-cols) items-start justify-between gap-10 px-12 pt-7 pb-5 max-[1100px]:grid-cols-[repeat(auto-fit,minmax(170px,1fr))] max-[1100px]:justify-normal max-[1100px]:gap-x-10 max-[1100px]:gap-y-5 max-[820px]:grid-cols-[repeat(auto-fit,minmax(140px,1fr))] max-[820px]:gap-x-4 max-[820px]:gap-y-4 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-6"
+              className="relative z-1 grid grid-cols-(--footer-cols) items-start gap-x-14 gap-y-5 px-12 pt-7 pb-5 max-[1100px]:grid-cols-[repeat(auto-fit,minmax(170px,1fr))] max-[1100px]:gap-x-10 max-[1100px]:gap-y-5 max-[820px]:grid-cols-[repeat(auto-fit,minmax(140px,1fr))] max-[820px]:gap-x-4 max-[820px]:gap-y-4 max-[820px]:px-6 max-[820px]:pt-6 max-[820px]:pb-6"
             >
               {data.columns.map((column) => (
                 <div key={column.join("-")} className={`flex min-w-0 flex-col gap-3 ${column.includes("brand") ? "max-[1100px]:col-span-full" : ""} max-[1100px]:max-w-none`}>
