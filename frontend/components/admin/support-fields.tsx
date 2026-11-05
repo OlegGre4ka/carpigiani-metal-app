@@ -1,20 +1,27 @@
 "use client";
 
-import { Input, Select, Switch } from "antd";
+import { Input, Segmented, Select, Switch } from "antd";
 
 import { Field, Hint, TextInput, type Lang, type Text } from "./page-block-editors";
 import type { Topic } from "./news-topics";
 
-// Settings of a page of the "Support" menu (4.11): its name in the menu, topic of news, the
-// article of the topic shown open (the menu item leads to its address), the "contact us" card
+// Settings of a page of the "Support" menu (4.11): its name in the menu, how it shows the
+// articles (5.11: one open for reading, or a list with a preview on top and its own address),
+// topic of news, the article of the topic shown open or in the preview, the "contact us" card
 // and visibility.
 
 /** The list of support pages in the admin panel */
 export const SUPPORT_PATH = "/fofkas-adminpanel/support";
 
+/** article: the chosen article open for reading; list: its preview on top, the others under it */
+export type SupportLayout = "article" | "list";
+
 export type SupportMeta = {
   title_uk: string;
   title_en: string;
+  layout: SupportLayout;
+  /** The address of a list (an article page has none) */
+  href: string;
   topic_id: number | null;
   main_news_id: number | null;
   is_visible: boolean;
@@ -42,6 +49,7 @@ export function SupportFields({
 }) {
   const set = (next: Partial<SupportMeta>) => onChange({ ...meta, ...next });
   const titleKey = lang === "uk" ? "title_uk" : "title_en";
+  const isList = meta.layout === "list";
 
   return (
     <div className="flex flex-col gap-4.5">
@@ -53,6 +61,28 @@ export function SupportFields({
           onChange={(e) => set({ [titleKey]: e.target.value })}
         />
       </Field>
+
+      <Field label="Вигляд сторінки">
+        <Segmented<SupportLayout>
+          value={meta.layout}
+          onChange={(layout) => set({ layout })}
+          options={[
+            { value: "article", label: "Стаття відкрита для читання" },
+            { value: "list", label: "Список статей" },
+          ]}
+        />
+      </Field>
+      {isList && (
+        <Field label="Адреса сторінки зі списком">
+          <Input
+            value={meta.href}
+            maxLength={300}
+            placeholder="/support-technologies"
+            onChange={(e) => set({ href: e.target.value })}
+            className="max-w-110"
+          />
+        </Field>
+      )}
 
       <div className="grid grid-cols-[1fr_1.3fr] gap-4 max-[800px]:grid-cols-1">
         <Field label="Тема новин">
@@ -66,7 +96,7 @@ export function SupportFields({
             options={topics.map((topic) => ({ value: topic.id, label: topic.title_uk }))}
           />
         </Field>
-        <Field label="Відкрита стаття на сторінці">
+        <Field label={isList ? "Стаття в прев'ю зверху" : "Відкрита стаття на сторінці"}>
           <Select
             value={meta.main_news_id ?? undefined}
             allowClear
@@ -83,8 +113,10 @@ export function SupportFields({
         </Field>
       </div>
       <Hint>
-        Пункт меню веде на адресу обраної статті: вона відкрита для читання, решта статей теми — під нею картками й у
-        меню праворуч. Не обрали — найновіша. Статті ті самі, що в «Новинах»: нову можна додати внизу, у списку статей.
+        {isList
+          ? "Пункт меню веде на адресу сторінки: обрана стаття — великою карткою зверху, решта статей теми — під нею по дві в ряд і в меню праворуч. Стаття відкривається за своєю адресою, без карток під нею. Не обрали — найновіша."
+          : "Пункт меню веде на адресу обраної статті: вона відкрита для читання, решта статей теми — під нею картками й у меню праворуч. Не обрали — найновіша."}{" "}
+        Статті ті самі, що в «Новинах»: нову можна додати внизу, у списку статей.
       </Hint>
 
       <div className="rounded-2xl bg-mist/60 px-4 py-3.5">

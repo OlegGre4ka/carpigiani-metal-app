@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Breadcrumbs } from "@/components/breadcrumbs";
@@ -7,7 +7,7 @@ import { EquipmentPageMark } from "@/components/contact-widget";
 import { SectionMark } from "@/components/section-mark";
 import { NewsText } from "@/components/news-article";
 import { SupportArrows } from "@/components/news-arrows";
-import { NewsGrid } from "@/components/news-cards";
+import { NewsGrid, PreviewNews } from "@/components/news-cards";
 import { NewsPhoto } from "@/components/news-photo";
 import { Reveal } from "@/components/reveal";
 import { Block } from "@/components/site-page";
@@ -22,13 +22,145 @@ import type { SitePageData } from "@/lib/site-pages";
 // the title, the main photo and the blocks. Right: all the articles of the topic as a menu (the
 // open one a dark pill) and the "contact us" card with its own title and text, the form and a
 // link to the Contacts page. At the bottom: the other articles of the topic as news cards.
+// A "list" page (5.11, Technologies): at its own address the chosen article as a big preview
+// card and the other articles under it two in a row; the right column the same, the menu of
+// articles closed. An article opened from a list: "Support › <page> › <article>", no cards under
+// it (the arrows lead from article to article).
 
 const delay = (index: number) => (index < 3 ? 120 + index * 90 : 0);
 const radius: Record<string, number> = { slider: 40, gallery: 28, video: 32, text: 24 };
 
 export async function SupportPage({ page, href }: { page: SitePageData; href: string }) {
+  if (page.support_layout === "list" && page.featured) return <SupportList page={page} featured={page.featured} href={href} />;
+  return <SupportArticle page={page} href={href} />;
+}
+
+/** A "list" page: the preview of the chosen article, the other articles two in a row */
+async function SupportList({ page, featured, href }: { page: SitePageData; featured: NonNullable<SitePageData["featured"]>; href: string }) {
+  const t = await getTranslations();
+  const linkOf = (articleHref: string) => (page.support_id ? `${articleHref}?support=${page.support_id}` : articleHref);
+  const articles = (page.articles ?? []).map((article) => ({ ...article, href: linkOf(article.href) }));
+  const others = articles.filter((article) => article.id !== featured.id);
+
+  return (
+    <main className="mx-auto w-full max-w-360 flex-1 px-20 pb-18 max-[820px]:px-4 max-[820px]:pb-12">
+      <EquipmentPageMark name="" />
+      <SectionMark section="support" />
+      <Breadcrumbs items={[{ title: t("Nav.support") }, { title: page.title }]} />
+      <h1 className="mb-5.5 w-fit max-w-full font-heading text-[33px] leading-[1.08] font-extrabold tracking-[-0.02em] metal-text-dark motion-safe:animate-fade-up motion-safe:[animation-delay:60ms] max-[820px]:text-[25px]">
+        {page.title}
+      </h1>
+      <div className="grid grid-cols-[minmax(0,1fr)_340px] gap-10 max-[1100px]:grid-cols-[minmax(0,1fr)_300px] max-[1100px]:gap-7 max-[820px]:grid-cols-1">
+        <div className="flex min-w-0 flex-col gap-6 max-[820px]:gap-3.5">
+          <PreviewNews item={{ ...featured, href: linkOf(featured.href) }} />
+          {others.length > 0 && (
+            <section aria-label={t("SupportPage.articles")}>
+              <NewsGrid items={others} columns={2} />
+            </section>
+          )}
+        </div>
+        <SupportAside page={page} href={href} articles={articles} closed />
+      </div>
+    </main>
+  );
+}
+
+/** Right column: the menu of the articles of the topic and the sticky "contact us" card.
+ *  As tall as the left one, nothing with a transform around the sticky card.
+ *  open: the address of the article open on the page (a dark pill in the menu).
+ *  closed: the menu is folded, opened by its title (a "list" page, 5.11). */
+async function SupportAside({
+  page,
+  href,
+  articles,
+  open = "",
+  closed = false,
+}: {
+  page: SitePageData;
+  href: string;
+  articles: { href: string; title: string }[];
+  open?: string;
+  closed?: boolean;
+}) {
+  const t = await getTranslations();
+  const heading = page.topic_title ? t("SupportPage.articlesOf", { topic: page.topic_title }) : t("SupportPage.articles");
+  const list = (
+    <ul className="flex flex-col gap-0.5">
+      {articles.map((article) => (
+        <li key={article.href}>
+          {article.href === open ? (
+            // The article open on this page: a dark pill, as in the menu of news
+            <span aria-current="page" className="flex items-start gap-2 rounded-[14px] bg-navbar px-3 py-2 text-[14px] leading-snug font-bold text-white">
+              <span aria-hidden="true" className="mt-1.75 size-1.5 shrink-0 rounded-full bg-sky" />
+              <span className="min-w-0">{article.title}</span>
+            </span>
+          ) : (
+            <Link
+              href={article.href}
+              className="group flex items-start gap-2 rounded-[14px] px-1.5 py-2 text-[14px] leading-snug font-bold text-navbar transition-colors hover:bg-mist"
+            >
+              <ArrowRight aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
+              <span className="min-w-0">{article.title}</span>
+            </Link>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+
+  return (
+    <aside className="flex min-w-0 flex-col gap-6">
+      {articles.length > 1 && (
+        <Reveal delay={150} radius={30} className="reveal-side">
+          <nav
+            aria-label={t("SupportPage.articles")}
+            className={`rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] px-4.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.09)] ${closed ? "py-1.5" : "pt-5 pb-3.5"}`}
+          >
+            {closed ? (
+              <details className="group/menu">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-[14px] px-1.5 py-3 text-[11px] font-extrabold tracking-[1.5px] text-steel uppercase transition-colors hover:text-navbar [&::-webkit-details-marker]:hidden">
+                  {heading}
+                  <ChevronDown aria-hidden="true" className="size-4.5 shrink-0 transition-transform duration-300 group-open/menu:rotate-180" />
+                </summary>
+                <div className="pb-2">{list}</div>
+              </details>
+            ) : (
+              <>
+                <p className="mb-2 px-1.5 text-[11px] font-extrabold tracking-[1.5px] text-steel uppercase">{heading}</p>
+                {list}
+              </>
+            )}
+          </nav>
+        </Reveal>
+      )}
+      <div className="sticky top-6">
+        <Reveal delay={350} radius={30}>
+          <div className="rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.96)] px-5 pt-5.5 pb-4.5 shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.16)]">
+            <ContactForm
+              variant="page"
+              heading="contact"
+              page={href}
+              subject={page.section_title || page.title}
+              customTitle={page.contact_title || undefined}
+              customText={page.contact_text || undefined}
+            />
+            <Link href="/contacts" className="mt-3 flex items-center justify-center gap-1.5 text-[13px] font-extrabold text-navbar hover:underline">
+              {t("SupportPage.toContacts")}
+              <ArrowRight aria-hidden="true" className="size-3.5" />
+            </Link>
+          </div>
+        </Reveal>
+      </div>
+    </aside>
+  );
+}
+
+/** An article open on the page (of an "article" page, or opened from a list) */
+async function SupportArticle({ page, href }: { page: SitePageData; href: string }) {
   const locale = await getLocale();
   const t = await getTranslations();
+  // Opened from a list (5.11): no cards of the other articles under it
+  const fromList = page.support_layout === "list";
   // An article of the topic opened from here stays in "Support" (4.11): ?support=<this page>;
   // the article of the menu item keeps its own address
   const linkOf = (articleHref: string) =>
@@ -103,69 +235,11 @@ export async function SupportPage({ page, href }: { page: SitePageData; href: st
           />
         </div>
 
-        {/* Right column: as tall as the left one, nothing with a transform around the sticky card */}
-        <aside className="flex min-w-0 flex-col gap-6">
-          {articles.length > 1 && (
-            <Reveal delay={150} radius={30} className="reveal-side">
-              <nav
-                aria-label={t("SupportPage.articles")}
-                className="rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] px-4.5 pt-5 pb-3.5 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.09)]"
-              >
-                <p className="mb-2 px-1.5 text-[11px] font-extrabold tracking-[1.5px] text-steel uppercase">
-                  {page.topic_title ? t("SupportPage.articlesOf", { topic: page.topic_title }) : t("SupportPage.articles")}
-                </p>
-                <ul className="flex flex-col gap-0.5">
-                  {articles.map((article) => {
-                    return (
-                      <li key={article.href}>
-                        {article.href === open ? (
-                          // The article open on this page: a dark pill, as in the menu of news
-                          <span aria-current="page" className="flex items-start gap-2 rounded-[14px] bg-navbar px-3 py-2 text-[14px] leading-snug font-bold text-white">
-                            <span aria-hidden="true" className="mt-1.75 size-1.5 shrink-0 rounded-full bg-sky" />
-                            <span className="min-w-0">{article.title}</span>
-                          </span>
-                        ) : (
-                          <Link
-                            href={article.href}
-                            className="group flex items-start gap-2 rounded-[14px] px-1.5 py-2 text-[14px] leading-snug font-bold text-navbar transition-colors hover:bg-mist"
-                          >
-                            <ArrowRight aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
-                            <span className="min-w-0">{article.title}</span>
-                          </Link>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
-            </Reveal>
-          )}
-          <div className="sticky top-6">
-            <Reveal delay={350} radius={30}>
-              <div className="rounded-[30px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.96)] px-5 pt-5.5 pb-4.5 shadow-[0_22px_50px_rgb(var(--shadow-rgb)/0.16)]">
-                <ContactForm
-                  variant="page"
-                  heading="contact"
-                  page={href}
-                  subject={page.section_title || page.title}
-                  customTitle={page.contact_title || undefined}
-                  customText={page.contact_text || undefined}
-                />
-                <Link
-                  href="/contacts"
-                  className="mt-3 flex items-center justify-center gap-1.5 text-[13px] font-extrabold text-navbar hover:underline"
-                >
-                  {t("SupportPage.toContacts")}
-                  <ArrowRight aria-hidden="true" className="size-3.5" />
-                </Link>
-              </div>
-            </Reveal>
-          </div>
-        </aside>
+        <SupportAside page={page} href={href} articles={articles} open={open} />
       </div>
 
       {/* The other articles of the topic, as news cards (no title over them, 4.11) */}
-      {others.length > 0 && (
+      {!fromList && others.length > 0 && (
         <section aria-label={t("SupportPage.articles")} className="mt-16 max-[820px]:mt-10">
           <NewsGrid items={others} />
         </section>

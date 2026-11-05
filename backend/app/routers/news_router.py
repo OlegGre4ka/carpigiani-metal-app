@@ -172,6 +172,12 @@ def summary_of(news: News, lang: Lang) -> str:
     summary = pick({"uk": news.summary_uk, "en": news.summary_en}, lang).strip()
     if summary:
         return summary
+    return text_start(news, lang, SUMMARY_FROM_TEXT)
+
+
+def text_start(news: News, lang: Lang, size: int) -> str:
+    """The beginning of the text of the news (its first text block), at most `size` letters,
+    cut at a word with "…"."""
     for block in news.blocks:
         if block.get("type") != "text" or not block.get("visible", True):
             continue
@@ -179,9 +185,9 @@ def summary_of(news: News, lang: Lang) -> str:
         # Paragraphs and headings are separated by a space, not glued together
         text = " ".join(unescape(TAG.sub(" ", html)).split())
         if text:
-            if len(text) <= SUMMARY_FROM_TEXT:
+            if len(text) <= size:
                 return text
-            return text[:SUMMARY_FROM_TEXT].rsplit(" ", 1)[0].rstrip(" .,;:—–-") + "…"
+            return text[:size].rsplit(" ", 1)[0].rstrip(" .,;:—–-") + "…"
     return ""
 
 

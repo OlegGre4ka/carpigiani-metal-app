@@ -104,6 +104,11 @@ export type SitePageData = {
   contact_title?: string;
   contact_text?: string;
   articles?: NewsCard[];
+  /** Support page (5.11): "article" — one article open; "list" — at its own address, the
+   *  chosen article as a big preview (featured, with a longer piece of its text) and the other
+   *  articles under it. An article of a "list" page has no cards under it. */
+  support_layout?: "article" | "list" | "";
+  featured?: (NewsCard & { text: string }) | null;
 };
 
 /** The page with this address in this language, or null if there is none yet.

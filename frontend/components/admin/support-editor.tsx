@@ -21,7 +21,7 @@ import { AdminLoader } from "@/components/cone-loader";
 // open, the "contact us" card), under them the articles of the topic: the same list as in
 // "News", with "Add news" right here.
 
-/** link: where the menu item leads (the address of the article shown open) */
+/** link: where the menu item leads (the address of the list, or of the article shown open) */
 type Loaded = SupportMeta & { id: number; topic_title: string; topic_href: string; link: string };
 
 const panel =
@@ -30,6 +30,8 @@ const panel =
 const metaOf = (data: Loaded): SupportMeta => ({
   title_uk: data.title_uk,
   title_en: data.title_en,
+  layout: data.layout,
+  href: data.href,
   topic_id: data.topic_id,
   main_news_id: data.main_news_id,
   is_visible: data.is_visible,
@@ -100,6 +102,10 @@ export function SupportEditor({ id }: { id: number }) {
       setLang("uk");
       return;
     }
+    if (draft.layout === "list" && !draft.href.trim()) {
+      message.error("Вкажіть адресу сторінки зі списком статей, наприклад /support-technologies");
+      return;
+    }
     setSaving(true);
     try {
       const response = await call(api, json("PUT", draft));
@@ -146,7 +152,9 @@ export function SupportEditor({ id }: { id: number }) {
             {page.title_uk}
           </h1>
           <p className="mt-1.5 max-w-160 text-[15px] leading-normal text-ink-soft motion-safe:animate-fade-up motion-safe:[animation-delay:80ms]">
-            На сторінці відкрита одна стаття з теми, решта — під нею. Оберіть, яку статтю показати.
+            {draft.layout === "list"
+              ? "Обрана стаття — великою карткою зверху, решта статей теми — під нею по дві в ряд."
+              : "На сторінці відкрита одна стаття з теми, решта — під нею. Оберіть, яку статтю показати."}
           </p>
         </div>
         <div className="flex flex-wrap gap-3 motion-safe:animate-fade-up motion-safe:[animation-delay:120ms]">

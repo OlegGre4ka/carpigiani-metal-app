@@ -35,6 +35,7 @@ from app.models import (
     EquipmentSubcategory,
     News,
     NewsTopic,
+    SupportPage,
 )
 from app.schemas.equipment_category import Brand
 from app.schemas.page_blocks import (
@@ -147,6 +148,10 @@ def href_owner(db: DbSession, href: str) -> str | None:
     news = db.scalar(select(News).where(News.href == href))
     if news:
         return f"новина «{news.title_uk}»"
+    # A list of articles of "Support" (5.11; the other support pages have no address)
+    support = db.scalar(select(SupportPage).where(SupportPage.href == href))
+    if support:
+        return f"сторінка підтримки «{support.title_uk}»"
     for sub in db.scalars(
         select(EquipmentSubcategory).where(
             EquipmentSubcategory.items.contains([{"href": href}])

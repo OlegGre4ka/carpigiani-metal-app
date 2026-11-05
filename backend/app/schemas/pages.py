@@ -222,3 +222,8 @@ class PublicPage(BaseModel):
     contact_title: str = ""
     contact_text: str = ""
     articles: list[dict] = []
+    # How the support page shows its articles (5.11): "article" or "list". A list at its own
+    # address: the chosen article as a big preview (featured: its card with a longer piece of
+    # its text, "text") and the other articles of the topic (articles) under it
+    support_layout: str = ""
+    featured: dict | None = None

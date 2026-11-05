@@ -68,10 +68,25 @@ function NoPhoto() {
 const stretched =
   "after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-3 focus-visible:after:outline-brand";
 
+/** The metal "Read more" button of a big card. A real link of its own: it stands above the link
+ *  of the whole card (it is a positioned box), so it has to lead to the news itself */
+function ReadMoreButton({ href, className = "" }: { href: string; className?: string }) {
+  const t = useTranslations("News");
+  return (
+    <Link
+      href={href}
+      tabIndex={-1}
+      className={`metal-round relative z-1 inline-flex items-center gap-2 rounded-full border border-white/80 bg-[image:var(--metal)] px-6 py-3.25 text-sm font-extrabold text-[#05070b] shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_10px_22px_rgb(var(--shadow-rgb)/0.22)] transition-colors hover:text-white focus-visible:text-white ${className}`}
+    >
+      {t("readMore")}
+      <ArrowRight size={17} strokeWidth={2.6} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1" />
+    </Link>
+  );
+}
+
 /** The newest news, big: two of the three columns of the first row (the next news stands in the
  *  third one), the photo on the left, the text on the right; one under the other on phones */
 export function FeaturedNews({ item }: { item: NewsCard }) {
-  const t = useTranslations("News");
   return (
     <Reveal radius={36} className="h-full">
       <article className="group relative grid h-full min-h-85 grid-cols-[1.1fr_1fr] overflow-hidden rounded-[36px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] shadow-[0_18px_50px_rgb(var(--shadow-rgb)/0.1)] transition duration-350 hover:-translate-y-1 hover:shadow-[0_26px_60px_rgb(var(--shadow-rgb)/0.16)] max-[820px]:min-h-0 max-[820px]:grid-cols-1 max-[820px]:rounded-[28px]">
@@ -97,17 +112,51 @@ export function FeaturedNews({ item }: { item: NewsCard }) {
             </Link>
           </h2>
           {item.summary && <p className="line-clamp-3 text-base leading-relaxed text-body max-[820px]:text-[15px]">{item.summary}</p>}
-          {/* A real link of its own: the button stands above the link of the whole card
-              (btn-shine makes it a positioned box), so it has to lead to the news itself */}
-          <Link
-            href={item.href}
-            tabIndex={-1}
-            className="metal-round relative z-1 inline-flex items-center gap-2 self-start rounded-full border border-white/80 bg-[image:var(--metal)] px-6 py-3.25 text-sm font-extrabold text-[#05070b] shadow-[inset_0_1px_0_rgb(255_255_255/0.9),0_10px_22px_rgb(var(--shadow-rgb)/0.22)] transition-colors hover:text-white focus-visible:text-white"
-          >
-            {t("readMore")}
-            <ArrowRight size={17} strokeWidth={2.6} aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
+          <ReadMoreButton href={item.href} className="self-start" />
         </div>
+      </article>
+    </Reveal>
+  );
+}
+
+/** The preview of an article on a "list" page of "Support" (5.11, the client's sketch): a
+ *  big card with the photo on the left; on the right the topic and the date, the title and a
+ *  piece of the text of the article, which goes on under the photo for a few lines; "Read more"
+ *  at the bottom in the middle. Phones: the photo on top, the text under it. */
+export function PreviewNews({ item }: { item: NewsCard & { text: string } }) {
+  return (
+    <Reveal radius={36}>
+      <article className="group relative flex flex-col overflow-hidden rounded-[36px] border border-white/90 bg-[rgb(var(--paper-rgb)/0.94)] px-6 pt-6 pb-6.5 shadow-[0_18px_50px_rgb(var(--shadow-rgb)/0.1)] transition duration-350 hover:-translate-y-1 hover:shadow-[0_26px_60px_rgb(var(--shadow-rgb)/0.16)] max-[820px]:rounded-[28px] max-[820px]:px-3.5 max-[820px]:pt-3.5 max-[820px]:pb-5">
+        {/* The photo floats left, the text goes round it: the box cuts the text a few lines
+            under the photo, softly (a fade instead of a cut in the middle of a line) */}
+        <div className="preview-news-body max-h-(--preview-cut) overflow-hidden max-[820px]:max-h-none">
+          <div className="relative float-left mr-7 mb-3 aspect-[4/3] w-[52%] overflow-hidden rounded-[26px] bg-mist max-[1100px]:mr-5 max-[1100px]:w-1/2 max-[820px]:float-none max-[820px]:mr-0 max-[820px]:mb-4 max-[820px]:w-full max-[820px]:aspect-[16/10] max-[820px]:rounded-[20px]">
+            {item.image ? (
+              <Image
+                src={item.image}
+                alt=""
+                fill
+                loading="eager"
+                sizes="(max-width: 820px) 100vw, 480px"
+                className="object-cover transition-transform duration-800 group-hover:scale-105"
+              />
+            ) : (
+              <NoPhoto />
+            )}
+          </div>
+          <NewsMeta topic={item.topic} date={item.date} className="mt-1 mb-3 max-[820px]:mx-1.5 max-[820px]:mt-0" />
+          <h2 className="mb-3.5 font-heading text-[30px] leading-[1.08] font-extrabold tracking-[-0.02em] text-navbar max-[1100px]:text-[25px] max-[820px]:mx-1.5 max-[820px]:text-[23px]">
+            <Link href={item.href} className={`${stretched} after:rounded-[36px] max-[820px]:after:rounded-[28px]`}>
+              {item.title}
+            </Link>
+          </h2>
+          {(item.text || item.summary) && (
+            <p className="text-base leading-relaxed text-body max-[820px]:mx-1.5 max-[820px]:line-clamp-5 max-[820px]:text-[15px]">
+              {item.text || item.summary}
+            </p>
+          )}
+        </div>
+        <ReadMoreButton href={item.href} className="mt-5 self-center max-[820px]:mt-4" />
       </article>
     </Reveal>
   );
@@ -175,10 +224,21 @@ function NewsCompactCard({ item, onNavy, tall = false }: { item: NewsCard; onNav
 
 /** Grid of compact cards, three in a row (two on tablets); on phones one compact row each.
  *  featured: the newest news takes two columns of the first row (the whole row on tablets).
- *  onNavy: on the navy home page (mockup): blue cards with a thin metal rim. */
-export function NewsGrid({ items, featured, onNavy = false }: { items: NewsCard[]; featured?: NewsCard; onNavy?: boolean }) {
+ *  onNavy: on the navy home page (mockup): blue cards with a thin metal rim.
+ *  columns 2: two in a row on large screens too (a "list" page of "Support", 5.11). */
+export function NewsGrid({
+  items,
+  featured,
+  onNavy = false,
+  columns = 3,
+}: {
+  items: NewsCard[];
+  featured?: NewsCard;
+  onNavy?: boolean;
+  columns?: 2 | 3;
+}) {
   return (
-    <ul className="grid grid-cols-3 gap-6 max-[1100px]:grid-cols-2 max-[820px]:grid-cols-1 max-[820px]:gap-3.5">
+    <ul className={`grid ${columns === 2 ? "grid-cols-2" : "grid-cols-3 max-[1100px]:grid-cols-2"} gap-6 max-[820px]:grid-cols-1 max-[820px]:gap-3.5`}>
       {featured && (
         <li className="col-span-2 min-w-0 max-[820px]:col-span-1">
           <FeaturedNews item={featured} />
@@ -187,7 +247,7 @@ export function NewsGrid({ items, featured, onNavy = false }: { items: NewsCard[
       {items.map((item, index) => (
         <li key={item.id} className="min-w-0">
           {/* The cards of a row open one after another */}
-          <Reveal delay={((index + (featured ? 2 : 0)) % 3) * 90} radius={28} className="h-full">
+          <Reveal delay={((index + (featured ? 2 : 0)) % columns) * 90} radius={28} className="h-full">
             <NewsCompactCard item={item} onNavy={onNavy} />
           </Reveal>
         </li>

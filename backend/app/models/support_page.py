@@ -19,8 +19,15 @@ class SupportPage(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title_uk: Mapped[str] = mapped_column(String(200), nullable=False)
     title_en: Mapped[str] = mapped_column(String(200), nullable=False, default="")
-    # Not used since 4.11 (the menu item leads to the address of the article shown open); the
-    # addresses the first pages had were freed for articles (migration f6b8d0a2c4e7)
+    # How the articles are shown (5.11): "article" — the chosen one open for reading (its menu
+    # item leads to the address of the article); "list" — the chosen one as a big preview card
+    # and the others under it two in a row, at the page's own address (href)
+    layout: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="article", server_default="article"
+    )
+    # The address of a "list" page (5.11, the client enters it); unused by an "article" page
+    # (4.11: its menu item leads to the article; the first addresses were freed for articles,
+    # migration f6b8d0a2c4e7)
     href: Mapped[str | None] = mapped_column(String(300), nullable=True, unique=True)
     # Order in the "Support" menu: smaller number goes first
     sort_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)

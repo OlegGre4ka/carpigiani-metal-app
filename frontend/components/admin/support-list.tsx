@@ -20,10 +20,16 @@ type SupportItem = {
   title_en: string;
   is_visible: boolean;
   topic_title: string;
+  /** article: one article open; list: the preview on top and the others (5.11) */
+  layout: "article" | "list";
   main_title: string;
-  /** Where its menu item leads: the address of the article shown open */
+  /** Where its menu item leads: the address of the list, or of the article shown open */
   link: string;
 };
+
+/** The article of the page, as the list says it: open, or in the preview of a list */
+const mainOf = (page: { layout: string; main_title: string }) =>
+  `${page.layout === "list" ? "Список, у прев'ю: " : ""}${page.main_title || "найновіша стаття"}`;
 
 type FormValues = { title_uk: string };
 
@@ -169,13 +175,13 @@ export function SupportList() {
       render: (link: string) => (link ? <Tag className="m-0! font-semibold">{link}</Tag> : <span className="text-sm text-hint">Немає в меню: додайте статтю</span>),
     },
     {
-      title: "Тема і відкрита стаття",
+      title: "Тема і стаття",
       key: "topic",
       width: 260,
       render: (_, page) => (
         <div className="text-sm">
           <div className="font-semibold">{page.topic_title || "Тему не обрано"}</div>
-          {page.topic_title && <div className="text-ink-soft">{page.main_title || "Найновіша стаття"}</div>}
+          {page.topic_title && <div className="text-ink-soft first-letter:uppercase">{mainOf(page)}</div>}
         </div>
       ),
     },
@@ -231,7 +237,7 @@ export function SupportList() {
                 <div className="mt-2 text-sm text-hint">Немає в меню: додайте статтю</div>
               )}
               <div className="mt-1.5 text-sm text-ink-soft">
-                {page.topic_title ? `${page.topic_title} · ${page.main_title || "найновіша стаття"}` : "Тему не обрано"}
+                {page.topic_title ? `${page.topic_title} · ${mainOf(page)}` : "Тему не обрано"}
               </div>
             </div>
             <div className="mt-3 flex items-center justify-between gap-2 border-t border-ink/8 px-1 pt-3">

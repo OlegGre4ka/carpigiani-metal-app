@@ -1,7 +1,9 @@
 """Pages of the "Support" menu (4.11): Carpigiani Gelato University, Technologies and any other
-the client adds. Each is tied to a topic of news: one article of the topic is shown open on the
-page (chosen in the admin panel; none chosen: the newest), the other articles of the topic go
-under it and into the menu of articles on the right, next to a "contact us" card with its own
+the client adds. Each is tied to a topic of news and shows it one of two ways (5.11, layout):
+"article" — one article of the topic open on the page (chosen in the admin panel; none chosen:
+the newest), the other articles under it; "list" — at the page's own address, the chosen article
+as a big preview card and the other articles under it two in a row (an article opened from there
+has no cards under it). On the right: the menu of articles and a "contact us" card with its own
 title and text. The pages are the items of the "Support" menu, in their order.
 
 Public: the menu and the page itself (asked through /api/pages by its address, pages_router).
@@ -14,10 +16,12 @@ from sqlalchemy import select
 from app.db.session import DbSession
 from app.models import News, NewsTopic, SupportPage
 from app.routers.news_router import (
+    check_href_free,
     check_topic,
     in_topic,
     newest_first,
     news_card,
+    text_start,
 )
 from app.routers.pages_router import blocks_for_site, delete_page_images, page_images
 from app.schemas.news import Visibility
@@ -41,6 +45,9 @@ admin_router = APIRouter(
 
 # Articles of the topic on the page (newest first)
 MAX_ARTICLES = 60
+# The piece of the text of the article on the preview card of a list (5.11): it fills the
+# right of the photo and goes on under it a few lines
+PREVIEW_TEXT = 900
 
 
 def ordered(db: DbSession, only_visible: bool = False) -> list[SupportPage]:
@@ -81,17 +88,25 @@ def main_of(page: SupportPage, news: list[News]) -> News | None:
     return chosen or (news[0] if news else None)
 
 
+def is_list(page: SupportPage) -> bool:
+    return page.layout == "list" and bool(page.href)
+
+
 def page_link(db: DbSession, page: SupportPage) -> str:
-    """Where the menu item of the page leads: the address of the article shown open. Empty when
-    its topic has no article on the site: then the page is not in the menu (4.11)."""
+    """Where the menu item of the page leads: the address of the list, or of the article shown
+    open. Empty when its topic has no article on the site: then the page is not in the menu
+    (4.11)."""
     main = main_of(page, topic_news(db, page)[1])
-    return main.href if main else ""
+    if main is None:
+        return ""
+    return page.href if is_list(page) else main.href
 
 
 @public_router.get("/support-menu")
 def support_menu(db: DbSession, lang: Lang = "uk") -> list[dict]:
-    """The items of the "Support" menu: the visible pages in their order, each leading to the
-    article it shows open (a page whose topic has no article on the site is not in the menu)."""
+    """The items of the "Support" menu: the visible pages in their order, each leading to its
+    list or to the article it shows open (a page whose topic has no article on the site is not
+    in the menu)."""
     items = []
     for page in ordered(db, only_visible=True):
         link = page_link(db, page)
@@ -105,16 +120,66 @@ def support_menu(db: DbSession, lang: Lang = "uk") -> list[dict]:
     return items
 
 
+def contact_card(page: SupportPage, lang: Lang) -> dict:
+    return {
+        "contact_title": pick(
+            {"uk": page.contact_title_uk, "en": page.contact_title_en}, lang
+        ),
+        "contact_text": pick(
+            {"uk": page.contact_text_uk, "en": page.contact_text_en}, lang
+        ),
+    }
+
+
+def topic_fields(topic: NewsTopic | None, lang: Lang) -> dict:
+    return {
+        "topic_title": pick({"uk": topic.title_uk, "en": topic.title_en}, lang)
+        if topic
+        else "",
+        "topic_href": topic.href if topic and topic.is_visible else "",
+    }
+
+
+def list_for_site(db: DbSession, page: SupportPage, lang: Lang) -> PublicPage | None:
+    """A "list" page at its own address (5.11): the chosen article as a big preview with a piece
+    of its text, the other articles of the topic under it."""
+    topic, news = topic_news(db, page)
+    main = main_of(page, news)
+    if main is None:
+        return None
+    name = pick({"uk": page.title_uk, "en": page.title_en}, lang)
+    articles = [news_card(item, {}, lang) for item in news]
+    featured = next(c for c in articles if c["id"] == main.id)
+    featured = {**featured, "text": text_start(main, lang, PREVIEW_TEXT)}
+    return PublicPage(
+        kind="support",
+        support_layout="list",
+        title=name,
+        blocks=[],
+        section_title=name,
+        support_id=page.id,
+        support_home=page.href or "",
+        featured=featured,
+        articles=articles,
+        **topic_fields(topic, lang),
+        **contact_card(page, lang),
+    )
+
+
 def support_page_for_site(
     db: DbSession, href: str, lang: Lang, support: int | None = None
 ) -> PublicPage | None:
-    """The support page at this address. Without `support`: the address of the article a
-    page shows open (its menu item leads there). With `support` (the id of a support page, 4.11):
-    any article of its topic, opened from that page, stays in the Support layout; opened from
-    "News" (without it) the same article is a usual news page."""
+    """The support page at this address: a list at its own address (5.11), or an article.
+    Without `support`: the address of the article a page shows open (its menu item leads
+    there). With `support` (the id of a support page, 4.11): any article of its topic, opened
+    from that page, stays in the Support layout; opened from "News" (without it) the same
+    article is a usual news page."""
     pages = ordered(db, only_visible=True)
     if not pages:
         return None
+    listed = next((p for p in pages if is_list(p) and p.href == href), None)
+    if listed is not None:
+        return list_for_site(db, listed, lang)
     article = db.scalar(
         select(News).where(News.href == href, News.is_visible.is_(True))
     )
@@ -153,25 +218,19 @@ def support_page_for_site(
         return None
     return PublicPage(
         kind="support",
+        # An article of a list: "Support › <page> › <article>", the page leads to the list
+        support_layout="list" if is_list(page) else "article",
         title=shown["title"],
         section_title=name,
         support_id=page.id,
-        support_home=main.href,
+        support_home=(page.href or "") if is_list(page) else main.href,
         date=shown["date"],
         image=article.image,
         blocks=blocks_for_site(article.blocks, lang, db),
         main_href=article.href,
-        topic_title=pick({"uk": topic.title_uk, "en": topic.title_en}, lang)
-        if topic
-        else "",
-        topic_href=topic.href if topic and topic.is_visible else "",
-        contact_title=pick(
-            {"uk": page.contact_title_uk, "en": page.contact_title_en}, lang
-        ),
-        contact_text=pick(
-            {"uk": page.contact_text_uk, "en": page.contact_text_en}, lang
-        ),
         articles=articles,
+        **topic_fields(topic, lang),
+        **contact_card(page, lang),
     )
 
 
@@ -198,6 +257,7 @@ def list_item(db: DbSession, page: SupportPage) -> SupportListItem:
         title_en=page.title_en,
         is_visible=page.is_visible,
         topic_title=topic.title_uk if topic else "",
+        layout=page.layout,
         main_title=main.title_uk if main else "",
         link=page_link(db, page),
     )
@@ -209,6 +269,8 @@ def page_admin(db: DbSession, page: SupportPage) -> SupportAdmin:
         id=page.id,
         title_uk=page.title_uk,
         title_en=page.title_en,
+        layout=page.layout,
+        href=page.href or "",
         topic_id=page.topic_id,
         main_news_id=page.main_news_id,
         is_visible=page.is_visible,
@@ -300,8 +362,21 @@ def save_page(page_id: int, data: SupportSettings, db: DbSession):
                 "Обрана стаття не з цієї теми. Оберіть статтю ще раз.",
             )
 
+    # A list has its own address (5.11); an article page has none
+    href = None
+    if data.layout == "list":
+        if not data.href:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                "Вкажіть адресу сторінки зі списком статей, наприклад /support-technologies",
+            )
+        check_href_free(db, data.href, page.href)
+        href = data.href
+
     page.title_uk = data.title_uk
     page.title_en = data.title_en
+    page.layout = data.layout
+    page.href = href
     page.topic_id = data.topic_id
     page.main_news_id = main_news_id
     page.is_visible = data.is_visible
