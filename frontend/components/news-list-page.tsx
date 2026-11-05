@@ -11,11 +11,13 @@ import { loadNews } from "@/lib/site-pages";
 // (/news/content/5-interesting, its address is typed by the client). The title and the chips
 // "All" + topics in one line (each chip is a link to its page), the newest news big, the next
 // ones in a compact grid of three: the newest one takes two columns of the first row, the next
-// one stands next to it. "Show more" and "Shown 14 of 35" under them.
-// The first page has 14 news (the first row of 2 and four rows of 3); /news?page=2 ... (for
-// search engines and old links) show the next 12 each.
+// one stands next to it. "Show more" and "Shown 11 of 35" under them.
+// The first page has 11 news (5.11): the big one takes two places, so the rows are full on
+// every screen — 3 in a row (the big one + 1, then three rows of 3) and 2 in a row on tablets
+// (the big one, then five rows of 2). "Show more" and /news?page=2 ... (for search engines and
+// old links) add 12 each, full rows again.
 
-const FIRST = 14;
+const FIRST = 11;
 const BATCH = 12;
 
 export async function NewsListPage({ page, topicHref }: { page: number; topicHref?: string }) {
