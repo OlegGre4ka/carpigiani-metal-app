@@ -86,11 +86,11 @@ export function Chevron({ dir }: { dir: "left" | "right" }) {
 
 // Ring timer around the "next" scoop: fills up during the 4 seconds before the slide switches,
 // stops while the slider is paused. Give it key={ringKey} from useSlider, so it restarts.
-// dark: on a dark background (home hero) — a faint light track under the ring.
-export function TimerRing({ paused, dark = false }: { paused: boolean; dark?: boolean }) {
+// The same everywhere (5.11, Oleh): a navbar-navy ring on a light track, on the home hero too.
+export function TimerRing({ paused }: { paused: boolean }) {
   return (
     <svg aria-hidden="true" viewBox="0 0 60 60" className="pointer-events-none absolute -inset-1.5 size-[calc(100%+12px)] -rotate-90">
-      <circle cx="30" cy="30" r="27" fill="none" className={dark ? "stroke-white/15" : "stroke-paper/80"} strokeWidth={dark ? 2 : 3.5} />
+      <circle cx="30" cy="30" r="27" fill="none" className="stroke-paper/80" strokeWidth={3.5} />
       <circle
         cx="30"
         cy="30"
@@ -99,7 +99,7 @@ export function TimerRing({ paused, dark = false }: { paused: boolean; dark?: bo
         strokeWidth="3"
         strokeLinecap="round"
         strokeDasharray="170"
-        className={`${dark ? "stroke-brand-light" : "stroke-brand"} motion-safe:animate-ring-fill motion-reduce:hidden ${paused ? "paused" : ""}`}
+        className={`stroke-navbar motion-safe:animate-ring-fill motion-reduce:hidden ${paused ? "paused" : ""}`}
       />
     </svg>
   );

@@ -147,7 +147,7 @@ export function HeroSlider() {
         <Chevron dir="left" />
       </button>
       <button type="button" onClick={next} aria-label={t("next")} className={`${scoopButton} hero-arrow !z-8 right-6`}>
-        <TimerRing key={ringKey} paused={paused} dark />
+        <TimerRing key={ringKey} paused={paused} />
         <Chevron dir="right" />
       </button>
 
