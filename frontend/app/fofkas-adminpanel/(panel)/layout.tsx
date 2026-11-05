@@ -58,7 +58,9 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
       </header>
 
       <div className="mx-auto grid max-w-360 grid-cols-[280px_minmax(0,1fr)] gap-8 px-8 py-8 max-[900px]:grid-cols-1 max-[900px]:gap-4 max-[900px]:px-4 max-[900px]:py-4">
-        <aside className="sticky top-24 self-start rounded-[28px] steel-card p-3 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[900px]:hidden">
+        {/* The menu stays on the screen and scrolls on its own when it is longer than the screen
+            (5.11): 96 px from the top (under the top bar) and 24 px from the bottom */}
+        <aside className="admin-side-scroll sticky top-24 max-h-[calc(100dvh-7.5rem)] self-start overflow-y-auto overscroll-contain rounded-[28px] steel-card p-3 shadow-[0_14px_40px_rgb(var(--shadow-rgb)/0.08)] max-[900px]:hidden">
           <Suspense fallback={<AdminSidebarFallback />}>
             <Sidebar />
           </Suspense>

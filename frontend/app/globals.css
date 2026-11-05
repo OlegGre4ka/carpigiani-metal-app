@@ -2372,3 +2372,22 @@ button:not(:disabled),
     }
   }
 }
+
+/* The menu on the left of the admin panel scrolls on its own (app/fofkas-adminpanel/(panel)/
+   layout.tsx, 5.11): a thin quiet scrollbar that does not cover the rounded corners */
+@layer components {
+  .admin-side-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--ink-rgb) / 0.22) transparent;
+  }
+  .admin-side-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .admin-side-scroll::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgb(var(--ink-rgb) / 0.22);
+  }
+  .admin-side-scroll::-webkit-scrollbar-track {
+    margin-block: 22px;
+  }
+}

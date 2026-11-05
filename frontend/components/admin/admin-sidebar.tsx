@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
 import type { AdminBrand } from "@/lib/admin/brands";
@@ -224,9 +224,28 @@ function Chevron({ expanded }: { expanded: boolean }) {
   );
 }
 
-/** Menu on the left on large screens */
+/** Menu on the left on large screens. It scrolls on its own (5.11: the menu grew longer than the
+ *  screen; the frame around it is in app/fofkas-adminpanel/(panel)/layout.tsx); the open page is
+ *  scrolled into sight inside the menu when the page changes, the page itself does not move. */
 export function AdminSidebar(data: MenuData) {
-  return <AdminNav {...data} />;
+  const pathname = usePathname();
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const frame = box.current?.closest("aside");
+    const here = frame?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!frame || !here) return;
+    const top = here.getBoundingClientRect().top - frame.getBoundingClientRect().top;
+    const bottom = top + here.offsetHeight;
+    // Only when it is not seen: then it comes to the middle of the menu
+    if (top < 0 || bottom > frame.clientHeight) {
+      frame.scrollTop += top - (frame.clientHeight - here.offsetHeight) / 2;
+    }
+  }, [pathname]);
+  return (
+    <div ref={box}>
+      <AdminNav {...data} />
+    </div>
+  );
 }
 
 const noop = () => () => {};
